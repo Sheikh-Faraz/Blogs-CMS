@@ -1,0 +1,56 @@
+import { Editor } from "@tiptap/core";
+import { EditorStateSnapshot } from "@tiptap/react";
+
+export function menuBarStateSelector(ctx: EditorStateSnapshot<Editor | null>) {
+  if (!ctx.editor) {
+    return {
+      isBold: false,
+      canBold: false,
+      isItalic: false,
+      canItalic: false,
+      isStrike: false,
+      canStrike: false,
+      isCode: false,
+      canCode: false,
+      isParagraph: false,
+      isHeading1: false,
+      isHeading2: false,
+      isBulletList: false,
+      isOrderedList: false,
+      isCodeBlock: false,
+      isBlockquote: false,
+      canUndo: false,
+      canRedo: false,
+    };
+  }
+
+  return {
+    isBold: ctx.editor.isActive("bold"),
+    canBold: ctx.editor.can().chain().toggleBold().run(),
+
+    isItalic: ctx.editor.isActive("italic"),
+    canItalic: ctx.editor.can().chain().toggleItalic().run(),
+
+    isStrike: ctx.editor.isActive("strike"),
+    canStrike: ctx.editor.can().chain().toggleStrike().run(),
+
+    isCode: ctx.editor.isActive("code"),
+    canCode: ctx.editor.can().chain().toggleCode().run(),
+
+    isParagraph: ctx.editor.isActive("paragraph"),
+
+    isHeading1: ctx.editor.isActive("heading", { level: 1 }),
+    isHeading2: ctx.editor.isActive("heading", { level: 2 }),
+
+    isBulletList: ctx.editor.isActive("bulletList"),
+    isOrderedList: ctx.editor.isActive("orderedList"),
+
+    isCodeBlock: ctx.editor.isActive("codeBlock"),
+    isBlockquote: ctx.editor.isActive("blockquote"),
+
+    canUndo: ctx.editor.can().chain().undo().run(),
+    canRedo: ctx.editor.can().chain().redo().run(),
+  };
+}
+
+export type MenuBarState = ReturnType<typeof menuBarStateSelector>;
