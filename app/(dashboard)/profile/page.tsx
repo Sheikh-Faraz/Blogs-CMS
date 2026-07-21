@@ -390,7 +390,7 @@ export default function ProfilePage() {
 
                                 {/* Hero banner */}
                                 {/* <div className="relative h-80 overflow-hidden border-4 border-orange-500 p-2 rounded-md"> */}
-                                <div className="relative h-80 overflow-auto border-4 border-orange-500 p-2 rounded-md">
+                                <div className="h-80 overflow-auto m-2 rounded-md bg-muted flex items-center justify-center">
                                   {previewBanner ? (
                                         <ImagePreview src={previewBanner}>
                                           <img
@@ -401,7 +401,7 @@ export default function ProfilePage() {
                                           />
                                         </ImagePreview>  
                                     ): (
-                                       <div className="justify-center w-fit mx-auto items-center">
+                                       <div className="flex justify-center">
                                          <ImageIcon className=" p-2 w-50 h-50 rounded-full opacity-50"/>
                                        </div>
                                      )
