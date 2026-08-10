@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
     })
       .populate("category")
       .populate("tags")
-      .populate("author", "fullName profilePic email")
+      .populate("author", "fullName profilePic email banner")
       .sort({ createdAt: -1 })
       .lean();
 

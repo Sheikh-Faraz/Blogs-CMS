@@ -14,8 +14,10 @@ import { useUser } from "@/context/User.context";
 // For Animation
 import { motion } from "framer-motion";
 
+
 // Images
 import EmptyStateImage from "@/public/No-img-placeholder.png";
+
 
 // Theme
 import { useTheme } from "next-themes";
@@ -172,13 +174,13 @@ export default function ProfilePage() {
   const [location, setLocation] = useState("");
 
   const [socialLinks, setSocialLinks] = useState({
-    linkedin: { url: "", visible: true },
-    github: { url: "", visible: true },
-    x: { url: "", visible: true },
-    facebook: { url: "", visible: true },
+    linkedin:  { url: "", visible: true },
+    github:    { url: "", visible: true },
+    x:         { url: "", visible: true },
+    facebook:  { url: "", visible: true },
     instagram: { url: "", visible: true },
-    youtube: { url: "", visible: true },
-    discord: { url: "", visible: true },
+    youtube:   { url: "", visible: true },
+    discord:   { url: "", visible: true },
   });
 
   const [profilePic, setProfilePic] = useState<File | null>(null);
@@ -386,7 +388,7 @@ export default function ProfilePage() {
                           <div>
                       
                               {/* Profile card */}
-                              <Card className="overflow-hidden rounded-2xl border shadow-sm">
+                              <Card className="overflow-hidden rounded-2xl border shadow-sm ">
 
                                 {/* Hero banner */}
                                 {/* <div className="relative h-80 overflow-hidden border-4 border-orange-500 p-2 rounded-md"> */}

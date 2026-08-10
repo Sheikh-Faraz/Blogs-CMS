@@ -85,53 +85,46 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
 // --------------------------- AUTHENTICATION LOGIC ---------------------------
 
-  // For logging in with email and password
+  // For logging in
   const login = async (formData: unknown) => {
     try {
-      setIsLoggingIn(true);
+      setIsLoggingIn(true);                               // Setting loading state for login process on Frontend UI
 
-      const res = await loginApi(formData as { email: string; password: string });
+      const res = await loginApi(formData as { email: string; password: string });  // Calling the login API with the form data (email and password) to authenticate the user
 
-      // Store token
-      Cookies.set("token", res.token, { expires: 7 });
+      // Changed to server-side for security - remove the below line and this comment if everything works fine which it does for now
+      // Cookies.set("token", res.token, { expires: 7 });    // Setting a cookie named "token" with the JWT token received from the API response, which will be used for authentication in future requests. The cookie is set to expire in 7 days.
 
-      setAuthUser(res.user);
+      setAuthUser(res.user);                              // Setting the authenticated user state with the user data received from the API response
 
-      toast.success("Logged in successfully");
-
-      router.push("/create-blog");
+      toast.success("Logged in successfully");            // Displaying success message/notificaton to the user
+      router.push("/create-blog");                        // Redirecting the user to the create blog page after successful login
 
     } catch (err) {
-      toast.error(getErrorMessage(err, "Login failed"));
-      
+      toast.error(getErrorMessage(err, "Login failed"));  // Displaying error message/notification to the user if login fails
     } finally {
-      setIsLoggingIn(false);
+      setIsLoggingIn(false);                              // Resetting the loading state for login process on Fronend UI, regardless of success or failure
     }
   };
 
 
 
 
-  // For signing up
+  // For Signing Up
   const signup = async (formData: unknown) => {
   try {
-    setIsSigningUp(true);
+    setIsSigningUp(true);                                   // For UI Loading
 
-    const res = await signupApi(formData);
+    const res = await signupApi(formData);                  // SignUp API with the form data (email and password) to authenticate the user
+    setAuthUser(res.user);                                  // Setting authenticated user's data
 
-    Cookies.set("token", res.token, { expires: 7 });
-
-    setAuthUser(res.user);
-
-    toast.success("Account created successfully");
-
-    router.push("/create-blog");
+    toast.success("Account created successfully");          // Displaying success message/notification
+    router.push("/create-blog");                            // Redirecting to create blog page 
 
   } catch (err: unknown) {
-      toast.error(getErrorMessage(err, "Signup failed"));
-
+      toast.error(getErrorMessage(err, "Signup failed"));   // Displaying signup failure message/notification
   } finally {
-    setIsSigningUp(false);
+    setIsSigningUp(false);                                  // Resetting the state for UI loading, regardless of success or failure
   }
 
 };
@@ -168,8 +161,8 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
         const res = await fetchUserInfoApi(); 
         const data = await res.json();
-        console.log("THIS IS THE RES OF THE FETCHED USER: ", res);
-        console.log("THIS IS THE DATA OF THE FETCHED USER: ", data);
+        // console.log("THIS IS THE RES OF THE FETCHED USER: ", res);
+        // console.log("THIS IS THE DATA OF THE FETCHED USER: ", data);
 
         await fetchWorkspaceMembers(data.defaultWorkspace._id); // Fetch members of the default workspace
 
@@ -256,7 +249,7 @@ export const useUser = (): UserContextType => {
   const context = useContext(UserContext);
 
   if (!context) {
-    throw new Error("useBlog must be used within BlogProvider");
+    throw new Error("useUser must be used within UserProvider");
   }
 
   return context;

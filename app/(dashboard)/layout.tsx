@@ -26,7 +26,11 @@ export default function DashboardLayout({
             } as React.CSSProperties
           }
         >
-          <AppSidebar variant="inset" />
+          {/* <AppSidebar variant="inset" /> */}
+          <AppSidebar 
+            variant= "floating" 
+            collapsible= "icon"  
+          />
 
                   <SidebarInset >
                     <SiteHeader />

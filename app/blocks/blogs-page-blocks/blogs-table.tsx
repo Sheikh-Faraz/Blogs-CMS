@@ -192,6 +192,7 @@ export default function BlogsTable({ blogsData, loadingData }: BlogsTableProps) 
                   <AuthorHoverCard
                     author={{
                       fullName: blog.author?.fullName,
+                      banner: blog.author?.banner || "",
                       profilePic: blog.author?.profilePic || "",
                       role: blog.authorRole,
                       email: blog.author?.email,

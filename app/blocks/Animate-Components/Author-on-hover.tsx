@@ -11,6 +11,7 @@ import { motion } from "framer-motion";
 
 type Author = {
   fullName: string;
+  banner: string;
   profilePic: string;
   role?: string;
   email?: string;
@@ -50,7 +51,16 @@ export default function AuthorHoverCard({ author }: { author: Author }) {
           transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
         >
           {/* Banner */}
-          <div className="h-24 bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500" />
+          {/* <div className="h-24 bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500" /> */}
+
+            <img
+              src={author.banner || ""}
+              alt="banner"
+              // width={80}
+              // height={24}
+              className="w-full h-24 object-cover"
+            />
+          
 
           {/* Avatar */}
           <div className="flex justify-center -mt-10">

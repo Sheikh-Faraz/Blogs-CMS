@@ -1,18 +1,29 @@
 "use client";
 
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+
+
+// Full Page Image preview/show
+import ImagePreview from "@/app/blocks/Animate-Components/Image-preview";
+
+import EditWorkspaceDialog from "@/app/blocks/workspace-blocks/workspace-edit-dialog";
+
+// Images
+import EmptyStateImage from "@/public/No-img-placeholder.png";
+
 
 // Context 
 import { useUser } from "@/context/User.context";
 
+
+// For Animation
+import { motion } from "framer-motion";
+
+
+// Components
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-
-// import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-
-import { motion } from "framer-motion";
 import {
   Tooltip,
   TooltipContent,
@@ -20,6 +31,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+
+// Icons
 import { MapPin as Location} from "lucide-react";
 import { GoOrganization as Organization } from "react-icons/go";
 import { MdEdit as Edit } from "react-icons/md";
@@ -89,38 +102,127 @@ export default function HeaderCard() {
     // User Context
     const { fetchUser, authUser } = useUser();
 
+
+    // 
+    // const [profilePic, setProfilePic] = useState<File | null>(null);
+    // const [previewImage, setPreviewImage] = useState("");
+    // const [removeProfilePic, setRemoveProfilePic] = useState(false);
+    
+    
+    // const [banner, setBanner] = useState<File | null>(null);
+    // const [previewBanner, setPreviewBanner] = useState("");
+    // const [removeBanner, setRemoveBanner] = useState(false);
+
+
+
     useEffect(() => {
         fetchUser();
     }, [])
+
+
+
+    const [editWorkspaceOpen, setEditWorkspaceOpen] = useState(false);
+
+  // Your actual workspace from context/API
+  const workspace = {
+    _id: "123",
+    name: "My Workspace",
+    logo: "/logo.png",
+    banner: "/banner.jpg",
+    about: "My workspace about text",
+    location: "Multan, Pakistan",
+    slug: "my-workspace",
+
+    socials: {
+      linkedin: {
+        url: "https://linkedin.com/company/example",
+        visible: true,
+      },
+      github: {
+        url: "https://github.com/example",
+        visible: true,
+      },
+      x: {
+        url: "",
+        visible: false,
+      },
+      facebook: {
+        url: "",
+        visible: false,
+      },
+      instagram: {
+        url: "https://instagram.com/example",
+        visible: true,
+      },
+      youtube: {
+        url: "",
+        visible: false,
+      },
+      discord: {
+        url: "",
+        visible: false,
+      },
+    },
+  };
+
 
   return (
     <div>
 
         {/* Profile card */}
         <Card className="overflow-hidden rounded-2xl border shadow-sm">
+
+        <div className="border border-red-600">
+          <button
+            onClick={() => setEditWorkspaceOpen(true)}
+          >
+            Edit workspace
+          </button>
+
+
+          <EditWorkspaceDialog
+            open={editWorkspaceOpen}
+            onOpenChange={setEditWorkspaceOpen}
+            workspace={workspace}
+            />
+        </div>
+
+
           {/* Hero banner */}
-          <div className="relative h-40 bg-muted overflow-hidden">
+
+          <div className="h-80 overflow-auto m-2 rounded-md bg-muted flex items-center justify-center">
+                                            {/* {previewBanner ? ( */}
+                                                  <ImagePreview src={authUser?.defaultWorkspace?.banner}>
+                                                    <img
+                                                      src={authUser?.defaultWorkspace?.banner || EmptyStateImage.src}
+                                                      alt="Profile Banner"
+                                                      // className="w-full h-full object-cover object-center"
+                                                      className="w-full h-full"
+                                                    />
+                                                  </ImagePreview>  
+                                              {/* ): (
+                                                 <div className="flex justify-center">
+                                                   <ImageIcon className=" p-2 w-50 h-50 rounded-full opacity-50"/>
+                                                 </div>
+                                               )
+                                             }                                    */}
+          
+                                          </div>
+
+
+          {/* <div className="relative h-40 bg-muted overflow-hidden border border-red-600">
             <img
               src={authUser?.defaultWorkspace?.banner || "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=900&q=80"}
               alt="Company banner"
               className="w-full h-full object-cover object-center"
-            />
+            />            
+          </div> */}
 
-            {/* <div className="absolute top-2 ml-4">
-
-            <button className="absolute top-3 left-3 text-black w-8 h-8 bg-white backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm hover:bg-background transition-colors">
-            <button className="text-black w-8 h-8 bg-white backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm hover:bg-background transition-colors">
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-
-            </div> */}
-            
-          </div>
 
           <div className="px-5 pt-0 pb-0">
             {/* Logo + edit */}
-            <div className="flex items-start justify-between -mt-6 mb-3">
-              <div className="w-14 h-14 rounded-2xl border-4 border-background flex items-center justify-center shadow-sm shrink-0 z-99">
+            <div className="flex items-start justify-between mb-3">
+              <div className="w-14 h-14 rounded-2xl border-4 border-[#E85129] flex items-center justify-center shadow-sm shrink-0">
 
                 {authUser?.defaultWorkspace?.logo ?
                 (
@@ -137,7 +239,8 @@ export default function HeaderCard() {
                 )}
               </div>
 
-              <Link href="#" className="flex items-center gap-1.5 mt-5 text-white text-md font-medium border rounded-full px-3 py-2 bg-[#E85129] hover:bg-muted transition-colors">
+              {/* <Link href="#" className="flex items-center gap-1.5 mt-5 text-white text-md font-medium border rounded-full px-3 py-2 bg-[#E85129] hover:bg-muted transition-colors"> */}
+              <Link href="#" className="flex items-center gap-1.5 mt-5 text-md font-medium border rounded-full px-3 py-2 hover:bg-muted transition-colors bg-card text-card-foreground">
                   <Edit className="w-4 h-4" />
                   edit workspace
               </Link>

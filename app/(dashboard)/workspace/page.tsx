@@ -6,18 +6,17 @@ import Link from "next/link";
 // Context 
 import { useUser } from "@/context/User.context";
 
-// Loading context
-// import { useGlobalLoading } from "@/context/Loading.context";
-
 
 // Header 
 import HeaderCard from "@/app/blocks/workspace-blocks/header-card";
 // About & Stats
 import AboutCard from "@/app/blocks/workspace-blocks/about-card";
+
 // Stats
-import StatsCard from "@/app/blocks/workspace-blocks/stats-card";
+// import StatsCard from "@/app/blocks/workspace-blocks/stats-card";
 // Team Members 
-import TeamCard from "@/app/blocks/workspace-blocks/team-card";
+// import TeamCard from "@/app/blocks/workspace-blocks/team-card";
+
 // Right Side info card 
 import RightCard from "@/app/blocks/workspace-blocks/Right-Card";
 // Delete card 
@@ -31,7 +30,10 @@ import { FiPlusCircle as Plus } from "react-icons/fi";
 export default function WorkspacePage() {
 
     // User Context
-    const { fetchUser, 
+    const { 
+      // fetchUser, 
+
+
       // authUser, 
       // members 
     } = useUser();
@@ -42,7 +44,9 @@ export default function WorkspacePage() {
     useEffect(() => {
 
         // setIsLoading(false);
-        fetchUser();
+
+
+        // fetchUser();
 
     }, [])
 
@@ -50,10 +54,11 @@ export default function WorkspacePage() {
     <div>
     
     <div className="flex justify-between items-center px-4 mb-8">
-      <p className="text-3xl font-bold">Current Workspace</p>
-      <Link href="#" className="border py-2 px-3 bg-[#E85129] text-white rounded-md flex gap-2 items-center">
+      <p className="text-3xl font-bold">Current Workspace / Edit</p>
+      {/* <Link href="#" className="border py-2 px-3 bg-[#E85129] text-white rounded-md flex gap-2 items-center"> */}
+      <Link href="#" className="border py-2 px-3 bg-card text-card-foreground rounded-md flex gap-2 items-center hover:bg-muted">
         <Plus />
-        Create New Workspace
+        Create New Workspace 
       </Link>
     </div>
 

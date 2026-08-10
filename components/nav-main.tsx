@@ -59,15 +59,16 @@ export function NavMain({
 
                       ${
                         isActive
-                          ? "bg-transparent! text-[#E85129]! hover:text-foreground!"
+                          // ? "bg-transparent! text-[#E85129]! hover:text-foreground!"
+                          ? "bg-[#E85129]! text-white! hover:text-gray-300! rounded-md py-5!"
                           : "bg-transparent! text-muted-foreground hover:text-[#E85129]!"
                       }
                     `}
                   >
                     <div className={
                       isActive
-                      ? "bg-transparent! p-2"
-                      : "bg-muted! p-2 rounded-full"
+                      ? "bg-transparent!"
+                      : "bg-muted! rounded-full"
                     }
                     >
                       {item.icon}

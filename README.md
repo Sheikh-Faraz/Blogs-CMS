@@ -1,4 +1,4 @@
-<!-- GENERAL -->
+GENERAL
 <!-- -- Fix/Add the one stat in the blog page -- DONE -->
 <!-- -- Add the ability to delete the category for user and do not implement edit for it -- DONE -->
 <!-- -- Fix the ai feature where if the content contains image it ignores it and it stays there -- DONE -->
@@ -6,12 +6,12 @@
 -- Add the functionality that if a user's role is not premitted and he can't perform certain actions
 
 
-<!-- Across PAGES -->
+Across PAGES
 <!-- -- Updating the loading and add loading skeleton across the pages  -- DONE KINDA -->
 <!-- -- Add subtle but beautiful showing animations -- ALSO DONE KINDA -->
 
 
-<!-- BLOGS PAGE -->
+BLOGS PAGE
 <!-- -- Add pagination to the blogs  --  DONE -->
 <!-- -- Add the correct loading skeleton instead of the circle loading for showing blogs loading -- DONE -->
 <!-- -- The top header of the blogs add stats to it -- DONE just need to change one stat -->
@@ -20,7 +20,7 @@
 <!-- -- Add beautiful subtle animations to it -- DONE -->
 
 
-<!-- CREATE BLOG PAGE -->
+CREATE BLOG PAGE
 <!-- -- Add the cloudinary image feature -- DONE -->
 <!-- -- Add the author and maybe the workspace for the blog -- DONE kinda -->
 <!-- -- Check if correct loading skeleton are need and applied -- DONE -->
@@ -31,7 +31,7 @@ POSPONDED FOR NOW
 
 
 
-<!-- PROFILE PAGE -->
+PROFILE PAGE
 <!-- -- Add new fields to the profile page -- DONE -->
 <!-- -- Add subtle animations showing components of page -- DONE KINDA -->
 <!-- -- Showing loading skeleton if needed -- DONE -->

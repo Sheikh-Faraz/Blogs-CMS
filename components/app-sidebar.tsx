@@ -13,7 +13,7 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarMenu,
-  // SidebarMenuButton,
+  SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
@@ -34,6 +34,8 @@ import { LayoutDashboard } from 'lucide-react';
 
 import { RiPenNibLine as Penlogo } from "react-icons/ri";
 
+import { WorkspaceSwitcher } from "@/app/blocks/Navbar/Workspace-Switcher";
+
 // Context 
 import { useUser } from "@/context/User.context";
 
@@ -49,6 +51,27 @@ const data = {
   //   email: "m@example.com",
   //   avatar: "/avatars/shadcn.jpg",
   // },
+
+
+  workspaces: [
+    {
+      name: "Acme Inc",
+      logo: SquareTerminal,
+      plan: "Enterprise",
+    },
+    {
+      name: "Acme Corp.",
+      logo: Users,
+      plan: "Startup",
+    },
+    {
+      name: "Evil Corp.",
+      logo: SquareTerminal,
+      plan: "Free",
+    },
+  ],
+
+
   navMain: [
     {
       title: "Blogs",
@@ -87,69 +110,72 @@ const data = {
     },
     {
       title: "Team",
-      url: "/workspace",
+      url: "/team",
       icon: (
         <Users  />
       ),
     },
   ],
-  navClouds: [
-    {
-      title: "Capture",
-      icon: (
-        <CameraIcon
-        />
-      ),
-      isActive: true,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Proposal",
-      icon: (
-        <FileTextIcon
-        />
-      ),
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Prompts",
-      icon: (
-        <FileTextIcon
-        />
-      ),
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-  ],
+
+
+  // navClouds: [
+  //   {
+  //     title: "Capture",
+  //     icon: (
+  //       <CameraIcon
+  //       />
+  //     ),
+  //     isActive: true,
+  //     url: "#",
+  //     items: [
+  //       {
+  //         title: "Active Proposals",
+  //         url: "#",
+  //       },
+  //       {
+  //         title: "Archived",
+  //         url: "#",
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     title: "Proposal",
+  //     icon: (
+  //       <FileTextIcon
+  //       />
+  //     ),
+  //     url: "#",
+  //     items: [
+  //       {
+  //         title: "Active Proposals",
+  //         url: "#",
+  //       },
+  //       {
+  //         title: "Archived",
+  //         url: "#",
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     title: "Prompts",
+  //     icon: (
+  //       <FileTextIcon
+  //       />
+  //     ),
+  //     url: "#",
+  //     items: [
+  //       {
+  //         title: "Active Proposals",
+  //         url: "#",
+  //       },
+  //       {
+  //         title: "Archived",
+  //         url: "#",
+  //       },
+  //     ],
+  //   },
+  // ],
+
   navSecondary: [
     {
       title: "Settings",
@@ -192,18 +218,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   // Context
   const { authUser, fetchUser } = useUser();
-    // logout 
 
     useEffect(() => {
       fetchUser();
     }, [])
 
-    // const [position, setPosition] = useState("bottom")
   
 
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
+    // <Sidebar collapsible="offcanvas" {...props}>
+    <Sidebar collapsible="icon" {...props}>
       <SidebarHeader >
+            <WorkspaceSwitcher teams={data.workspaces} />
         <SidebarMenu>
           <SidebarMenuItem>
 
@@ -213,20 +239,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               // className="items-center justify-center border border-green-600" 
               // className="items-center justify-center border border-green-600" 
             > */}
-              <div>
 
+
+
+              {/* <div>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild> 
-                    {/* <Button variant="outline" className="w-full"> */}
-                      <button className="w-full flex items-center gap-2 justify-center py-4 border bg-muted rounded-md">
+                      <button className="w-full flex items-center gap-2 justify-center py-4 rounded-md border ">
 
-                        <span>
-                          <SquareTerminal size={20} />
-                        </span>
+                          <span className="bg-[#E85129] rounded-md p-2">
+                            <SquareTerminal size={20} className="text-white "/>
+                          </span>
 
-                        <span>
-                          {authUser?.defaultWorkspace?.name || "Workspace"}
-                        </span>
+                          <span className="text-md">
+                            {authUser?.defaultWorkspace?.name || "Workspace"}
+                          </span>
 
                         <span className="ml-4">
                           <ChevronsUpDown  size={15}/>
@@ -239,7 +266,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     // className="w-32"
                     align='center'
                     className='w-full! items-center justify-center'
-                  >
+                    >
                     <DropdownMenuGroup>
                       <DropdownMenuLabel>Workspaces</DropdownMenuLabel>
                       <DropdownMenuRadioGroup>
@@ -251,37 +278,38 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   </DropdownMenuContent>
                 </DropdownMenu>
 
-              </div>
+              </div> */}
 
-            {/* </SidebarMenuButton> */}
-            
-            {/* <SidebarMenuButton
-              asChild
-              className="py-8! mt-2" 
-            > */}
 
-            {/* <div className="mb-4 mt-6 flex items-center gap-2 justify-center"> */}
-            <div className="mb-4 my-8 mx-4">
+            <SidebarMenuButton
+              size="lg"
+              // variant="default"
+              className="bg-transparent! my-4"
+            >
+        
               <a href="#" className="flex items-center gap-2">
 
-                <span className="bg-[#E85129] p-2 rounded-full">
+                <div className="bg-[#E85129] p-2 rounded-full">
+                  {/* <Penlogo className="text-white h-6! w-6!" /> */}
                   <Penlogo className="text-white" size={25}/>
-                </span>
+                </div>
 
-                <span className="text-xl font-bold">Inkwell.</span>
+                <div className="text-xl font-bold">Inkwell.</div>
               </a>
-            </div>
-
-            {/* </SidebarMenuButton> */}
+            </SidebarMenuButton>
 
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
+
+
       <SidebarContent>
         <NavMain items={data.navMain}/>
-        {/* <NavDocuments items={data.documents}/> */}
         <NavSecondary items={data.navSecondary} className="mt-auto" />
+        {/* <NavDocuments items={data.documents}/> */}
       </SidebarContent>
+
+
       <SidebarFooter>
         {/* <NavUser user={data.user} /> */}
         <NavUser user={{
@@ -290,6 +318,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           avatar: authUser?.profilePic || "no nothing",
         }} />
       </SidebarFooter>
+
     </Sidebar>
   )
 }
