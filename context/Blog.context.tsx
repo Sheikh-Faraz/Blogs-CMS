@@ -143,8 +143,6 @@ export const BlogProvider = ({ children }: { children: React.ReactNode }) => {
       
       const data = await res.json();
       setBlogs(data);
-
-      // console.log("THIS THE BLOGS I AM GETTING ", res);
       
     } catch (err) {
       toast.error(getErrorMessage(err, "Failed to fetch blogs"));

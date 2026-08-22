@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
-
 // Context 
 import { useUser } from "@/context/User.context";
 
@@ -15,11 +13,22 @@ import { motion } from "framer-motion";
 export default function DeleteCard() {
 
     // User Context
-    const { fetchUser, authUser } = useUser();
+    const {
+      authUser,
+      workspace,
+      deleteWorkspace,
+      deleteWorkspaceLoading,
+    } = useUser();
 
-    useEffect(() => {
-        fetchUser();
-    }, [])
+    const handleDeleteWorkspace = async () => {
+      const workspaceName = workspace?.name || "this workspace";
+
+      if (!window.confirm(`Delete ${workspaceName}? This permanently removes its blogs, categories, tags, and memberships.`)) {
+        return;
+      }
+
+      await deleteWorkspace();
+    };
 
   return (
     <div>
@@ -73,10 +82,17 @@ export default function DeleteCard() {
                 className="leading-relaxed flex justify-between"
               >
                 <div>
-                    <p className="text-md font-bold text-muted-foreground">Delete {authUser?.defaultWorkspace?.name || "Workspace"}</p>
+                    <p className="text-md font-bold text-muted-foreground">Delete {workspace?.name || authUser?.defaultWorkspace?.name || "Workspace"}</p>
                     <p className="text-xs text-red-400 my-2">Are you sure you want to delete this workspace?</p>
                 </div>
-                <button className="px-2 rounded-md bg-red-600 text-white">Delete Workspace</button>
+                <button
+                  type="button"
+                  onClick={handleDeleteWorkspace}
+                  disabled={deleteWorkspaceLoading}
+                  className="px-2 rounded-md bg-red-600 text-white disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {deleteWorkspaceLoading ? "Deleting..." : "Delete Workspace"}
+                </button>
               </motion.p>
             </CardContent>
           </Card>

@@ -1,11 +1,14 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 
 // Context 
 import { useUser } from "@/context/User.context";
 
+// Workspace Loading Skeleton
+import WorkspaceSkeleton from "@/app/blocks/loading/Workspace-Skeleton-Components/WorkspaceSkeleton";
 
 // Header 
 import HeaderCard from "@/app/blocks/workspace-blocks/header-card";
@@ -13,7 +16,10 @@ import HeaderCard from "@/app/blocks/workspace-blocks/header-card";
 import AboutCard from "@/app/blocks/workspace-blocks/about-card";
 
 // Stats
+import WorkspaceAnalytics from "@/app/blocks/workspace-blocks/workspaceAnalytics";
+
 // import StatsCard from "@/app/blocks/workspace-blocks/stats-card";
+
 // Team Members 
 // import TeamCard from "@/app/blocks/workspace-blocks/team-card";
 
@@ -21,6 +27,7 @@ import AboutCard from "@/app/blocks/workspace-blocks/about-card";
 import RightCard from "@/app/blocks/workspace-blocks/Right-Card";
 // Delete card 
 import DeleteCard from "@/app/blocks/workspace-blocks/delete-card";
+import CreateWorkspaceDialog from "@/app/blocks/workspace-blocks/create-workspace-dialog";
 
 
 import { FiPlusCircle as Plus } from "react-icons/fi";
@@ -29,35 +36,47 @@ import { FiPlusCircle as Plus } from "react-icons/fi";
 
 export default function WorkspacePage() {
 
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const [createWorkspaceOpen, setCreateWorkspaceOpen] = useState(false);
+    const createWorkspaceRequested = searchParams.get("create") === "1";
+
     // User Context
     const { 
-      // fetchUser, 
+      workspaceAnalyticsLoading,
 
-
-      // authUser, 
-      // members 
+      fetchAnalytics,
+      analytics,
     } = useUser();
 
-    // Loading context 
-    // const { setIsLoading } = useGlobalLoading();
-
     useEffect(() => {
-
-        // setIsLoading(false);
-
-
-        // fetchUser();
-
+      fetchAnalytics();
     }, [])
+
+    const handleCreateWorkspaceOpenChange = (open: boolean) => {
+      setCreateWorkspaceOpen(open);
+
+      if (!open && createWorkspaceRequested) {
+        router.replace("/workspace");
+      }
+    };
+
+
+    if(workspaceAnalyticsLoading) {
+      return <WorkspaceSkeleton />
+    };
 
   return (
     <div>
+      <CreateWorkspaceDialog
+        open={createWorkspaceRequested || createWorkspaceOpen}
+        onOpenChange={handleCreateWorkspaceOpenChange}
+      />
     
     <div className="flex justify-between items-center px-4 mb-8">
-      <p className="text-3xl font-bold">Current Workspace / Edit</p>
-      {/* <Link href="#" className="border py-2 px-3 bg-[#E85129] text-white rounded-md flex gap-2 items-center"> */}
-      <Link href="#" className="border py-2 px-3 bg-card text-card-foreground rounded-md flex gap-2 items-center hover:bg-muted">
-        <Plus />
+      <p className="text-3xl font-bold">Current Workspace</p>
+      <Link href="/workspace?create=1" className="border py-2 px-3 bg-card text-card-foreground rounded-md flex gap-2 items-center hover:bg-muted">
+        <Plus className="text-[#E85129]" />
         Create New Workspace 
       </Link>
     </div>
@@ -71,9 +90,32 @@ export default function WorkspacePage() {
 
         <div className="flex-1 min-w-0 space-y-4">
 
-          <AboutCard />
+          <AboutCard 
+            totalBlogs={analytics?.overview.totalBlogs ?? 0}
+            publishedBlogs={analytics?.overview.publishedBlogs ?? 0}
+            draftBlogs={analytics?.overview.draftBlogs ?? 0}
+            authors={analytics?.overview.totalAuthors ?? 0 }
+          />
 
           {/* <StatsCard /> */}
+
+
+          <WorkspaceAnalytics
+            totalBlogs={analytics?.overview.totalBlogs ?? 0}
+            publishedBlogs={analytics?.overview.publishedBlogs ?? 0}
+            draftBlogs={analytics?.overview.draftBlogs ?? 0}
+            authors={analytics?.authors.map((author) => ({
+              _id: author.id,
+              fullName: author.name,
+              profilePic: author.profilePic,
+              totalBlogs: author.totalBlogs,
+              publishedBlogs: author.published,
+              draftBlogs: author.drafts,
+
+              location: author.location,
+            })) ?? []}
+          />
+
 
           {/* <TeamCard /> */}
           

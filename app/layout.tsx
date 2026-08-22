@@ -50,9 +50,9 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col font-inter">
 
         {/* Context */}
+        <BlogProvider>
         <UserProvider>
 
-        <BlogProvider>
 
           <LoadingProvider>
 
@@ -77,10 +77,10 @@ export default function RootLayout({
               
               </LoadingProvider>
 
-        </BlogProvider>
 
         </UserProvider>
 
+        </BlogProvider>
       </body>
     </html>
   );

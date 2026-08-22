@@ -9,6 +9,8 @@ export interface Workspace {
   
   location: string;
 
+  founded?: string | Date | null;
+
   socials?: WorkspaceSocials;
 
   slug: string;
@@ -16,12 +18,40 @@ export interface Workspace {
 }
 
 export interface WorkspaceSocials {
-  website?: string;
-  linkedin?: string;
-  github?: string;
-  x?: string;
-  facebook?: string;
-  instagram?: string;
-  youtube?: string;
-  discord?: string;
+  // website?: string;
+  // linkedin?: string;
+  // github?: string;
+  // x?: string;
+  // facebook?: string;
+  // instagram?: string;
+  // youtube?: string;
+  // discord?: string;
+  linkedin?: {
+    url: string;
+    visible: boolean;
+  };
+  github?: {
+    url: string;
+    visible: boolean;
+  };
+  x?: {
+    url: string;
+    visible: boolean;
+  };
+  facebook?: {
+    url: string;
+    visible: boolean;
+  };
+  instagram?: {
+    url: string;
+    visible: boolean;
+  };
+  youtube?: {
+    url: string;
+    visible: boolean;
+  };
+  discord?: {
+    url: string;
+    visible: boolean;
+  };
 }

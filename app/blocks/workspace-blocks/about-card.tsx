@@ -2,8 +2,9 @@
 
 import { useEffect } from "react";
 
-// Context 
+// Context's
 import { useUser } from "@/context/User.context";
+
 
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -21,46 +22,65 @@ import { TiTickOutline as Published } from "react-icons/ti";
 import { CiRead as Read } from "react-icons/ci";
 
 
-const stats = [
-  {
-    label: "Team Members",
-    value: 10,
-    icon: User,
-    color: "from-blue-500/20 via-blue-400/10 to-transparent",
-    glow: "hover:shadow-blue-500/20",
-  },
-  {
-    label: "All Blogs",
-    value: 10,
-    icon: Blogs,
-    color: "from-zinc-500/20 via-zinc-400/10 to-transparent",
-    glow: "hover:shadow-zinc-500/20",
-  },
-  {
-    label: "Published Blogs",
-    value: 10,
-    icon: Published,
-    color: "from-black/20 via-zinc-700/10 to-transparent",
-    glow: "hover:shadow-black/20",
-  },
-  {
-    label: "Users Read",
-    value: 10,
-    icon: Read,
-    color: "from-sky-500/20 via-blue-400/10 to-transparent",
-    glow: "hover:shadow-sky-500/20",
-  },
-];
+type AboutCardProps = {
+  totalBlogs: number;
+  publishedBlogs: number;
+  draftBlogs: number;
+  authors: number;
+};
 
 
-export default function AboutCard() {
-
+export default function AboutCard(
+  {
+    totalBlogs,
+    publishedBlogs,
+    draftBlogs,
+    authors,
+  } : AboutCardProps) {  
+  
     // User Context
-    const { fetchUser, authUser } = useUser();
+    const { 
+      fetchUser, 
+      authUser,
+    } = useUser();
 
+    
     useEffect(() => {
-        fetchUser();
+      fetchUser();
     }, [])
+ 
+    
+    const stats = [
+      {
+        label: "Team Members",
+        value: authors,
+        icon: User,
+        color: "from-blue-500/20 via-blue-400/10 to-transparent",
+        glow: "hover:shadow-blue-500/20",
+      },
+      {
+        label: "All Blogs",
+        value: totalBlogs,
+        icon: Blogs,
+        color: "from-zinc-500/20 via-zinc-400/10 to-transparent",
+        glow: "hover:shadow-zinc-500/20",
+      },
+      {
+        label: "Published Blogs",
+        value: publishedBlogs,
+        icon: Published,
+        color: "from-black/20 via-zinc-700/10 to-transparent",
+        glow: "hover:shadow-black/20",
+      },
+      {
+        label: "Drafted Blogs",
+        value: draftBlogs,
+        icon: Read,
+        color: "from-sky-500/20 via-blue-400/10 to-transparent",
+        glow: "hover:shadow-sky-500/20",
+      },
+    ];
+
 
   return (
     <div>
@@ -109,7 +129,7 @@ export default function AboutCard() {
                   className="mb-2 text-muted-foreground group-hover:text-foreground"
                 >
                   <div className="bg-muted p-2 w-fit rounded-md">
-                    <Icon size={18} className="text-orange-500"/>
+                    <Icon size={18} className="text-[#E85129]"/>
                   </div>
                 </motion.div>
         
@@ -156,7 +176,7 @@ export default function AboutCard() {
               >
 
               <span className="flex gap-2 items-center">
-                <Exclamation size={18} className="text-orange-500"/>
+                <Exclamation size={18} className="text-[#E85129]"/>
                 <span className="text-xl">About {authUser?.defaultWorkspace?.name || "Workspace"}</span>
               </span>
 

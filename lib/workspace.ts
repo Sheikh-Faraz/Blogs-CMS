@@ -6,25 +6,29 @@ import User from "@/models/User";
 
 export async function getActiveWorkspace( userId: string ) {
 
-  const cookieStore = await cookies();
+    const cookieStore = await cookies();
 
-  const activeWorkspaceId = cookieStore.get("activeWorkspaceId")?.value;
+    const activeWorkspaceId = cookieStore.get("activeWorkspaceId")?.value;
 
-  // STEP 1
-  // Try cookie workspace
+      // STEP 1
+      // Try cookie workspace
 
-  if (activeWorkspaceId) {
-    const membership = await Membership.findOne({
-      user: userId,
-      workspace: activeWorkspaceId,
-    });
+      // Get the current active workspace
+      if (activeWorkspaceId) {
+        const membership = await Membership.findOne({
+          user: userId,
+          workspace: activeWorkspaceId,
+      });
 
-    if (membership) {
-      const workspace = await Workspace.findById(activeWorkspaceId);
 
+      // Check if the user is a member of the workspace
+      if (membership) {
+        const workspace = await Workspace.findById(activeWorkspaceId);
+      
       if (workspace) {
         return workspace;
       }
+
     }
   }
 

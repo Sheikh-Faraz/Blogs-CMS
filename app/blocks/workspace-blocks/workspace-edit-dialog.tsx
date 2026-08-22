@@ -3,6 +3,16 @@
 import { useEffect, useRef, useState } from "react";
 import type { ElementType } from "react";
 
+// Loading spinning icon
+import LoaderIcon from "@/app/blocks/loading/Loader";
+
+// Context 
+import { useUser } from "@/context/User.context";
+
+// Countries/Locations
+import  DropdownMenuCheckboxes  from "@/app/blocks/CountrySelector";
+
+
 import {
   Dialog,
   DialogContent,
@@ -16,18 +26,21 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
+import { format } from "date-fns";
+import { CalendarDays } from "lucide-react";
+
 import {
   Camera,
   Image as ImageIcon,
-//   X,
-//   Linkedin,
-//   Github,
-//   Twitter,
-//   Facebook,
-//   Instagram,
-//   Youtube,
-  MessageCircle,
-  MapPin,
+  X, 
+  // MapPin,
 } from "lucide-react";
 
 
@@ -39,7 +52,7 @@ import {
     FaYoutube as Youtube  
 } from "react-icons/fa";
 import { FiGithub as Github } from "react-icons/fi";
-import { FaXTwitter as X } from "react-icons/fa6";
+import { FaXTwitter as Twitter } from "react-icons/fa6";
 
 /* =========================================================
    TYPES
@@ -74,6 +87,8 @@ type Workspace = {
 
   about?: string;
   location?: string;
+
+  founded?: string | Date | null;
 
   slug: string;
 
@@ -119,7 +134,8 @@ interface EditWorkspaceDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 
-  workspace: Workspace;
+  // workspace: Workspace;
+  ActiveWorkspace: Workspace;
 
   onSave?: (formData: FormData) => Promise<void>;
 }
@@ -133,41 +149,49 @@ const SOCIAL_CONFIG: Record<
   {
     label: string;
     icon: ElementType;
+    visible: boolean;
   }
 > = {
   linkedin: {
     label: "LinkedIn",
     icon: Linkedin,
+    visible: false,
   },
 
   github: {
     label: "GitHub",
     icon: Github,
+    visible: false,
   },
 
   x: {
     label: "X / Twitter",
-    icon: X,
+    icon: Twitter,
+    visible: false,
   },
 
   facebook: {
     label: "Facebook",
     icon: Facebook,
+    visible: false,
   },
 
   instagram: {
     label: "Instagram",
     icon: Instagram,
+    visible: false,
   },
 
   youtube: {
     label: "YouTube",
     icon: Youtube,
+    visible: false,
   },
 
   discord: {
     label: "Discord",
-    icon: MessageCircle,
+    icon: Discord,
+    visible: false,
   },
 };
 
@@ -178,11 +202,19 @@ const SOCIAL_CONFIG: Record<
 export default function EditWorkspaceDialog({
   open,
   onOpenChange,
-  workspace,
+  ActiveWorkspace,
+  // workspace,
   onSave,
 }: EditWorkspaceDialogProps) {
   const logoInputRef = useRef<HTMLInputElement>(null);
   const bannerInputRef = useRef<HTMLInputElement>(null);
+
+
+      // User Context
+      const { 
+        updateWorkspaceLoading,
+        updateWorkspace,
+      } = useUser();
 
   /* ---------------------------------------------------------
      Basic information
@@ -191,6 +223,7 @@ export default function EditWorkspaceDialog({
   const [name, setName] = useState("");
   const [location, setLocation] = useState("");
   const [about, setAbout] = useState("");
+  const [founded, setFounded] = useState<Date | undefined>();
 
   /* ---------------------------------------------------------
      Images
@@ -215,43 +248,44 @@ export default function EditWorkspaceDialog({
     linkedin: {
       ...SOCIAL_CONFIG.linkedin,
       url: "",
-      visible: false,
+      // visible: false,
+      visible: SOCIAL_CONFIG.linkedin.visible,
     },
 
     github: {
       ...SOCIAL_CONFIG.github,
       url: "",
-      visible: false,
+      visible: SOCIAL_CONFIG.github.visible,
     },
 
     x: {
       ...SOCIAL_CONFIG.x,
       url: "",
-      visible: false,
+      visible: SOCIAL_CONFIG.x.visible,
     },
 
     facebook: {
       ...SOCIAL_CONFIG.facebook,
       url: "",
-      visible: false,
+      visible: SOCIAL_CONFIG.facebook.visible,
     },
 
     instagram: {
       ...SOCIAL_CONFIG.instagram,
       url: "",
-      visible: false,
+      visible: SOCIAL_CONFIG.instagram.visible,
     },
 
     youtube: {
       ...SOCIAL_CONFIG.youtube,
       url: "",
-      visible: false,
+      visible: SOCIAL_CONFIG.youtube.visible,
     },
 
     discord: {
       ...SOCIAL_CONFIG.discord,
       url: "",
-      visible: false,
+      visible: SOCIAL_CONFIG.discord.visible,
     },
   });
 
@@ -262,11 +296,17 @@ export default function EditWorkspaceDialog({
   ========================================================= */
 
   useEffect(() => {
-    if (!workspace) return;
+    if (!ActiveWorkspace) return;
 
-    setName(workspace.name || "");
-    setLocation(workspace.location || "");
-    setAbout(workspace.about || "");
+    setName(ActiveWorkspace.name || "");
+    setLocation(ActiveWorkspace.location || "");
+    setAbout(ActiveWorkspace.about || "");
+
+    setFounded(
+      ActiveWorkspace.founded
+        ? new Date(ActiveWorkspace.founded)
+        : undefined
+    );
 
     setLogo(null);
     setBanner(null);
@@ -274,8 +314,8 @@ export default function EditWorkspaceDialog({
     setRemoveLogo(false);
     setRemoveBanner(false);
 
-    setLogoPreview(workspace.logo || "");
-    setBannerPreview(workspace.banner || "");
+    setLogoPreview(ActiveWorkspace.logo || "");
+    setBannerPreview(ActiveWorkspace.banner || "");
 
     /*
      * Convert workspace.socials into local form state.
@@ -283,50 +323,50 @@ export default function EditWorkspaceDialog({
     setSocials({
       linkedin: {
         ...SOCIAL_CONFIG.linkedin,
-        url: workspace.socials?.linkedin?.url || "",
-        visible: workspace.socials?.linkedin?.visible ?? false,
+        url: ActiveWorkspace.socials?.linkedin?.url || "",
+        visible: ActiveWorkspace.socials?.linkedin?.visible ?? false,
       },
 
       github: {
         ...SOCIAL_CONFIG.github,
-        url: workspace.socials?.github?.url || "",
-        visible: workspace.socials?.github?.visible ?? false,
+        url: ActiveWorkspace.socials?.github?.url || "",
+        visible: ActiveWorkspace.socials?.github?.visible ?? false,
       },
 
       x: {
         ...SOCIAL_CONFIG.x,
-        url: workspace.socials?.x?.url || "",
-        visible: workspace.socials?.x?.visible ?? false,
+        url: ActiveWorkspace.socials?.x?.url || "",
+        visible: ActiveWorkspace.socials?.x?.visible ?? false,
       },
 
       facebook: {
         ...SOCIAL_CONFIG.facebook,
-        url: workspace.socials?.facebook?.url || "",
-        visible: workspace.socials?.facebook?.visible ?? false,
+        url: ActiveWorkspace.socials?.facebook?.url || "",
+        visible: ActiveWorkspace.socials?.facebook?.visible ?? false,
       },
 
       instagram: {
         ...SOCIAL_CONFIG.instagram,
-        url: workspace.socials?.instagram?.url || "",
+        url: ActiveWorkspace.socials?.instagram?.url || "",
         visible:
-          workspace.socials?.instagram?.visible ?? false,
+          ActiveWorkspace.socials?.instagram?.visible ?? false,
       },
 
       youtube: {
         ...SOCIAL_CONFIG.youtube,
-        url: workspace.socials?.youtube?.url || "",
+        url: ActiveWorkspace.socials?.youtube?.url || "",
         visible:
-          workspace.socials?.youtube?.visible ?? false,
+          ActiveWorkspace.socials?.youtube?.visible ?? false,
       },
 
       discord: {
         ...SOCIAL_CONFIG.discord,
-        url: workspace.socials?.discord?.url || "",
+        url: ActiveWorkspace.socials?.discord?.url || "",
         visible:
-          workspace.socials?.discord?.visible ?? false,
+          ActiveWorkspace.socials?.discord?.visible ?? false,
       },
     });
-  }, [workspace]);
+  }, [ActiveWorkspace]);
 
   /* =========================================================
      IMAGE HANDLERS
@@ -349,10 +389,10 @@ export default function EditWorkspaceDialog({
     setBanner(file);
     setRemoveBanner(false);
 
-    const preview = URL.createObjectURL(file);
-
+  const preview = URL.createObjectURL(file);
     setBannerPreview(preview);
   };
+
 
   const removeLogoImage = () => {
     setLogo(null);
@@ -414,6 +454,13 @@ export default function EditWorkspaceDialog({
       formData.append("location", location.trim());
       formData.append("about", about.trim());
 
+
+      if (founded) {
+        formData.append("founded",founded.toISOString());
+      } else {
+        formData.append("founded", "");
+      }
+
       /* Images */
 
       if (logo) {
@@ -424,15 +471,9 @@ export default function EditWorkspaceDialog({
         formData.append("banner", banner);
       }
 
-      formData.append(
-        "removeLogo",
-        String(removeLogo)
-      );
+      formData.append("removeLogo", String(removeLogo));
 
-      formData.append(
-        "removeBanner",
-        String(removeBanner)
-      );
+      formData.append("removeBanner", String(removeBanner));
 
       /*
        * Send socials as JSON.
@@ -464,6 +505,8 @@ export default function EditWorkspaceDialog({
         JSON.stringify(socialsData)
       );
 
+      await updateWorkspace(formData);
+
       if (onSave) {
         await onSave(formData);
       }
@@ -490,9 +533,10 @@ export default function EditWorkspaceDialog({
     >
       <DialogContent
         className="
-          max-w-2xl
-          overflow-hidden
-          p-0
+          w-[calc(100%-20rem)] 
+          max-w-none!
+          overflow-y-auto
+          p-4
           gap-0
           max-h-[90vh]
         "
@@ -509,7 +553,7 @@ export default function EditWorkspaceDialog({
           "
         >
           <DialogTitle className="text-base font-semibold">
-            Edit workspace
+            Edit Workspace
           </DialogTitle>
         </DialogHeader>
 
@@ -603,7 +647,7 @@ export default function EditWorkspaceDialog({
                     hover:bg-black/70
                   "
                 >
-                  <X size={18} />
+                  <X  size={18} />
                 </button>
               )}
             </div>
@@ -639,7 +683,7 @@ export default function EditWorkspaceDialog({
                     overflow-hidden
                     rounded-full
                     border-4
-                    border-background
+                    border-[#E85129]
                     bg-muted
                     shadow-md
                   "
@@ -769,31 +813,75 @@ export default function EditWorkspaceDialog({
 
             {/* Location */}
 
-            <div className="space-y-2">
-              <Label>Location</Label>
+            <div className="flex gap-5 w-fullw">
 
-              <div className="relative">
-                <MapPin
-                  size={16}
-                  className="
-                    absolute
-                    left-3
-                    top-1/2
-                    -translate-y-1/2
-                    text-muted-foreground
-                  "
-                />
-
-                <Input
+              <div className="w-full">
+                <Label>Location</Label>
+                <DropdownMenuCheckboxes 
                   value={location}
-                  onChange={(event) =>
-                    setLocation(event.target.value)
-                  }
-                  placeholder="e.g. Multan, Pakistan"
-                  className="pl-9"
-                />
+                  onChange={setLocation}
+                  />
               </div>
+
+              <div className="w-full">
+
+                <Label>Founded</Label>
+
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className={`
+                        w-full
+                        justify-start
+                        text-left
+                        font-normal
+                        ${!founded ? "text-muted-foreground" : ""}
+                      `}
+                    >
+                      <CalendarDays className="mr-2 h-4 w-4" />
+
+                      {founded
+                        ? format(founded, "PPP")
+                        : "Select founded date"}
+                    </Button>
+                  </PopoverTrigger>
+
+                  <PopoverContent
+                    className="w-auto p-0"
+                    align="start"
+                  >
+                    <Calendar
+                      mode="single"
+                      selected={founded}
+                      onSelect={setFounded}
+                      captionLayout="dropdown"
+                      disabled={(date) =>
+                        date > new Date()
+                      }
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+
+                {founded && (
+                  <button
+                    type="button"
+                    onClick={() => setFounded(undefined)}
+                    className="
+                      text-xs
+                      text-muted-foreground
+                      hover:text-foreground
+                    "
+                  >
+                    Clear date
+                  </button>
+                )}
+              </div>
+
             </div>
+
 
             {/* About */}
 
@@ -802,7 +890,7 @@ export default function EditWorkspaceDialog({
                 <Label>About</Label>
 
                 <span className="text-xs text-muted-foreground">
-                  {about.length}/500
+                  {about.length}
                 </span>
               </div>
 
@@ -953,7 +1041,6 @@ export default function EditWorkspaceDialog({
             justify-end
             gap-2
             border-t
-            bg-background
             px-6
             py-4
           "
@@ -977,9 +1064,11 @@ export default function EditWorkspaceDialog({
             }
             onClick={handleSubmit}
           >
-            {saving
-              ? "Saving..."
-              : "Save changes"}
+            {updateWorkspaceLoading ? 
+              <LoaderIcon />
+              : 
+              "Save changes"
+            }
           </Button>
         </div>
       </DialogContent>

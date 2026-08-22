@@ -18,8 +18,7 @@ export const getCurrentUser = async (req: NextRequest) => {
 
 
   // Read token from cookie
-  const token =
-    req.cookies.get("token")?.value;
+  const token = req.cookies.get("token")?.value;
 
   if (!token) {
     throw new Error("Unauthorized");

@@ -26,13 +26,14 @@ import { useBlog } from "@/context/Blog.context";
 export default function BlogTable() {
 
   // Context
-  const { blogs, loading, getAllBlogs } = useBlog();
+  const { 
+    blogs, 
+    loading, 
+    getAllBlogs 
+  } = useBlog();
 
-  // Loading context 
-  // const { setIsLoading } = useGlobalLoading();
 
-
-   // ================= FILTER STATES =================
+  // ================= FILTER STATES =================
 
   const [search, setSearch] = useState("");
 
@@ -43,11 +44,9 @@ export default function BlogTable() {
 
   const [authorFilter, setAuthorFilter] = useState("all");
 
-
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [endDate, setEndDate] = useState<Date | undefined>();
 
-  // =================================================
 
 // ================= FILTERED BLOGS =================
 
@@ -96,7 +95,6 @@ export default function BlogTable() {
   
   useEffect(()=>{
     getAllBlogs();
-    // setIsLoading(false);
   }, []);
   
  

@@ -56,13 +56,12 @@ import {
 
 
 import toast from "react-hot-toast";
+
 import LoaderIcon from "@/app/blocks/loading/Loader";
 
 
 // Countries/Locations
 import  DropdownMenuCheckboxes  from "@/app/blocks/CountrySelector";
-
-
 
 
 
@@ -345,7 +344,6 @@ export default function ProfilePage() {
 
 
   return (
-    // <div className="w-full border border-red-600 overflow-hidden">
     <div className="overflow-hidden">
 
       {/* 🔥 HEADER */}
@@ -398,7 +396,6 @@ export default function ProfilePage() {
                                           <img
                                             src={previewBanner || EmptyStateImage.src}
                                             alt="Profile Banner"
-                                            // className="w-full h-full object-cover object-center"
                                             className="w-full h-full"
                                           />
                                         </ImagePreview>  
@@ -473,7 +470,7 @@ export default function ProfilePage() {
                                               height={100}
                                               width={100}
                                               alt="Profile Image"
-                                              className="object-cover object-center rounded-full w-30 h-30 border-4 border-orange-500 rounded-full"
+                                              className="object-cover object-center rounded-full w-30 h-30 border-4 border-orange-500"
                                               />
                                           </ImagePreview>
                         

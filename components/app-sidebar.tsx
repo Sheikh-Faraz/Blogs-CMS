@@ -17,17 +17,15 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-
-import { CameraIcon, FileTextIcon, Settings2Icon, User, ChartNoAxesColumn, SquareTerminal, ChevronsUpDown, Users } from "lucide-react"
+import { 
+  FileTextIcon, 
+  Settings2Icon, 
+  User, 
+  Users,
+  // CameraIcon, 
+  // ChartNoAxesColumn, 
+  // ChevronsUpDown, 
+} from "lucide-react"
 import { CgOrganisation as Organization } from "react-icons/cg";
 
 import { LayoutDashboard } from 'lucide-react';
@@ -52,26 +50,6 @@ const data = {
   //   avatar: "/avatars/shadcn.jpg",
   // },
 
-
-  workspaces: [
-    {
-      name: "Acme Inc",
-      logo: SquareTerminal,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: Users,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: SquareTerminal,
-      plan: "Free",
-    },
-  ],
-
-
   navMain: [
     {
       title: "Blogs",
@@ -87,13 +65,13 @@ const data = {
         <FileTextIcon />
       ),
     },
-    {
-      title: "Analytics",
-      url: "/analytics",
-      icon: (
-        <ChartNoAxesColumn  />
-      ),
-    },
+    // {
+    //   title: "Analytics",
+    //   url: "/analytics",
+    //   icon: (
+    //     <ChartNoAxesColumn  />
+    //   ),
+    // },
     {
       title: "Profile",
       url: "/profile",
@@ -216,11 +194,22 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
-  // Context
-  const { authUser, fetchUser } = useUser();
+    // Context
+    const {
+      authUser,
+      workspace,
+      workspaces,
+      
+      selectWorkspace,
+      fetchUser,
+      fetchWorkspaces,
+      CurrentActiveWorkspace,
+    } = useUser();
 
     useEffect(() => {
       fetchUser();
+      fetchWorkspaces();
+      CurrentActiveWorkspace();
     }, [])
 
   
@@ -229,7 +218,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     // <Sidebar collapsible="offcanvas" {...props}>
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader >
-            <WorkspaceSwitcher teams={data.workspaces} />
+            <WorkspaceSwitcher
+              workspaces={workspaces}
+              activeWorkspaceId={workspace?._id}
+              onWorkspaceSelect={selectWorkspace}
+            />
         <SidebarMenu>
           <SidebarMenuItem>
 

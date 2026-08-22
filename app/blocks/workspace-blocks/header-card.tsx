@@ -3,10 +3,11 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 
-
 // Full Page Image preview/show
 import ImagePreview from "@/app/blocks/Animate-Components/Image-preview";
 
+
+// For editing the active workspace
 import EditWorkspaceDialog from "@/app/blocks/workspace-blocks/workspace-edit-dialog";
 
 // Images
@@ -30,6 +31,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
 
 
 // Icons
@@ -100,70 +102,71 @@ const socials = [
 export default function HeaderCard() {
 
     // User Context
-    const { fetchUser, authUser } = useUser();
+    const { 
+      fetchUser, 
+      // authUser, 
 
-
-    // 
-    // const [profilePic, setProfilePic] = useState<File | null>(null);
-    // const [previewImage, setPreviewImage] = useState("");
-    // const [removeProfilePic, setRemoveProfilePic] = useState(false);
-    
-    
-    // const [banner, setBanner] = useState<File | null>(null);
-    // const [previewBanner, setPreviewBanner] = useState("");
-    // const [removeBanner, setRemoveBanner] = useState(false);
+      CurrentActiveWorkspace, 
+      workspace,
+    } = useUser();
 
 
 
     useEffect(() => {
-        fetchUser();
-    }, [])
 
+        fetchUser();                // Fetch the authorized/current user's info
+
+        CurrentActiveWorkspace();   // Fetch the current active workspace details
+
+    }, [])
 
 
     const [editWorkspaceOpen, setEditWorkspaceOpen] = useState(false);
 
+
   // Your actual workspace from context/API
-  const workspace = {
-    _id: "123",
-    name: "My Workspace",
-    logo: "/logo.png",
-    banner: "/banner.jpg",
-    about: "My workspace about text",
-    location: "Multan, Pakistan",
-    slug: "my-workspace",
+  const ActiveWorkspace = {
+    _id: workspace?._id || "workspace-id-123546789",
+    name: workspace?.name || "My Workspace",
+    logo: workspace?.logo || "/logo.png",
+    banner: workspace?.banner || "/banner.jpg",
+    about: workspace?.about || "My workspace about text",
+    location: workspace?.location || "Workspace's location",
+    founded: workspace?.founded || null,
+    slug: workspace?.slug || "my-workspace",
 
     socials: {
       linkedin: {
-        url: "https://linkedin.com/company/example",
-        visible: true,
+        url: workspace?.socials?.linkedin?.url || "https://linkedin.com/company/example",
+        visible: workspace?.socials?.linkedin?.visible ?? false,
       },
       github: {
-        url: "https://github.com/example",
-        visible: true,
+        url: workspace?.socials?.github?.url || "https://github.com/example",
+        visible: workspace?.socials?.github?.visible ?? false,
       },
       x: {
-        url: "",
-        visible: false,
+        url: workspace?.socials?.x?.url || "",
+        visible: workspace?.socials?.x?.visible ?? false,
       },
       facebook: {
-        url: "",
-        visible: false,
+        url: workspace?.socials?.facebook?.url || "",
+        visible: workspace?.socials?.facebook?.visible ?? false,
       },
       instagram: {
-        url: "https://instagram.com/example",
-        visible: true,
+        url: workspace?.socials?.instagram?.url || "https://instagram.com/example",
+        visible: workspace?.socials?.instagram?.visible ?? false,
       },
       youtube: {
-        url: "",
-        visible: false,
+        url: workspace?.socials?.youtube?.url || "",
+        visible: workspace?.socials?.youtube?.visible ?? false,
       },
       discord: {
-        url: "",
-        visible: false,
+        url: workspace?.socials?.discord?.url || "",
+        visible: workspace?.socials?.discord?.visible ?? false,
       },
     },
   };
+
 
 
   return (
@@ -172,51 +175,29 @@ export default function HeaderCard() {
         {/* Profile card */}
         <Card className="overflow-hidden rounded-2xl border shadow-sm">
 
-        <div className="border border-red-600">
-          <button
-            onClick={() => setEditWorkspaceOpen(true)}
-          >
-            Edit workspace
-          </button>
 
-
+          {/* Dialog that opens to edit the current workspace */}
           <EditWorkspaceDialog
             open={editWorkspaceOpen}
             onOpenChange={setEditWorkspaceOpen}
-            workspace={workspace}
-            />
-        </div>
+            ActiveWorkspace={ActiveWorkspace}
+          />
 
 
           {/* Hero banner */}
 
           <div className="h-80 overflow-auto m-2 rounded-md bg-muted flex items-center justify-center">
-                                            {/* {previewBanner ? ( */}
-                                                  <ImagePreview src={authUser?.defaultWorkspace?.banner}>
+                                                  <ImagePreview src={workspace?.banner || EmptyStateImage.src}>
                                                     <img
-                                                      src={authUser?.defaultWorkspace?.banner || EmptyStateImage.src}
+                                                      src={workspace?.banner || EmptyStateImage.src}
                                                       alt="Profile Banner"
-                                                      // className="w-full h-full object-cover object-center"
                                                       className="w-full h-full"
                                                     />
                                                   </ImagePreview>  
-                                              {/* ): (
-                                                 <div className="flex justify-center">
-                                                   <ImageIcon className=" p-2 w-50 h-50 rounded-full opacity-50"/>
-                                                 </div>
-                                               )
-                                             }                                    */}
           
                                           </div>
 
 
-          {/* <div className="relative h-40 bg-muted overflow-hidden border border-red-600">
-            <img
-              src={authUser?.defaultWorkspace?.banner || "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=900&q=80"}
-              alt="Company banner"
-              className="w-full h-full object-cover object-center"
-            />            
-          </div> */}
 
 
           <div className="px-5 pt-0 pb-0">
@@ -224,14 +205,15 @@ export default function HeaderCard() {
             <div className="flex items-start justify-between mb-3">
               <div className="w-14 h-14 rounded-2xl border-4 border-[#E85129] flex items-center justify-center shadow-sm shrink-0">
 
-                {authUser?.defaultWorkspace?.logo ?
+                {workspace?.logo ?
                 (
-                    <img
-                      src={authUser?.defaultWorkspace?.logo || ""}
-                      alt="Company logo"
-                      className="w-full h-full object-cover object-center"
-                    />
-
+                      <ImagePreview src={workspace?.logo || EmptyStateImage.src}>
+                        <img
+                            src={workspace?.logo || EmptyStateImage.src}
+                            alt="Workspace logo"
+                            className="w-full h-full rounded-xl"
+                        />
+                      </ImagePreview>  
                 )
                 :
                 (
@@ -239,25 +221,30 @@ export default function HeaderCard() {
                 )}
               </div>
 
-              {/* <Link href="#" className="flex items-center gap-1.5 mt-5 text-white text-md font-medium border rounded-full px-3 py-2 bg-[#E85129] hover:bg-muted transition-colors"> */}
-              <Link href="#" className="flex items-center gap-1.5 mt-5 text-md font-medium border rounded-full px-3 py-2 hover:bg-muted transition-colors bg-card text-card-foreground">
-                  <Edit className="w-4 h-4" />
+
+              <Button 
+                variant="outline"
+                // className="flex items-center gap-1.5 mt-5 text-md font-medium border rounded-full px-3 py-2 hover:bg-muted transition-colors bg-card text-card-foreground"
+                className="flex items-center gap-1.5 mt-5 text-md font-medium  px-3 py-2"
+                onClick={() => setEditWorkspaceOpen(true)}
+              >
+                  <Edit className="w-4 h-4 text-[#E85129]" />
                   edit workspace
-              </Link>
+              </Button>
 
             </div>
 
             {/* Company info */}
             <div className="my-3">
-              <p className="text-lg mt-2 truncate max-w-90 ">
-                {authUser?.defaultWorkspace?.name || "Workspace Name"}
+              <p className="text-lg mt-2 truncate max-w-90">
+                {workspace?.name || "Workspace Name"}
               </p>
               <p className="text-xs text-muted-foreground my-3 flex gap-2 items-center">
-                <Location className="size-4 text-orange-500" />
-                {authUser?.defaultWorkspace?.location || "Location NA"}
+                <Location className="size-4 text-[#E85129]" />
+                {workspace?.location || "Location NA"}
               </p>
               <p className="text-xs text-muted-foreground leading-relaxedb truncate max-w-180">
-                {authUser?.defaultWorkspace?.about || "About"}
+                {workspace?.about || "About"}
               </p>
             </div>
 
@@ -265,8 +252,14 @@ export default function HeaderCard() {
             {/* Social icons */}           
             <TooltipProvider>
       <div className="flex items-center gap-4 my-6">
+        {/* {socials.map(({ name, icon: Icon, href, color, visible }) => { */}
         {socials.map(({ name, icon: Icon, href, color }) => {
-          const url = authUser?.defaultWorkspace?.socials?.[href as keyof typeof authUser.defaultWorkspace.socials] || "#";
+          const url = workspace?.socials?.[href as keyof typeof workspace.socials]?.url || "#";
+
+          const isVisible = workspace?.socials?.[href as keyof typeof workspace.socials]?.visible ?? false;
+          if (!isVisible) {
+            return null; // Skip rendering if not visible
+          }
 
           return (
             <Tooltip key={name}>
@@ -277,7 +270,8 @@ export default function HeaderCard() {
                   transition={{ type: "spring", stiffness: 300, damping: 15 }}
                 >
                   <Link
-                    href={url || "#"}
+                    // href={url || "#"}
+                    href={url}
                     target="_blank"
                     className={[
                       "relative flex items-center justify-center",
@@ -306,24 +300,6 @@ export default function HeaderCard() {
 
             <Separator />
 
-            {/* Tabs */}
-            {/* <div className="flex overflow-x-auto">
-              {tabs.map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`px-3 py-2.5 text-xs font-medium whitespace-nowrap transition-colors relative shrink-0 ${
-                    activeTab === tab ? "text-foreground" : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {tab}
-                  {activeTab === tab && (
-                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-foreground rounded-full" />
-                  )}
-                </button>
-              ))}
-            </div> */}
-          {/* </CardContent> */}
           </div>
         </Card>
 

@@ -1,7 +1,8 @@
 "use client"
 
-import * as React from "react"
-import { ChevronsUpDown, Plus } from "lucide-react"
+import { Building2, ChevronsUpDown, Plus } from "lucide-react"
+import { useRouter } from "next/navigation"
+import type { Workspace } from "@/app/Types/workspace.type"
 
 import {
   DropdownMenu,
@@ -9,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
+  // DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {
@@ -20,18 +21,22 @@ import {
 } from "@/components/ui/sidebar"
 
 export function WorkspaceSwitcher({
-  teams,
+  workspaces,
+  activeWorkspaceId,
+  onWorkspaceSelect,
 }: {
-  teams: {
-    name: string
-    logo: React.ElementType
-    plan: string
-  }[]
+  workspaces: Workspace[]
+  activeWorkspaceId?: string
+  onWorkspaceSelect: (workspaceId: string) => void
 }) {
   const { isMobile } = useSidebar()
-  const [activeTeam, setActiveTeam] = React.useState(teams[0])
+  const router = useRouter()
 
-  if (!activeTeam) {
+  const activeWorkspace =
+    workspaces.find((workspace) => workspace._id === activeWorkspaceId) ||
+    workspaces[0]
+
+  if (!activeWorkspace) {
     return null
   }
 
@@ -44,12 +49,16 @@ export function WorkspaceSwitcher({
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground "
             >
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-[#E85129] text-sidebar-primary-foreground">
-                <activeTeam.logo className="size-4" />
+              {/* <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-[#E85129] text-sidebar-primary-foreground border border-red-600 p-1"> */}
+              <div className="flex aspect-square size-8 items-center justify-center rounded-lg text-sidebar-primary-foreground">
+                {activeWorkspace.logo ? (
+                  <img src={activeWorkspace.logo} alt="" className="h-full w-full" />
+                ) : (
+                  <Building2 className="size-4" />
+                )}
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{activeTeam.name}</span>
-                {/* <span className="truncate text-xs">{activeTeam.plan}</span> */}
+                <span className="truncate font-medium">{activeWorkspace.name}</span>
               </div>
               <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>
@@ -63,21 +72,28 @@ export function WorkspaceSwitcher({
             <DropdownMenuLabel className="text-xs text-muted-foreground">
               Workspaces
             </DropdownMenuLabel>
-            {teams.map((team, index) => (
+            {workspaces.map((workspace, index) => (
               <DropdownMenuItem
-                key={team.name}
-                onClick={() => setActiveTeam(team)}
+                key={workspace._id}
+                onClick={() => onWorkspaceSelect(workspace._id)}
                 className="gap-2 p-2"
               >
-                {/* <div className="flex size-6 items-center justify-center rounded-md border">
-                  <team.logo className="size-3.5 shrink-0" />
-                </div> */}
-                {team.name}
-                <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
+                <div className="flex size-6 shrink-0 items-center justify-center overflow-hidden rounded-md border bg-muted">
+                  {workspace.logo ? (
+                    <img src={workspace.logo} alt="" className="h-full w-full" />
+                  ) : (
+                    <Building2 className="size-3.5" />
+                  )}
+                </div>
+                <span className="truncate">{workspace.name}</span>
+                {/* <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut> */}
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="gap-2 p-2">
+            <DropdownMenuItem
+              className="gap-2 p-2"
+              onClick={() => router.push("/workspace?create=1")}
+            >
               <div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
                 <Plus className="size-4" />
               </div>

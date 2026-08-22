@@ -2,6 +2,12 @@
 
 import { useRouter } from "next/navigation";
 import { createContext, useContext, useState } from "react";
+
+
+// Importing user context to refresh/get blogs when workspace is switched
+import { useBlog } from "@/context/Blog.context";
+
+
 import toast from "react-hot-toast";
 import Cookies from "js-cookie";
 
@@ -12,12 +18,19 @@ import {
   fetchUserInfoApi,
   updateUserProfileApi,
   fetchWorkspaceMembersApi,
+  getWorkspaceApi,
+  updateWorkspaceApi,
+  deleteWorkspaceApi,
+  fetchWorkspacesApi,
+  selectWorkspaceApi,
+  createWorkspaceApi,
+  fetchAnalyticsApi,
 } from "@/services/auth.services";
 
 
 // Types
 import { User } from "@/app/Types/user.type";
-// import { Workspace } from "@/app/Types/workspace.type";
+import { Workspace } from "@/app/Types/workspace.type";
 
 
 // Utility
@@ -37,13 +50,69 @@ export interface WorkspaceMember {
     profilePic?: string;
     location?: string;
   };
-}
+};
+
+
+// ============================================================
+// TYPES FOR ANALYIC DATA
+// ============================================================
+
+type Overview = {
+  totalBlogs: number;
+  publishedBlogs: number;
+  draftBlogs: number;
+  totalAuthors: number;
+  totalMembers: number;
+};
+
+
+type BlogActivity = {
+  date: string;
+  total: number;
+  published: number;
+  drafts: number;
+};
+
+
+type Author = {
+  id: string;
+  name: string;
+  profilePic: string;
+  gender: string;
+  location: string;
+  role: string;
+  totalBlogs: number;
+  published: number;
+  drafts: number;
+};
+
+
+type ChartData = {
+  name: string;
+  value: number;
+};
+
+
+type AnalyticsData = {
+  overview: Overview;
+
+  blogActivity: BlogActivity[];
+
+  authors: Author[];
+
+  authorsByGender: ChartData[];
+
+  authorsByLocation: ChartData[];
+
+  membersByRole: ChartData[];
+};
 
 
 interface UserContextType {
   loading: boolean;
   updateLoading: boolean;
   fetchLoading: boolean;
+  workspaceAnalyticsLoading: boolean;
 
   // Authentication
   authUser: User | null;
@@ -54,12 +123,36 @@ interface UserContextType {
   fetchUser: () => Promise<void>;                            
   updateUserProfile: (formData: FormData) => Promise<void>;
   logout: () => Promise<void>;
-
+  
   // Workspace Members
   fetchWorkspaceMembers: (workspaceId: string) => Promise<void>;
   members: WorkspaceMember[];
   membersLoading: boolean;
 
+  
+  // Workspace
+  workspace: Workspace | null;
+  setWorkspace: (workspace: Workspace | null) => void;
+  workspaces: Workspace[];
+  workspacesLoading: boolean;
+  fetchWorkspaces: () => Promise<void>;
+  selectWorkspace: (workspaceId: string) => Promise<void>;
+  createWorkspace: (name: string) => Promise<boolean>;
+  createWorkspaceLoading: boolean;
+
+  CurrentActiveWorkspace: () => Promise<void>;
+
+
+  updateWorkspaceLoading: boolean;
+  updateWorkspace: (formData: FormData) => Promise<void>;
+  deleteWorkspaceLoading: boolean;
+
+
+  deleteWorkspace: () => Promise<boolean>;
+
+
+  analytics: AnalyticsData | null;
+  fetchAnalytics: () => Promise<void>;
 }
 
 // Context
@@ -67,10 +160,21 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
+    // Context
+    const { getAllBlogs } = useBlog();
+
   const router = useRouter();
 
   // Context 
+  const [workspaceAnalyticsLoading, setWorkspaceAnalyticsLoading] = useState(true);
+  const [workspace, setWorkspace] = useState<Workspace | null>(null);
+  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
+  const [workspacesLoading, setWorkspacesLoading] = useState(false);
+  const [createWorkspaceLoading, setCreateWorkspaceLoading] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  const [updateWorkspaceLoading, setUpdateWorkspaceLoading] = useState(false);
+  const [deleteWorkspaceLoading, setDeleteWorkspaceLoading] = useState(false);
 
   const [updateLoading, setUpdateLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(false);
@@ -81,6 +185,9 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   const [members, setMembers] = useState<WorkspaceMember[]>([]);
   const [membersLoading, setMembersLoading] = useState(false);
+
+  // Analytics
+  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
 
 
 // --------------------------- AUTHENTICATION LOGIC ---------------------------
@@ -161,9 +268,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
         const res = await fetchUserInfoApi(); 
         const data = await res.json();
-        // console.log("THIS IS THE RES OF THE FETCHED USER: ", res);
-        // console.log("THIS IS THE DATA OF THE FETCHED USER: ", data);
-
+ 
         await fetchWorkspaceMembers(data.defaultWorkspace._id); // Fetch members of the default workspace
 
         setAuthUser(data);
@@ -205,8 +310,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
     const data = await res.json();
 
-    // console.log("Workspace members:", data);
-
     setMembers(data.members);
   } catch (err) {
     toast.error(
@@ -218,12 +321,155 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 };
 
 
+
+  // Get Current Workspace Details
+  const CurrentActiveWorkspace = async () => {
+    try {
+      setUpdateLoading(true);
+
+      const res = await getWorkspaceApi();
+      const data = await res.json();
+
+      setWorkspace(data.workspace);
+      await fetchWorkspaceMembers(data.workspace._id);
+
+    }
+    catch (err) {
+        toast.error(getErrorMessage(err, "Failed to fetch current workspace"));
+    }
+    finally {
+      setUpdateLoading(false);
+    }
+  };
+
+
+  // Get Current Workspace Details
+  const updateWorkspace = async (formData: FormData) => {
+    try {
+      setUpdateWorkspaceLoading(true);
+
+      const data = await updateWorkspaceApi(formData);
+
+      setWorkspace(data.workspace);
+
+      fetchWorkspaces();
+
+      toast.success("Workspace updated successfully");
+    }
+    catch (err) {
+        toast.error(getErrorMessage(err, "Failed to update workspace details"));
+    }
+    finally {
+      setUpdateWorkspaceLoading(false);
+    }
+  };
+
+
+  // Delete workspace
+  const deleteWorkspace = async () => {
+    try {
+      setDeleteWorkspaceLoading(true);
+
+      const data = await deleteWorkspaceApi();
+
+      setWorkspace(data.workspace);
+      await fetchUser();
+      await fetchWorkspaces();
+      await fetchAnalytics();
+
+      toast.success("Workspace deleted successfully");
+      router.refresh();
+
+      return true;
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Failed to delete workspace"));
+      return false;
+    } finally {
+      setDeleteWorkspaceLoading(false);
+    }
+  };
+
+
+  const fetchWorkspaces = async () => {
+    try {
+      setWorkspacesLoading(true);
+      setWorkspaces(await fetchWorkspacesApi());
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Failed to fetch workspaces"));
+    } finally {
+      setWorkspacesLoading(false);
+    }
+  };
+
+
+  const selectWorkspace = async (workspaceId: string) => {
+    try {
+      await selectWorkspaceApi(workspaceId);
+      await CurrentActiveWorkspace();
+      
+      router.push("/blogs");
+      
+      await fetchAnalytics();
+      await getAllBlogs();
+
+      // router.refresh();
+
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Failed to switch workspace"));
+    }
+  };
+
+
+  const createWorkspace = async (name: string) => {
+    try {
+      setCreateWorkspaceLoading(true);
+      const data = await createWorkspaceApi(name);
+
+      setWorkspace(data.workspace);
+      await fetchWorkspaces();
+      await fetchAnalytics();
+
+      toast.success("Workspace created successfully");
+      router.refresh();
+      return true;
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Failed to create workspace"));
+      return false;
+    } finally {
+      setCreateWorkspaceLoading(false);
+    }
+  };
+
+
+  // ==========================================================
+  // FETCH ANALYTICS
+  // ==========================================================
+
+  const fetchAnalytics = async () => {
+    try {
+
+      const res = await fetchAnalyticsApi();
+      const data = await res.json();
+
+      setAnalytics(data);
+
+    } catch (err) {
+      console.error("Analytics fetch error:", err);
+    } finally {
+      setWorkspaceAnalyticsLoading(false);
+    }
+  };
+
+
+
+
   return (
     <UserContext.Provider
       value={{
         loading,
         updateLoading,
         fetchLoading,
+        workspaceAnalyticsLoading,
 
         // Authentication
         authUser,
@@ -237,6 +483,26 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         fetchWorkspaceMembers,
         members,
         membersLoading,
+
+        // Workspace
+        workspace,
+        setWorkspace,
+        workspaces,
+        workspacesLoading,
+        fetchWorkspaces,
+        selectWorkspace,
+        createWorkspace,
+        createWorkspaceLoading,
+        CurrentActiveWorkspace,
+
+        updateWorkspaceLoading,
+        updateWorkspace,
+        
+        deleteWorkspaceLoading,
+        deleteWorkspace,
+
+        analytics,
+        fetchAnalytics,
       }}
     >
       {children}

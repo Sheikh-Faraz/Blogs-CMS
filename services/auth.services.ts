@@ -84,7 +84,7 @@ export const updateUserProfileApi = async ( formData: FormData ) => {
     body: formData,
   });
 
-  if (!res.ok) throw new Error("Failed to update blog");
+  if (!res.ok) throw new Error("Failed to update profile");
   return res.json();
 };
 
@@ -102,4 +102,110 @@ export const fetchWorkspaceMembersApi = async (
   );
 
   return res;
+};
+
+
+// Your own data i.e the looged in user info
+export const getWorkspaceApi = async () => {
+
+  const res = await fetch(`${BASE_URL}/api/workspace/currentActiveWorkspace`, { 
+    cache: "no-store", 
+    method: "GET",
+    credentials: "include", 
+  });
+
+  return res;
+};
+
+
+// ✅ UPDATE Workspace
+export const updateWorkspaceApi = async ( formData: FormData ) => {
+  const res = await fetch(`${BASE_URL}/api/workspace/update-workspace`, {
+    method: "PUT",
+
+    // Using cookies for creadentials instead of cookies
+    credentials: "include", 
+
+    body: formData,
+  });
+
+  if (!res.ok) throw new Error("Failed to update workspace");
+  return res.json();
+};
+
+
+// Get the analytics data for the workspace
+export const fetchAnalyticsApi = async () => {
+
+  const res = await fetch(`${BASE_URL}/api/workspace/workspaceAnalyticsData`, { 
+    cache: "no-store", 
+    method: "GET",
+    credentials: "include", 
+  });
+
+  return res;
+};
+
+
+// Delete Workspace
+export const deleteWorkspaceApi = async () => {
+  const res = await fetch(`${BASE_URL}/api/workspace/delete-workspace`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+
+  const result = await res.json();
+
+  if (!res.ok) {
+    throw new Error(result.error || "Failed to delete workspace");
+  }
+
+  return result;
+};
+
+export const fetchWorkspacesApi = async () => {
+  const res = await fetch(`${BASE_URL}/api/workspace/list`, {
+    cache: "no-store",
+    credentials: "include",
+  });
+
+  const result = await res.json();
+
+  if (!res.ok) {
+    throw new Error(result.error || "Failed to fetch workspaces");
+  }
+
+  return result;
+};
+
+export const selectWorkspaceApi = async (workspaceId: string) => {
+  const res = await fetch(`${BASE_URL}/api/workspace/select`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ workspaceId }),
+  });
+
+  const result = await res.json();
+
+  if (!res.ok) {
+    throw new Error(result.error || "Failed to switch workspace");
+  }
+};
+
+export const createWorkspaceApi = async (name: string) => {
+  const res = await fetch(`${BASE_URL}/api/workspace/create-workspace`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ name }),
+  });
+
+  const result = await res.json();
+
+  if (!res.ok) {
+    throw new Error(result.error || "Failed to create workspace");
+  }
+
+  return result;
 };

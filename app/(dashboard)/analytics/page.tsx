@@ -288,10 +288,10 @@ export default function AnalyticsPage() {
   const [mode, setMode] = useState<"both" | "pageviews" | "sessions">("both");
 
   // Loading context 
-  const { setIsLoading } = useGlobalLoading();
+  // const { setIsLoading } = useGlobalLoading();
 
   useEffect(() => {
-    setIsLoading(false);
+    // setIsLoading(false);
     
     async function fetchAnalytics() {
       try {
