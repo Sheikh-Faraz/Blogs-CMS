@@ -46,8 +46,6 @@ export function DonutChart() {
         })
       );
 
-      console.log("This is the chartData map Donut: ", chartData);
-
 
   return (
     <Card className="flex flex-col bg-[#E85129]">

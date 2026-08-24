@@ -1,16 +1,22 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { FormEvent } from "react";
 import { cn } from "@/lib/utils"
+
+import { useSearchParams } from "next/navigation";
+
+
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupButton } from "@/components/ui/input-group";
 import { Tooltip, TooltipContent, TooltipTrigger, } from "@/components/ui/tooltip"
+import { Spinner } from "@/components/ui/spinner"
+
+
 import { Eye, EyeOff, UserRound, Mail, Lock} from "lucide-react"
 
 import { toast } from "react-hot-toast";
-import { Spinner } from "@/components/ui/spinner"
-import { FormEvent } from "react";
 
 // Context
 import { useUser } from "@/context/User.context";
@@ -22,7 +28,12 @@ export function SignUpForm({
   ...props
 }: React.ComponentProps<"form">) {
 
-//   const { signup, isSigningUp, googleLogin } = useAuth();
+
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || undefined;
+  const invitedEmail = searchParams.get("email");
+
+
   const { signup, isSigningUp } = useUser();
 
   const [showPassword, setShowPassword] = useState(false)
@@ -32,6 +43,21 @@ export function SignUpForm({
     email: "",
     password: "",
   });
+
+
+  // Set the email from the url and don't allow the user to change the email as it could be not the same as 
+  // to the one it is intended for 
+  useEffect(() => {
+
+    if (invitedEmail) {
+
+      setFormData((prev) => ({
+        ...prev,
+        email: invitedEmail,
+      }));
+
+    }
+  }, [invitedEmail]);
 
 
   const validateForm = () => {
@@ -45,21 +71,21 @@ export function SignUpForm({
   };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+
     e.preventDefault();
 
     const success = validateForm();
 
-    if (success === true) signup(formData);
+    if (success === true) {
+      signup(formData, redirectTo);
+    };
+
   };
 
   return (
-    // Added the onsubmit handle on thi s
     <form className={cn("flex flex-col gap-6", className)} {...props} onSubmit={handleSubmit}>
       <div className="flex flex-col items-center gap-2 text-center max-[425px]:m-4 m-2">
         <h1 className="text-2xl font-bold">Create an account</h1>
-        {/* <p className="text-muted-foreground text-sm text-balance">
-          Enter your details to sign up
-        </p> */}
       </div>
 
       <div className="grid gap-6 max-[425px]:gap-8">
@@ -96,9 +122,9 @@ export function SignUpForm({
               type="email" 
               placeholder="you@example.com" 
               required 
-              value={formData.email}
-              disabled={isSigningUp}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              disabled={isSigningUp || !!invitedEmail}
+              value={invitedEmail || formData.email}
+              onChange={(e) => setFormData({...formData, email: e.target.value,})}
           />
 
             <InputGroupAddon >

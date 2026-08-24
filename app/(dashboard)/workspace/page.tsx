@@ -10,6 +10,8 @@ import { useUser } from "@/context/User.context";
 // Workspace Loading Skeleton
 import WorkspaceSkeleton from "@/app/blocks/loading/Workspace-Skeleton-Components/WorkspaceSkeleton";
 
+import { Button } from "@/components/ui/button";
+
 // Header 
 import HeaderCard from "@/app/blocks/workspace-blocks/header-card";
 // About & Stats
@@ -28,9 +30,14 @@ import RightCard from "@/app/blocks/workspace-blocks/Right-Card";
 // Delete card 
 import DeleteCard from "@/app/blocks/workspace-blocks/delete-card";
 import CreateWorkspaceDialog from "@/app/blocks/workspace-blocks/create-workspace-dialog";
+import PendingInvitationsCard from "@/app/blocks/workspace-blocks/pending-invitaionts-card";
 
 
-import { FiPlusCircle as Plus } from "react-icons/fi";
+// Invite user/member dialog
+import InviteMemberDialog from "@/app/blocks/workspace-blocks/invite-member-dialog";
+
+
+import { FiPlusCircle as Plus, FiUserPlus } from "react-icons/fi";
 
 
 
@@ -39,6 +46,7 @@ export default function WorkspacePage() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [createWorkspaceOpen, setCreateWorkspaceOpen] = useState(false);
+    const [inviteMemberOpen, setInviteMemberOpen] = useState(false);
     const createWorkspaceRequested = searchParams.get("create") === "1";
 
     // User Context
@@ -49,9 +57,11 @@ export default function WorkspacePage() {
       analytics,
     } = useUser();
 
+
     useEffect(() => {
       fetchAnalytics();
     }, [])
+
 
     const handleCreateWorkspaceOpenChange = (open: boolean) => {
       setCreateWorkspaceOpen(open);
@@ -68,17 +78,42 @@ export default function WorkspacePage() {
 
   return (
     <div>
+
       <CreateWorkspaceDialog
         open={createWorkspaceRequested || createWorkspaceOpen}
         onOpenChange={handleCreateWorkspaceOpenChange}
       />
+
+      <InviteMemberDialog
+        open={inviteMemberOpen}
+        onOpenChange={setInviteMemberOpen}
+      />
     
     <div className="flex justify-between items-center px-4 mb-8">
       <p className="text-3xl font-bold">Current Workspace</p>
+
+      <div className="flex items-center gap-3">
+
+    <Button
+      variant="outline"
+      onClick={() =>
+        setInviteMemberOpen(true)
+      }
+    >
+      <FiUserPlus className="mr-2" />
+      Invite Member
+    </Button>
+
+      
+
+      {/* Create new workspace */}
       <Link href="/workspace?create=1" className="border py-2 px-3 bg-card text-card-foreground rounded-md flex gap-2 items-center hover:bg-muted">
         <Plus className="text-[#E85129]" />
         Create New Workspace 
       </Link>
+
+      </div>
+
     </div>
 
       {/* <div className="flex gap-5 p-4 min-h-full border border-blue-600"> */}
@@ -116,7 +151,7 @@ export default function WorkspacePage() {
             })) ?? []}
           />
 
-
+          <PendingInvitationsCard />
           {/* <TeamCard /> */}
           
           <DeleteCard />

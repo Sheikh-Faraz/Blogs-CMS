@@ -1,9 +1,12 @@
+"use client";
+
 import { LoginForm } from "@/components/login-form"
 
 import { RiPenNibLine } from "react-icons/ri";
 
 
 export default function LogInPage() {
+  
   return (
     <div className="h-screen">
 

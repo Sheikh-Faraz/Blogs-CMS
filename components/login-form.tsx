@@ -1,5 +1,10 @@
 "use client"
 
+
+import { useSearchParams } from "next/navigation";
+
+// import { LoginForm } from "@/components/login-form"
+
 import { useState } from "react"
 import { FormEvent } from "react";
 
@@ -24,9 +29,14 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
- 
+
+
+  const searchParams = useSearchParams();
+
+  const redirectTo = searchParams.get("redirect") || undefined;
+
+  
   // Context
-  // const { login, isLoggingIn, googleLogin } = useAuth();
   const { login, isLoggingIn } = useUser();
   
   const [showPassword, setShowPassword] = useState(false)
@@ -37,9 +47,8 @@ export function LoginForm({
   });
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-//   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    login(formData);
+    login(formData, redirectTo);
   };
 
   return (

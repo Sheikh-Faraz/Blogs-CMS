@@ -147,6 +147,7 @@ export const fetchAnalyticsApi = async () => {
 };
 
 
+
 // Delete Workspace
 export const deleteWorkspaceApi = async () => {
   const res = await fetch(`${BASE_URL}/api/workspace/delete-workspace`, {
@@ -163,6 +164,8 @@ export const deleteWorkspaceApi = async () => {
   return result;
 };
 
+
+// Fetch all the workspaces of current user
 export const fetchWorkspacesApi = async () => {
   const res = await fetch(`${BASE_URL}/api/workspace/list`, {
     cache: "no-store",
@@ -178,6 +181,9 @@ export const fetchWorkspacesApi = async () => {
   return result;
 };
 
+
+
+// Switching between workspaces
 export const selectWorkspaceApi = async (workspaceId: string) => {
   const res = await fetch(`${BASE_URL}/api/workspace/select`, {
     method: "POST",
@@ -193,6 +199,9 @@ export const selectWorkspaceApi = async (workspaceId: string) => {
   }
 };
 
+
+
+// Create a new workspace
 export const createWorkspaceApi = async (name: string) => {
   const res = await fetch(`${BASE_URL}/api/workspace/create-workspace`, {
     method: "POST",
@@ -208,4 +217,170 @@ export const createWorkspaceApi = async (name: string) => {
   }
 
   return result;
+};
+
+
+
+// Inviting a user to workspace (Owner sends an invitation)
+// export const createInvitationApi = async ( email: string, role: string ) => {
+
+//   return await fetch("/api/workspace/invitation", 
+//   {    
+//       method: "POST",
+
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+
+//       body: JSON.stringify({
+//         email,
+//         role,
+//       }),
+
+//   });
+
+// };
+
+
+
+// // To validate the invitaiton (Check whether an invitation is valid)
+// export const validateInvitationApi = async ( token: string ) => {
+  
+//   return await fetch( `/api/workspace/invitation/accept?token=${encodeURIComponent(token)}`,
+//     {
+//       method: "GET",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//     }
+//   );
+// };
+
+
+// // Accept invitation  (Actually join the workspace)
+// export const acceptInvitationApi = async ( token: string ) => {
+
+//   return await fetch( "/api/workspace/invitation/accept",
+//     {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify({
+//         token,
+//       }),
+//     }
+//   );
+// };
+
+
+
+
+export const createInvitationApi = async (
+  email: string,
+  role: string
+) => {
+  return await fetch(
+    `${BASE_URL}/api/workspace/invitation`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        email,
+        role,
+      }),
+    }
+  );
+};
+
+
+export const acceptInvitationApi = async (
+  token: string
+) => {
+  return await fetch(
+    `${BASE_URL}/api/workspace/invitation/accept`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        token,
+      }),
+    }
+  );
+};
+
+
+export const validateInvitationApi = async (
+  token: string
+) => {
+  return await fetch(
+    `${BASE_URL}/api/workspace/invitation/accept?token=${encodeURIComponent(
+      token
+    )}`,
+    {
+      method: "GET",
+      credentials: "include",
+    }
+  );
+};
+
+
+// Get the inviations fro active workspace
+export const fetchPendingInvitationsApi = async () => {
+
+    const res = await fetch(`${BASE_URL}/api/workspace/invitation/pending`,
+      {
+        cache: "no-store",
+        method: "GET",
+        credentials: "include",
+      }
+    );
+
+    return res;
+};
+
+
+// To revoke the pending invite
+export const revokeInvitationApi = async (invitationId: string) => {
+
+  const res = await fetch(`${BASE_URL}/api/workspace/invitation/pending`,
+    {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        invitationId,
+      }),
+    }
+  );
+
+  return res;
+};
+
+
+// To resend invitation again with new token 
+export const resendInvitationApi = async ( invitationId: string ) => {
+  
+  const res = await fetch(`${BASE_URL}/api/workspace/invitation/pending`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        invitationId,
+      }),
+    }
+  );
+
+  return res;
 };
