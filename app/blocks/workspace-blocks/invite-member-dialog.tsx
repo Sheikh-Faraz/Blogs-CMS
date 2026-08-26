@@ -23,7 +23,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { createInvitationApi } from "@/services/auth.services";
+import { createInvitationApi, } from "@/services/auth.services";
+
+import { useUser } from "@/context/User.context";
 
 type InviteRole =
   | "ADMIN"
@@ -35,21 +37,78 @@ interface InviteMemberDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export default function InviteMemberDialog({ open, onOpenChange, }: InviteMemberDialogProps) {
+const rolesByMemberRole: Record<
+  "OWNER" | "ADMIN" | "EDITOR" | "VIEWER",
+  InviteRole[]
+> = {
+  OWNER: [
+    "ADMIN",
+    "EDITOR",
+    "VIEWER",
+  ],
+
+  ADMIN: [
+    "EDITOR",
+    "VIEWER",
+  ],
+
+  EDITOR: [],
+
+  VIEWER: [],
+};
+
+export default function InviteMemberDialog({
+  open,
+  onOpenChange,
+}: InviteMemberDialogProps) {
+
+  // Context
+  const {
+    authUser,
+    members,
+  } = useUser();
 
   const [email, setEmail] = useState("");
-  const [role, setRole] =
-    useState<InviteRole>("EDITOR");
 
-  const [loading, setLoading] =
-    useState(false);
+  const [role, setRole] = useState<InviteRole>("EDITOR");
+
+  const [loading, setLoading] = useState(false);
+
+  /*
+   * Find the current user's membership
+   * in the currently loaded workspace.
+   */
+  const currentMember = members.find(
+    (member) => member.user._id === authUser?._id
+  );
+
+  const currentRole = currentMember?.role;
+
+  const availableRoles =
+    currentRole
+      ? rolesByMemberRole[currentRole]
+      : [];
+
+  /*
+   * If the current default role isn't
+   * available, select the first valid role.
+   */
+  const selectedRole =
+    availableRoles.includes(role)
+      ? role
+      : availableRoles[0];
 
   const handleInvite = async () => {
     const normalizedEmail =
       email.trim().toLowerCase();
 
     if (!normalizedEmail) {
-      toast.error("Email is required");
+      toast.error( "Email is required" );
+      return;
+    }
+
+    if (!selectedRole) {
+      toast.error( "You do not have permission to invite members" );
       return;
     }
 
@@ -59,47 +118,43 @@ export default function InviteMemberDialog({ open, onOpenChange, }: InviteMember
       const res =
         await createInvitationApi(
           normalizedEmail,
-          role
+          selectedRole
         );
 
       const data = await res.json();
 
+
+
+
+    if (data.invitationUrl) {
+
+      console.log( "INVITATION URL:", data.invitationUrl );
+      await navigator.clipboard.writeText( data.invitationUrl );
+      toast.success( "Invitation created and link copied!" );
+      
+    } else {
+      toast.success( "Invitation sent successfully" );
+    }
+
+
+
+
+
       if (!res.ok) {
-        throw new Error(
-          data.message ||
-            "Failed to create invitation"
-        );
+        throw new Error( data.message || "Failed to create invitation" );
       }
 
-      toast.success(
-        "Invitation created successfully"
-      );
-
-      /*
-       * TEMPORARY
-       *
-       * We don't have email sending yet,
-       * so expose the token while testing.
-       */
-      console.log(
-        "Invitation token:",
-        data.invitationToken
-      );
-
-      console.log(
-        "Invitation:",
-        data.invitation
-      );
+      toast.success( "Invitation sent successfully" );
 
       setEmail("");
-      setRole("EDITOR");
+
+      setRole( availableRoles[0] || "EDITOR" );
 
       onOpenChange(false);
+
     } catch (error) {
-      console.error(
-        "Invite member error:",
-        error
-      );
+
+      console.error( "Invite member error:", error );
 
       toast.error(
         error instanceof Error
@@ -110,6 +165,18 @@ export default function InviteMemberDialog({ open, onOpenChange, }: InviteMember
       setLoading(false);
     }
   };
+
+  /*
+   * If member information isn't loaded
+   * or this role can't invite, don't render
+   * the dialog contents.
+   */
+  if (
+    !currentRole ||
+    availableRoles.length === 0
+  ) {
+    return null;
+  }
 
   return (
     <Dialog
@@ -150,7 +217,7 @@ export default function InviteMemberDialog({ open, onOpenChange, }: InviteMember
             </label>
 
             <Select
-              value={role}
+              value={selectedRole}
               onValueChange={(value) =>
                 setRole(
                   value as InviteRole
@@ -163,19 +230,29 @@ export default function InviteMemberDialog({ open, onOpenChange, }: InviteMember
               </SelectTrigger>
 
               <SelectContent>
+                {availableRoles.includes(
+                  "ADMIN"
+                ) && (
+                  <SelectItem value="ADMIN">
+                    Admin
+                  </SelectItem>
+                )}
 
-                <SelectItem value="ADMIN">
-                  Admin
-                </SelectItem>
+                {availableRoles.includes(
+                  "EDITOR"
+                ) && (
+                  <SelectItem value="EDITOR">
+                    Editor
+                  </SelectItem>
+                )}
 
-                <SelectItem value="EDITOR">
-                  Editor
-                </SelectItem>
-
-                <SelectItem value="VIEWER">
-                  Viewer
-                </SelectItem>
-                
+                {availableRoles.includes(
+                  "VIEWER"
+                ) && (
+                  <SelectItem value="VIEWER">
+                    Viewer
+                  </SelectItem>
+                )}
               </SelectContent>
             </Select>
           </div>

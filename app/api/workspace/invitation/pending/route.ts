@@ -81,9 +81,7 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json(
-      {
-        invitations: activeInvitations,
-      },
+      { invitations: activeInvitations, },
       { status: 200 }
     );
   } catch (error) {

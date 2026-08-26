@@ -55,7 +55,7 @@ export function HorizontalBarChart() {
             data={chartData}
             layout="vertical"
             margin={{
-              left: 5,
+              left: 8,
             }}
             >
             <YAxis

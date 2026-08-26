@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Mail, Clock, X, RefreshCw } from "lucide-react";
 
 import {
@@ -12,6 +12,17 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 
 import toast from "react-hot-toast";
@@ -39,31 +50,76 @@ export default function PendingInvitationsCard() {
 
 
 
-  const handleRevoke = async (invitationId: string) => {
-    try {
+  const [ revokeInvitationId, setRevokeInvitationId, ] = useState<string | null>(null);
+  const [ revoking, setRevoking, ] = useState(false);
 
-      const res = await revokeInvitationApi(invitationId);
+
+
+  const handleRevoke = async () => {
+    if (!revokeInvitationId) {
+      return;
+    }
+
+    try {
+      setRevoking(true);
+
+      const res =
+        await revokeInvitationApi(
+          revokeInvitationId
+        );
+
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.message || "Failed to revoke invitation")
+        throw new Error( data.message || "Failed to revoke invitation" );
       }
 
-      toast.success("Invitation revoked");
+      toast.success( "Invitation revoked" );
+
+      setRevokeInvitationId(null);
 
       await fetchPendingInvitations();
-
     } catch (error) {
 
-      console.error("Revoke invitation error:", error);
+      console.error( "Revoke invitation error:", error );
 
       toast.error(
         error instanceof Error
           ? error.message
           : "Failed to revoke invitation"
       );
+    } finally {
+      setRevoking(false);
     }
   };
+
+
+
+  // const handleRevoke = async (invitationId: string) => {
+  //   try {
+
+  //     const res = await revokeInvitationApi(invitationId);
+  //     const data = await res.json();
+
+  //     if (!res.ok) {
+  //       throw new Error(data.message || "Failed to revoke invitation")
+  //     }
+
+  //     toast.success("Invitation revoked");
+
+  //     await fetchPendingInvitations();
+
+  //   } catch (error) {
+
+  //     console.error("Revoke invitation error:", error);
+
+  //     toast.error(
+  //       error instanceof Error
+  //         ? error.message
+  //         : "Failed to revoke invitation"
+  //     );
+  //   }
+  // };
 
 
   const handleResend = async ( invitationId: string ) => {
@@ -167,8 +223,11 @@ export default function PendingInvitationsCard() {
 
                     <button
                       type="button"
+                      // onClick={() =>
+                      //   handleRevoke(invitation._id)
+                      // }
                       onClick={() =>
-                        handleRevoke(invitation._id)
+                        setRevokeInvitationId(invitation._id)
                       }
                       className="inline-flex h-8 w-8 items-center justify-center rounded-md border text-muted-foreground transition-colors hover:bg-destructive hover:text-destructive-foreground"
                       title="Revoke invitation"
@@ -184,6 +243,53 @@ export default function PendingInvitationsCard() {
           </div>
         )}
       </CardContent>
+
+
+
+
+        <AlertDialog
+          open={!!revokeInvitationId}
+          onOpenChange={(open) => {
+            if (!open && !revoking) {
+              setRevokeInvitationId(null);
+            }
+          }}
+        >
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                Revoke invitation?
+              </AlertDialogTitle>
+
+              <AlertDialogDescription>
+                This invitation will immediately stop
+                working. The recipient will no longer be
+                able to use the current invitation link.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+
+            <AlertDialogFooter>
+              <AlertDialogCancel
+                disabled={revoking}
+              >
+                Cancel
+              </AlertDialogCancel>
+
+              <AlertDialogAction
+                onClick={handleRevoke}
+                disabled={revoking}
+              >
+                {revoking
+                  ? "Revoking..."
+                  : "Revoke Invitation"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+
+
     </Card>
+
   );
 }

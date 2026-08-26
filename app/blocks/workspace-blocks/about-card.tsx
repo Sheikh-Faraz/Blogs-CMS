@@ -40,8 +40,12 @@ export default function AboutCard(
   
     // User Context
     const { 
+
       fetchUser, 
       authUser,
+
+      workspace,
+
     } = useUser();
 
     
@@ -144,7 +148,8 @@ export default function AboutCard(
             </Card>
           </motion.div>
         ))}
-                </div>
+        
+        </div>
 
 
 
@@ -177,7 +182,7 @@ export default function AboutCard(
 
               <span className="flex gap-2 items-center">
                 <Exclamation size={18} className="text-[#E85129]"/>
-                <span className="text-xl">About {authUser?.defaultWorkspace?.name || "Workspace"}</span>
+                <span className="text-xl">About {workspace?.name || "Workspace"}</span>
               </span>
 
               </motion.h2>
@@ -197,7 +202,7 @@ export default function AboutCard(
                 transition={{ delay: 0.2 }}
                 className="text-xs text-muted-foreground leading-relaxed"
               >
-                {authUser?.defaultWorkspace?.about || "No description available for this workspace yet."}
+                {workspace?.about || "No description available for this workspace yet."}
               </motion.p>
             </CardContent>
           </Card>

@@ -1,6 +1,8 @@
 "use client";
 
-import { useState ,useEffect } from "react";
+import { useState,
+  // useEffect 
+} from "react";
 
 // Context 
 import { useUser } from "@/context/User.context";
@@ -65,7 +67,8 @@ import {
 export default function TeamCard() {
 
     // User Context
-    const { fetchUser, members } = useUser();
+    // const { fetchUser, members } = useUser();
+    const { members } = useUser();
 
     // For Profile Viewing of Team Member
     const [openProfile, setOpenProfile] = useState(false);
@@ -80,9 +83,9 @@ export default function TeamCard() {
     };
     const [selectedMember, setSelectedMember] = useState<MemberUser | null>(null);
 
-    useEffect(() => {
-        fetchUser();
-    }, [])
+    // useEffect(() => {
+    //     fetchUser();
+    // }, [])
 
   return (
                 

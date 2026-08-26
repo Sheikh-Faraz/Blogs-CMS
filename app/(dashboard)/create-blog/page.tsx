@@ -433,7 +433,8 @@ const handleSubmit = async () => {
           )
           : 
             <p className="flex gap-2 items-center">
-              Publish changes
+              {/* Publish changes */}
+                Create
               <UploadIcon className="text-[#E85129] size-4"/>
             </p>
           }

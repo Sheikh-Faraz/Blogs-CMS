@@ -51,16 +51,43 @@ export default function WorkspacePage() {
 
     // User Context
     const { 
-      workspaceAnalyticsLoading,
+      authUser,
+      members,
 
+      workspaceAnalyticsLoading,
       fetchAnalytics,
       analytics,
+
+      CurrentActiveWorkspace,
+      fetchPendingInvitations,
     } = useUser();
 
 
     useEffect(() => {
-      fetchAnalytics();
-    }, [])
+
+      const loadWorkspaceData = async () => {
+        try {
+
+          await CurrentActiveWorkspace();
+          await fetchPendingInvitations();
+          await fetchAnalytics();
+
+        } catch (error) {
+          console.error( "Failed to load workspace data:", error );
+        }
+      };
+
+      loadWorkspaceData();
+      
+    }, []);
+
+    const currentMember =
+      members.find(
+        (member) =>
+          member.user._id === authUser?._id
+      );
+
+    const canInvite = currentMember?.role === "OWNER" || currentMember?.role === "ADMIN";
 
 
     const handleCreateWorkspaceOpenChange = (open: boolean) => {
@@ -84,6 +111,7 @@ export default function WorkspacePage() {
         onOpenChange={handleCreateWorkspaceOpenChange}
       />
 
+
       <InviteMemberDialog
         open={inviteMemberOpen}
         onOpenChange={setInviteMemberOpen}
@@ -94,16 +122,17 @@ export default function WorkspacePage() {
 
       <div className="flex items-center gap-3">
 
-    <Button
-      variant="outline"
-      onClick={() =>
-        setInviteMemberOpen(true)
-      }
-    >
-      <FiUserPlus className="mr-2" />
-      Invite Member
-    </Button>
-
+        {canInvite && (
+          <Button
+            variant="outline"
+            onClick={() =>
+              setInviteMemberOpen(true)
+            }
+          >
+            <FiUserPlus className="mr-2" />
+            Invite Member
+          </Button>
+        )}
       
 
       {/* Create new workspace */}

@@ -145,10 +145,7 @@ export async function POST(req: NextRequest) {
 
     if (existingInvitation) {
       return NextResponse.json(
-        {
-          message:
-            "A pending invitation already exists for this email",
-        },
+        { message: "A pending invitation already exists for this email", },
         { status: 409 }
       );
     }
@@ -185,11 +182,37 @@ export async function POST(req: NextRequest) {
     // If email sending fails, MongoDB already contains: PENDING Invitation but the recipient never gets the email.
     // That's not ideal, try solve that with a transaction, right now implementing try catch but eventually change to 
     // mongo transaction so that it can automic
-    try {
+    // try {
 
-      const appUrl = process.env.APP_URL || "http://localhost:3000";
+    //   const appUrl = process.env.APP_URL || "http://localhost:3000";
 
-      const invitationUrl = `${appUrl}/invitation/accept?token=${encodeURIComponent(rawToken)}`;
+    //   const invitationUrl = `${appUrl}/invitation/accept?token=${encodeURIComponent(rawToken)}`;
+
+    //   await sendInvitationEmail({
+    //     email: normalizedEmail,
+    //     workspaceName: workspace.name,
+    //     role,
+    //     invitationUrl,
+    //   });
+
+    // } catch (emailError) {
+      
+    //   await Invitation.deleteOne({ _id: invitation._id,});
+    //   throw emailError;
+
+    // };
+
+
+
+    const appUrl = process.env.APP_URL || "http://localhost:3000";
+
+    const invitationUrl = `${appUrl}/invitation/accept?token=${encodeURIComponent(rawToken)}`;
+
+    if (process.env.NODE_ENV === "development") {
+      
+      console.log( "DEV INVITATION URL:", invitationUrl);
+
+    } else {
 
       await sendInvitationEmail({
         email: normalizedEmail,
@@ -198,12 +221,9 @@ export async function POST(req: NextRequest) {
         invitationUrl,
       });
 
-    } catch (emailError) {
-      
-      await Invitation.deleteOne({ _id: invitation._id,});
-      throw emailError;
-
     };
+
+
 
     return NextResponse.json(
       {
@@ -216,6 +236,8 @@ export async function POST(req: NextRequest) {
           status: invitation.status,
           expiresAt: invitation.expiresAt,
         },
+
+         ...(process.env.NODE_ENV === "development" && {invitationUrl,}),
 
       },
       { status: 201 }

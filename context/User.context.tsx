@@ -502,10 +502,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(
-          data.message ||
-            "Failed to fetch pending invitations"
-        );
+        throw new Error( data.message || "Failed to fetch pending invitations" );
       }
 
       setPendingInvitations(data.invitations || []);

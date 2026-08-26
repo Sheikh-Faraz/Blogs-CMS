@@ -331,7 +331,7 @@ export const validateInvitationApi = async (
 };
 
 
-// Get the inviations fro active workspace
+// Get the inviations foo active workspace
 export const fetchPendingInvitationsApi = async () => {
 
     const res = await fetch(`${BASE_URL}/api/workspace/invitation/pending`,
