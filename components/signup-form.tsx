@@ -248,7 +248,20 @@ export function SignUpForm({
         >
           Login
         </a>
-        
+
+
+        {isInvitationFlow && (
+          <div className="text-center text-sm">
+            <a
+              href="/signup"
+              className="text-muted-foreground underline underline-offset-4 hover:text-foreground"
+            >
+              Cancel invitation
+            </a>
+          </div>
+        )}
+
+
       </div>
     </form>
   )
