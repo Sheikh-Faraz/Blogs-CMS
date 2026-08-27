@@ -208,20 +208,29 @@ export async function POST(req: NextRequest) {
 
     const invitationUrl = `${appUrl}/invitation/accept?token=${encodeURIComponent(rawToken)}`;
 
-    if (process.env.NODE_ENV === "development") {
+
+    await sendInvitationEmail({
+      email: normalizedEmail,
+      workspaceName: workspace.name,
+      role,
+      invitationUrl,
+      inviterName: currentUser.fullName,
+    });
+
+    // if (process.env.NODE_ENV === "development") {
       
-      console.log( "DEV INVITATION URL:", invitationUrl);
+    //   console.log( "DEV INVITATION URL:", invitationUrl);
 
-    } else {
+    // } else {
 
-      await sendInvitationEmail({
-        email: normalizedEmail,
-        workspaceName: workspace.name,
-        role,
-        invitationUrl,
-      });
+    //   await sendInvitationEmail({
+    //     email: normalizedEmail,
+    //     workspaceName: workspace.name,
+    //     role,
+    //     invitationUrl,
+    //   });
 
-    };
+    // };
 
 
 
@@ -237,7 +246,7 @@ export async function POST(req: NextRequest) {
           expiresAt: invitation.expiresAt,
         },
 
-         ...(process.env.NODE_ENV === "development" && {invitationUrl,}),
+        //  ...(process.env.NODE_ENV === "development" && {invitationUrl,}),
 
       },
       { status: 201 }

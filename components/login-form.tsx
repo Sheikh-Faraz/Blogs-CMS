@@ -35,6 +35,11 @@ export function LoginForm({
 
   const redirectTo = searchParams.get("redirect") || undefined;
 
+
+  const invitationToken = searchParams.get("invitationToken");
+  const invitationEmail = searchParams.get("invitationEmail");
+  const isInvitationFlow = !!invitationToken;
+
   
   // Context
   const { login, isLoggingIn } = useUser();
@@ -55,6 +60,34 @@ export function LoginForm({
     <form className={cn("flex flex-col gap-6", className)} {...props} onSubmit={handleSubmit}>
       
       <div className="flex flex-col items-center gap-2 text-center max-[425px]:m-4 m-2">
+  
+        {invitationToken && (
+          <div className="rounded-lg border bg-muted/50 p-3 text-center text-sm">
+            You have been invited to join a workspace.
+            Login to continue.
+          </div>
+        )}
+
+
+        {isInvitationFlow && (
+          <div className="rounded-xl border bg-muted/50 p-4 text-sm">
+            <p className="font-medium">
+              Workspace invitation
+            </p>
+
+            <p className="mt-1 text-muted-foreground">
+              Sign in to continue with your
+              invitation.
+            </p>
+
+            {invitationEmail && (
+              <p className="mt-2 text-xs text-muted-foreground">
+                Invitation for: {invitationEmail}
+              </p>
+            )}
+          </div>
+        )}
+
         <h1 className="text-2xl font-bold">Login to your account</h1>
         {/* <p className="text-muted-foreground text-sm text-balance">
           Enter your credentials to login to your account
@@ -159,7 +192,25 @@ export function LoginForm({
       <div className="text-center text-sm">
         Don&apos;t have an account?{" "}
 
-          <a href="/signup" className="underline underline-offset-4 hover:text-green-600">
+          {/* <a href="/signup" className="underline underline-offset-4 hover:text-green-600">
+            Sign up
+          </a> */}
+
+
+          <a
+            href={
+              invitationToken
+                ? `/signup?invitationToken=${encodeURIComponent(
+                    invitationToken
+                  )}&invitationEmail=${encodeURIComponent(
+                    invitationEmail || ""
+                  )}&redirect=${encodeURIComponent(
+                    redirectTo || ""
+                  )}`
+                : "/signup"
+            }
+            className="underline underline-offset-4 hover:text-green-600"
+          >
             Sign up
           </a>
 

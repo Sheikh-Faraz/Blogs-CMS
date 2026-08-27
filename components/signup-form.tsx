@@ -31,7 +31,12 @@ export function SignUpForm({
 
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || undefined;
-  const invitedEmail = searchParams.get("email");
+
+  // const invitedEmail = searchParams.get("email");
+
+  const invitationToken = searchParams.get("invitationToken");
+  const invitedEmail = searchParams.get("invitationEmail");
+  const isInvitationFlow = !!invitationToken;
 
 
   const { signup, isSigningUp } = useUser();
@@ -85,6 +90,26 @@ export function SignUpForm({
   return (
     <form className={cn("flex flex-col gap-6", className)} {...props} onSubmit={handleSubmit}>
       <div className="flex flex-col items-center gap-2 text-center max-[425px]:m-4 m-2">
+
+        {isInvitationFlow && (
+            <div className="rounded-xl border bg-muted/50 p-4 text-sm">
+              <p className="font-medium">
+                Workspace invitation
+              </p>
+
+              <p className="mt-1 text-muted-foreground">
+                Create your account to join this
+                workspace.
+              </p>
+
+              {invitedEmail && (
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Invitation for: {invitedEmail}
+                </p>
+              )}
+            </div>
+          )}
+
         <h1 className="text-2xl font-bold">Create an account</h1>
       </div>
 
@@ -203,9 +228,27 @@ export function SignUpForm({
 
       <div className="text-center text-sm">
         Already have an account?{" "}
-        <a href="/login" className="underline underline-offset-4 hover:text-green-600">
+        {/* <a href="/login" className="underline underline-offset-4 hover:text-green-600">
+          Login
+        </a> */}
+
+        <a
+          href={
+            isInvitationFlow
+              ? `/login?invitationToken=${encodeURIComponent(
+                  invitationToken!
+                )}&invitationEmail=${encodeURIComponent(
+                  invitedEmail || ""
+                )}&redirect=${encodeURIComponent(
+                  redirectTo || ""
+                )}`
+              : "/login"
+          }
+          className="underline underline-offset-4 hover:text-green-600"
+        >
           Login
         </a>
+        
       </div>
     </form>
   )

@@ -70,6 +70,26 @@ export default function AcceptInvitationPage() {
 
         setInvitation(data.invitation);
         setWorkspace(data.workspace);
+
+        if (!authUser) {
+        const redirectTo = `/invitation/accept?token=${encodeURIComponent(token!)}`;
+
+        const loginUrl =
+          `/login?invitationToken=${encodeURIComponent(
+            token!
+          )}` +
+          `&invitationEmail=${encodeURIComponent(
+            data.invitation.email
+          )}` +
+          `&redirect=${encodeURIComponent(
+            redirectTo
+          )}`;
+
+        router.replace(loginUrl);
+
+        return;
+      }
+
       } catch (error) {
 
         console.error( "Invitation validation error:", error );
@@ -104,18 +124,14 @@ export default function AcceptInvitationPage() {
     const data = await res.json();
 
     if (!res.ok) {
-      throw new Error(
-        data.message || "Failed to accept invitation"
-      );
+      throw new Error( data.message || "Failed to accept invitation" );
     }
 
     const workspaceId =
       data.membership?.workspace;
 
     if (!workspaceId) {
-      throw new Error(
-        "Workspace information was not returned"
-      );
+      throw new Error( "Workspace information was not returned" );
     }
 
     // Refresh the user's workspace list because
@@ -128,10 +144,7 @@ export default function AcceptInvitationPage() {
     );
 
   } catch (error) {
-    console.error(
-      "Accept invitation error:",
-      error
-    );
+    console.error( "Accept invitation error:", error );
 
     setError(
       error instanceof Error
@@ -161,8 +174,7 @@ export default function AcceptInvitationPage() {
           </h1>
 
           <p className="mt-2 text-sm text-muted-foreground">
-            {error ||
-              "This invitation could not be loaded."}
+            {error || "This invitation could not be loaded."}
           </p>
         </div>
       </main>

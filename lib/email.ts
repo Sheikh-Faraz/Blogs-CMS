@@ -86,14 +86,17 @@ export const sendInvitationEmail = async ({
   invitationUrl,
   inviterName,
 }: SendInvitationEmailParams) => {
-  
-  const serviceId = process.env.EMAILJS_SERVICE_ID;
+  const serviceId =
+    process.env.EMAILJS_SERVICE_ID;
 
-  const templateId = process.env.EMAILJS_TEMPLATE_ID;
+  const templateId =
+    process.env.EMAILJS_TEMPLATE_ID;
 
-  const publicKey = process.env.EMAILJS_PUBLIC_KEY;
+  const publicKey =
+    process.env.EMAILJS_PUBLIC_KEY;
 
-  const privateKey = process.env.EMAILJS_PRIVATE_KEY;
+  const privateKey =
+    process.env.EMAILJS_PRIVATE_KEY;
 
   if (
     !serviceId ||
@@ -101,10 +104,13 @@ export const sendInvitationEmail = async ({
     !publicKey ||
     !privateKey
   ) {
-    throw new Error( "EmailJS environment variables are not configured" );
+    throw new Error(
+      "EmailJS environment variables are not configured"
+    );
   }
 
-  const response = await fetch( "https://api.emailjs.com/api/v1.0/email/send",
+  const response = await fetch(
+    "https://api.emailjs.com/api/v1.0/email/send",
     {
       method: "POST",
       headers: {
@@ -113,7 +119,6 @@ export const sendInvitationEmail = async ({
       body: JSON.stringify({
         service_id: serviceId,
         template_id: templateId,
-
         user_id: publicKey,
         accessToken: privateKey,
 
@@ -129,12 +134,17 @@ export const sendInvitationEmail = async ({
   );
 
   if (!response.ok) {
+    const errorText =
+      await response.text();
 
-    const errorText = await response.text();
+    console.error(
+      "EmailJS error:",
+      errorText
+    );
 
-    console.error( "EmailJS error:", errorText );
-    throw new Error("Failed to send invitation email");
-
+    throw new Error(
+      `Failed to send invitation email: ${errorText}`
+    );
   }
 
   return true;
