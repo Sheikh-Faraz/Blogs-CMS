@@ -34,16 +34,14 @@ export async function GET(req: NextRequest) {
     };
 
     return NextResponse.json(safeUser);
+    
   } catch (error) {
+
     console.error("Get user info error:", error);
 
     return NextResponse.json(
-      {
-        message: "Server error",
-      },
-      {
-        status: 500,
-      }
+      { message: "Server error", },
+      { status: 500, }
     );
   }
 }

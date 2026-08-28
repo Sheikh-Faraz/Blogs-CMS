@@ -9,6 +9,7 @@ import { getCurrentUser } from "@/lib/getCurrentUser";
 import Invitation from "@/models/Invitation";
 import Workspace from "@/models/Workspace";
 import Membership from "@/models/Membership";
+import User from "@/models/User";
 
 
 // ============================================================
@@ -23,9 +24,7 @@ export async function GET(req: NextRequest) {
 
     if (!token) {
       return NextResponse.json(
-        {
-          message: "Invitation token is required",
-        },
+        {message: "Invitation token is required",},
         { status: 400 }
       );
     }
@@ -45,10 +44,7 @@ export async function GET(req: NextRequest) {
 
     if (!invitation) {
       return NextResponse.json(
-        {
-          message:
-            "Invitation is invalid or has already been used",
-        },
+        {message: "Invitation is invalid or has already been used",},
         { status: 404 }
       );
     }
@@ -60,9 +56,7 @@ export async function GET(req: NextRequest) {
       await invitation.save();
 
       return NextResponse.json(
-        {
-          message: "This invitation has expired",
-        },
+        { message: "This invitation has expired", },
         { status: 410 }
       );
     }
@@ -75,16 +69,30 @@ export async function GET(req: NextRequest) {
 
     if (!workspace) {
       return NextResponse.json(
-        {
-          message:
-            "The workspace associated with this invitation no longer exists",
-        },
+        { message: "The workspace associated with this invitation no longer exists", },
         { status: 404 }
       );
-    }
+    };
+
+
+    // Check whether the invited email already has an account
+    const invitedUser = await User.findOne({ email: invitation.email, }).select("_id email");
+
+    // Check whether the visitor is currently authenticated
+    const currentUser = await getCurrentUser(req);
+
+    const isAuthenticated = !!currentUser;
+
+    const emailMatches =
+      !!currentUser &&
+      currentUser.email.toLowerCase() ===
+        invitation.email.toLowerCase();
+
+
 
     // Return only information that the
     // invitation page actually needs
+
     return NextResponse.json(
       {
         invitation: {
@@ -97,9 +105,29 @@ export async function GET(req: NextRequest) {
           name: workspace.name,
           slug: workspace.slug,
         },
+
+        accountExists: !!invitedUser,
+        isAuthenticated,
+        emailMatches,
       },
       { status: 200 }
     );
+
+    // return NextResponse.json(
+    //   {
+    //     invitation: {
+    //       email: invitation.email,
+    //       role: invitation.role,
+    //       expiresAt: invitation.expiresAt,
+    //     },
+
+    //     workspace: {
+    //       name: workspace.name,
+    //       slug: workspace.slug,
+    //     },
+    //   },
+    //   { status: 200 }
+    // );
 
   } catch (error) {
     

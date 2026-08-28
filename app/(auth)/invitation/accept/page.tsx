@@ -30,12 +30,11 @@ export default function AcceptInvitationPage() {
   const router = useRouter();
 
   // Context
-  const { authUser, selectWorkspace, fetchWorkspaces  } = useUser();
+  const { authUser, selectWorkspace, fetchWorkspaces, fetchUser } = useUser();
 
   const [accepting, setAccepting] = useState(false);
 
   const searchParams = useSearchParams();
-
   const token = searchParams.get("token");
 
   const [loading, setLoading] = useState(true);
@@ -44,6 +43,11 @@ export default function AcceptInvitationPage() {
   const [invitation, setInvitation] = useState<InvitationData | null>(null);
 
   const [workspace, setWorkspace] = useState<WorkspaceData | null>(null);
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
 
   useEffect(() => {
     if (!token) {
@@ -62,33 +66,30 @@ export default function AcceptInvitationPage() {
         const data = await res.json();
 
         if (!res.ok) {
-          throw new Error(
-            data.message ||
-              "Unable to validate invitation"
-          );
-        }
+          throw new Error( data.message || "Unable to validate invitation" );
+        };
 
         setInvitation(data.invitation);
         setWorkspace(data.workspace);
 
         if (!authUser) {
-        const redirectTo = `/invitation/accept?token=${encodeURIComponent(token!)}`;
+          const redirectTo = `/invitation/accept?token=${encodeURIComponent(token!)}`;
 
-        const loginUrl =
-          `/login?invitationToken=${encodeURIComponent(
-            token!
-          )}` +
-          `&invitationEmail=${encodeURIComponent(
-            data.invitation.email
-          )}` +
-          `&redirect=${encodeURIComponent(
-            redirectTo
-          )}`;
+          const loginUrl =
+            `/login?invitationToken=${encodeURIComponent(
+              token!
+            )}` +
+            `&invitationEmail=${encodeURIComponent(
+              data.invitation.email
+            )}` +
+            `&redirect=${encodeURIComponent(
+              redirectTo
+            )}`;
 
-        router.replace(loginUrl);
+          router.replace(loginUrl);
 
-        return;
-      }
+          return;
+        }
 
       } catch (error) {
 

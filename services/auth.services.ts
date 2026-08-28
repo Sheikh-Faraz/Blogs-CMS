@@ -320,9 +320,7 @@ export const validateInvitationApi = async (
   token: string
 ) => {
   return await fetch(
-    `${BASE_URL}/api/workspace/invitation/accept?token=${encodeURIComponent(
-      token
-    )}`,
+    `${BASE_URL}/api/workspace/invitation/accept?token=${encodeURIComponent(token)}`,
     {
       method: "GET",
       credentials: "include",
