@@ -79,7 +79,16 @@ export async function GET(req: NextRequest) {
     const invitedUser = await User.findOne({ email: invitation.email, }).select("_id email");
 
     // Check whether the visitor is currently authenticated
-    const currentUser = await getCurrentUser(req);
+    // const currentUser = await getCurrentUser(req);
+
+    let currentUser = null;
+
+    try {
+      currentUser = await getCurrentUser(req);
+    } catch (error) {
+      // Being logged out is a valid state when opening an invitation.
+      currentUser = null;
+    }
 
     const isAuthenticated = !!currentUser;
 
@@ -134,10 +143,7 @@ export async function GET(req: NextRequest) {
     console.error( "Validate invitation error:", error );
 
     return NextResponse.json(
-      {
-        message:
-          "Failed to validate invitation",
-      },
+      { message: "Failed to validate invitation", },
       { status: 500 }
     );
   }
@@ -277,16 +283,11 @@ export async function POST(req: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    console.error(
-      "Accept invitation error:",
-      error
-    );
+
+    console.error( "Accept invitation error:", error);
 
     return NextResponse.json(
-      {
-        message:
-          "Failed to accept invitation",
-      },
+      { message: "Failed to accept invitation", },
       { status: 500 }
     );
   }

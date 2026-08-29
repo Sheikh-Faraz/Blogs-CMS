@@ -30,7 +30,13 @@ export default function AcceptInvitationPage() {
   const router = useRouter();
 
   // Context
-  const { authUser, selectWorkspace, fetchWorkspaces, fetchUser } = useUser();
+  const {
+    authUser,
+    selectWorkspace,
+    fetchWorkspaces,
+    fetchUser,
+    fetchLoading,
+  } = useUser();
 
   const [accepting, setAccepting] = useState(false);
 
@@ -62,9 +68,11 @@ export default function AcceptInvitationPage() {
         setError("");
 
         const res = await validateInvitationApi(token);
-
         const data = await res.json();
 
+        console.log("This is the data check the account exist or not: ", data);
+        
+        
         if (!res.ok) {
           throw new Error( data.message || "Unable to validate invitation" );
         };
@@ -72,24 +80,24 @@ export default function AcceptInvitationPage() {
         setInvitation(data.invitation);
         setWorkspace(data.workspace);
 
-        if (!authUser) {
-          const redirectTo = `/invitation/accept?token=${encodeURIComponent(token!)}`;
+        // if (!authUser) {
+        //   const redirectTo = `/invitation/accept?token=${encodeURIComponent(token!)}`;
 
-          const loginUrl =
-            `/login?invitationToken=${encodeURIComponent(
-              token!
-            )}` +
-            `&invitationEmail=${encodeURIComponent(
-              data.invitation.email
-            )}` +
-            `&redirect=${encodeURIComponent(
-              redirectTo
-            )}`;
+        //   const loginUrl =
+        //     `/login?invitationToken=${encodeURIComponent(
+        //       token!
+        //     )}` +
+        //     `&invitationEmail=${encodeURIComponent(
+        //       data.invitation.email
+        //     )}` +
+        //     `&redirect=${encodeURIComponent(
+        //       redirectTo
+        //     )}`;
 
-          router.replace(loginUrl);
+        //   router.replace(loginUrl);
 
-          return;
-        }
+        //   return;
+        // }
 
       } catch (error) {
 
@@ -107,6 +115,30 @@ export default function AcceptInvitationPage() {
 
     validateInvitation();
   }, [token]);
+
+
+
+  useEffect(() => {
+    if (fetchLoading) return;
+
+    if (!authUser) {
+      return;
+    }
+
+    if (!invitation || !token) {
+      return;
+    }
+
+    const emailMatches =
+      authUser.email.toLowerCase() ===
+      invitation.email.toLowerCase();
+
+    if (!emailMatches) {
+      setError(
+        `This invitation was sent to ${invitation.email}, but you are currently signed in as ${authUser.email}.`
+      );
+    }
+  }, [fetchLoading, authUser, invitation, token]);
 
 
 
