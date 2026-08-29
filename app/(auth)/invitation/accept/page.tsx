@@ -38,6 +38,9 @@ export default function AcceptInvitationPage() {
     fetchLoading,
   } = useUser();
 
+  const [accountExists, setAccountExists] = useState<boolean | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+
   const [accepting, setAccepting] = useState(false);
 
   const searchParams = useSearchParams();
@@ -47,12 +50,13 @@ export default function AcceptInvitationPage() {
   const [error, setError] = useState("");
 
   const [invitation, setInvitation] = useState<InvitationData | null>(null);
-
   const [workspace, setWorkspace] = useState<WorkspaceData | null>(null);
 
   useEffect(() => {
-    fetchUser();
-  }, []);
+    if (isAuthenticated) {
+      fetchUser();
+    }
+  }, [isAuthenticated]);
 
 
   useEffect(() => {
@@ -79,6 +83,9 @@ export default function AcceptInvitationPage() {
 
         setInvitation(data.invitation);
         setWorkspace(data.workspace);
+
+        setAccountExists(data.accountExists);
+        setIsAuthenticated(data.isAuthenticated);
 
         // if (!authUser) {
         //   const redirectTo = `/invitation/accept?token=${encodeURIComponent(token!)}`;
@@ -119,26 +126,108 @@ export default function AcceptInvitationPage() {
 
 
   useEffect(() => {
-    if (fetchLoading) return;
+      // Wait until we know whether the user is authenticated
+      if (
+        isAuthenticated === null ||
+        !invitation ||
+        !token ||
+        accountExists === null
+      ) {
+        return;
+      }
 
-    if (!authUser) {
-      return;
-    }
+      // If authenticated, wait until the user data has finished loading
+      if (isAuthenticated && fetchLoading) {
+        return;
+      }
 
-    if (!invitation || !token) {
-      return;
-    }
+      // =========================
+      // LOGGED-IN FLOW
+      // =========================
+      if (isAuthenticated && authUser) {
+        const emailMatches =
+          authUser.email.toLowerCase() ===
+          invitation.email.toLowerCase();
 
-    const emailMatches =
-      authUser.email.toLowerCase() ===
-      invitation.email.toLowerCase();
+        if (!emailMatches) {
+          setError(
+            `This invitation was sent to ${invitation.email}, but you are currently signed in as ${authUser.email}.`
+          );
+        }
 
-    if (!emailMatches) {
-      setError(
-        `This invitation was sent to ${invitation.email}, but you are currently signed in as ${authUser.email}.`
-      );
-    }
-  }, [fetchLoading, authUser, invitation, token]);
+        return;
+      }
+
+      // =========================
+      // LOGGED-OUT FLOW
+      // =========================
+      if (!isAuthenticated) {
+        const redirectTo = `/invitation/accept?token=${encodeURIComponent(token)}`;
+
+        // Existing account → Login
+        if (accountExists) {
+          router.replace(
+            `/login?redirect=${encodeURIComponent(redirectTo)}`
+          );
+          return;
+        }
+
+        // No account → Signup
+        router.replace(
+          `/signup?invitationToken=${encodeURIComponent(token)}&invitationEmail=${encodeURIComponent(
+          invitation.email
+         )}&redirect=${encodeURIComponent(redirectTo)}`
+        );
+        // router.replace(
+        //   `/signup?email=${encodeURIComponent(
+        //     invitation.email
+        //   )}&redirect=${encodeURIComponent(redirectTo)}`
+        // );
+      }
+    }, [
+      isAuthenticated,
+      fetchLoading,
+      authUser,
+      invitation,
+      token,
+      accountExists,
+      router,
+    ]);
+
+  // useEffect(() => {
+  //   // Wait until the current authentication check finishes
+  //   if (fetchLoading) return;
+
+  //   // Wait until invitation data has loaded
+  //   if (!invitation || !token || accountExists === null) return;
+
+  //   // CASE 1: User is logged in
+  //   if (authUser) {
+  //     const emailMatches =
+  //       authUser.email.toLowerCase() ===
+  //       invitation.email.toLowerCase();
+
+  //     if (!emailMatches) {
+  //       setError(`This invitation was sent to ${invitation.email}, but you are currently signed in as ${authUser.email}.`);
+  //     }
+
+  //     return;
+  //   }
+
+  //   // CASE 2: User is logged out but already has an account
+  //   if (accountExists) {
+  //     const redirectTo = `/invitation/accept?token=${encodeURIComponent(token)}`;
+  //     router.replace(`/login?redirect=${encodeURIComponent(redirectTo)}`);
+  //   }
+
+  // }, [
+  //   fetchLoading,
+  //   authUser,
+  //   invitation,
+  //   token,
+  //   accountExists,
+  //   router,
+  // ]);
 
 
 
