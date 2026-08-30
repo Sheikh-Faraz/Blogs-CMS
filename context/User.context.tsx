@@ -15,6 +15,7 @@ import Cookies from "js-cookie";
 import { 
   loginApi, 
   signupApi,
+  logoutApi,
   fetchUserInfoApi,
   updateUserProfileApi,
   fetchWorkspaceMembersApi,
@@ -143,7 +144,7 @@ interface UserContextType {
 
   fetchUser: () => Promise<void>;                            
   updateUserProfile: (formData: FormData) => Promise<void>;
-  logout: () => Promise<void>;
+  logout: (redirectTo?: string) => Promise<void>;
   
   // Workspace Members
   fetchWorkspaceMembers: (workspaceId: string) => Promise<void>;
@@ -266,26 +267,22 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
 
   // For Logging Out
-  const logout = async () => {
-    
+  const logout = async (redirectTo?: string) => {
     try {
-      
-      // 🧹 Remove token from everywhere
-      localStorage.removeItem("token");
-      Cookies.remove("token");
-      
-      // googleLogout();
+      const res = await logoutApi();
+
+      if (!res.ok) {
+        throw new Error("Failed to logout");
+      }
 
       setAuthUser(null);
-      
-      toast.success("Logged out successfully");
-      
-      // 👇 Redirect after Logout
-      router.push("/login");
 
+      toast.success("Logged out successfully");
+
+      router.push(redirectTo || "/login");
     } catch (err) {
-        toast.error(getErrorMessage(err, "Failed to logout"));
-    } 
+      toast.error(getErrorMessage(err, "Failed to logout"));
+    }
   };
 
   

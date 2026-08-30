@@ -59,7 +59,16 @@ export const signupApi = async (data: unknown) => {
 //   return res;
 // };
 
-// Apprently Don't Need A Backend-Api for Logout Only Need it If Moven Backend Https Baseed Cookies
+
+// For logging out 
+export const logoutApi = async () => {
+  return await fetch(`${BASE_URL}/api/auth/logout`, {
+    method: "POST",
+    credentials: "include",
+  });
+
+};
+
 
 // Your own data i.e the looged in user info
 export const fetchUserInfoApi = async () => {
@@ -218,60 +227,6 @@ export const createWorkspaceApi = async (name: string) => {
 
   return result;
 };
-
-
-
-// Inviting a user to workspace (Owner sends an invitation)
-// export const createInvitationApi = async ( email: string, role: string ) => {
-
-//   return await fetch("/api/workspace/invitation", 
-//   {    
-//       method: "POST",
-
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-
-//       body: JSON.stringify({
-//         email,
-//         role,
-//       }),
-
-//   });
-
-// };
-
-
-
-// // To validate the invitaiton (Check whether an invitation is valid)
-// export const validateInvitationApi = async ( token: string ) => {
-  
-//   return await fetch( `/api/workspace/invitation/accept?token=${encodeURIComponent(token)}`,
-//     {
-//       method: "GET",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//     }
-//   );
-// };
-
-
-// // Accept invitation  (Actually join the workspace)
-// export const acceptInvitationApi = async ( token: string ) => {
-
-//   return await fetch( "/api/workspace/invitation/accept",
-//     {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify({
-//         token,
-//       }),
-//     }
-//   );
-// };
 
 
 
