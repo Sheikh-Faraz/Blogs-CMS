@@ -42,7 +42,13 @@ const invitationSchema = new mongoose.Schema(
     // Invitation lifecycle
     status: {
       type: String,
-      enum: ["PENDING", "ACCEPTED", "REVOKED", "EXPIRED"],
+      enum: [
+        "PENDING",
+        "ACCEPTED",
+        "DECLINED",
+        "REVOKED",
+        "EXPIRED",
+      ],
       default: "PENDING",
     },
 

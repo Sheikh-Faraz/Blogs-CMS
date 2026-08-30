@@ -382,3 +382,19 @@ export const resendInvitationApi = async ( invitationId: string ) => {
 
   return res;
 };
+
+
+export const declineInvitationApi = async (token: string) => {
+  return await fetch( `${BASE_URL}/api/workspace/invitation/accept`,
+    {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        token,
+      }),
+    }
+  );
+};

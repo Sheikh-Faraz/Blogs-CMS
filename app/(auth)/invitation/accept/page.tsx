@@ -9,6 +9,7 @@ import { useUser } from "@/context/User.context";
 import {
   validateInvitationApi,
   acceptInvitationApi,
+  declineInvitationApi,
 } from "@/services/auth.services";
 
 
@@ -42,6 +43,7 @@ export default function AcceptInvitationPage() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   const [accepting, setAccepting] = useState(false);
+  const [declining, setDeclining] = useState(false);
 
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -167,22 +169,28 @@ export default function AcceptInvitationPage() {
         // Existing account → Login
         if (accountExists) {
           router.replace(
-            `/login?redirect=${encodeURIComponent(redirectTo)}`
+            `/login?invitationToken=${encodeURIComponent(
+              token
+            )}&invitationEmail=${encodeURIComponent(
+              invitation.email
+            )}&redirect=${encodeURIComponent(redirectTo)}`
           );
+
+          // router.replace(
+          //   `/login?redirect=${encodeURIComponent(redirectTo)}`
+          // );
+
           return;
         }
 
         // No account → Signup
         router.replace(
-          `/signup?invitationToken=${encodeURIComponent(token)}&invitationEmail=${encodeURIComponent(
+          `/signup?invitationToken=${encodeURIComponent(
+            token
+          )}&invitationEmail=${encodeURIComponent(
           invitation.email
          )}&redirect=${encodeURIComponent(redirectTo)}`
         );
-        // router.replace(
-        //   `/signup?email=${encodeURIComponent(
-        //     invitation.email
-        //   )}&redirect=${encodeURIComponent(redirectTo)}`
-        // );
       }
     }, [
       isAuthenticated,
@@ -193,41 +201,6 @@ export default function AcceptInvitationPage() {
       accountExists,
       router,
     ]);
-
-  // useEffect(() => {
-  //   // Wait until the current authentication check finishes
-  //   if (fetchLoading) return;
-
-  //   // Wait until invitation data has loaded
-  //   if (!invitation || !token || accountExists === null) return;
-
-  //   // CASE 1: User is logged in
-  //   if (authUser) {
-  //     const emailMatches =
-  //       authUser.email.toLowerCase() ===
-  //       invitation.email.toLowerCase();
-
-  //     if (!emailMatches) {
-  //       setError(`This invitation was sent to ${invitation.email}, but you are currently signed in as ${authUser.email}.`);
-  //     }
-
-  //     return;
-  //   }
-
-  //   // CASE 2: User is logged out but already has an account
-  //   if (accountExists) {
-  //     const redirectTo = `/invitation/accept?token=${encodeURIComponent(token)}`;
-  //     router.replace(`/login?redirect=${encodeURIComponent(redirectTo)}`);
-  //   }
-
-  // }, [
-  //   fetchLoading,
-  //   authUser,
-  //   invitation,
-  //   token,
-  //   accountExists,
-  //   router,
-  // ]);
 
 
 
@@ -275,6 +248,41 @@ export default function AcceptInvitationPage() {
     );
   } finally {
     setAccepting(false);
+  }
+};
+
+
+const handleDeclineInvitation = async () => {
+  if (!token) {
+    setError("Invalid invitation link.");
+    return;
+  }
+
+  try {
+    setDeclining(true);
+    setError("");
+
+    const res = await declineInvitationApi(token);
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || "Failed to decline invitation");
+    }
+
+    // Invitation flow is finished.
+    // Go back to the user's normal app experience.
+    router.replace("/");
+
+  } catch (error) {
+    console.error("Decline invitation error:", error);
+
+    setError(
+      error instanceof Error
+        ? error.message
+        : "Failed to decline invitation"
+    );
+  } finally {
+    setDeclining(false);
   }
 };
 
@@ -356,7 +364,7 @@ export default function AcceptInvitationPage() {
         </div>
 
 
-        {!authUser && (
+        {/* {!authUser && (
         <div className="mt-6 space-y-3">
             <button
             className="w-full rounded-lg bg-black px-4 py-2 text-white"
@@ -387,25 +395,43 @@ export default function AcceptInvitationPage() {
                 Create an account
             </button>
         </div>
-        )}
+        )} */}
 
 
 
-        {authUser && (
-        <button
-            className="mt-6 w-full rounded-lg bg-black px-4 py-2 text-white disabled:opacity-50"
+      {authUser && (
+        <div className="mt-6 flex flex-col gap-3">
+          <button
+            className="w-full rounded-lg bg-black px-4 py-2 text-white disabled:opacity-50"
             onClick={handleAcceptInvitation}
             disabled={
-            accepting ||
-            authUser.email.toLowerCase() !==
+              accepting ||
+              declining ||
+              authUser.email.toLowerCase() !==
                 invitation.email.toLowerCase()
             }
-        >
+          >
             {accepting
-            ? "Joining workspace..."
-            : "Accept Invitation"}
-        </button>
-        )}
+              ? "Joining workspace..."
+              : "Accept Invitation"}
+          </button>
+
+          <button
+            className="w-full rounded-lg border px-4 py-2 disabled:opacity-50"
+            onClick={handleDeclineInvitation}
+            disabled={
+              accepting ||
+              declining ||
+              authUser.email.toLowerCase() !==
+                invitation.email.toLowerCase()
+            }
+          >
+            {declining
+              ? "Declining invitation..."
+              : "Decline Invitation"}
+          </button>
+        </div>
+      )}
 
 
       </div>

@@ -22,12 +22,11 @@ export default function LogInPage() {
         </div>
 
 
-          <div className="w-full max-w-xs">
-
-            {/* Log-In Form */}
-            <LoginForm />
-
+          {/* <div className="w-full max-w-xs border border-blue-600"> */}
+          <div className="w-full">
+            <LoginForm />  {/* Log-In Form */}
           </div>
+
       </div>
     
     </div>

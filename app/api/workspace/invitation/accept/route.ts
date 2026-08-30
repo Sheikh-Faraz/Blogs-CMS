@@ -292,3 +292,96 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
+
+
+// ============================================================
+// DELETE — Decline invitation
+// ============================================================
+
+export async function DELETE(req: NextRequest) {
+  try {
+    await connectDB();
+
+    const body = await req.json();
+    const { token } = body;
+
+    if (!token) {
+      return NextResponse.json(
+        { message: "Invitation token is required", },
+        { status: 400 }
+      );
+    }
+
+    // User must be logged in to decline an invitation
+    const currentUser = await getCurrentUser(req);
+
+    if (!currentUser) {
+      return NextResponse.json(
+        { message: "You must be logged in to decline this invitation", },
+        { status: 401 }
+      );
+    }
+
+    // Hash token before looking it up
+    const tokenHash = crypto
+      .createHash("sha256")
+      .update(token)
+      .digest("hex");
+
+    // Find only pending invitations
+    const invitation = await Invitation.findOne({
+      tokenHash,
+      status: "PENDING",
+    });
+
+    if (!invitation) {
+      return NextResponse.json(
+        { message: "Invitation is invalid or has already been processed", },
+        { status: 404 }
+      );
+    }
+
+    // Check expiration
+    if (invitation.expiresAt < new Date()) {
+      invitation.status = "EXPIRED";
+      await invitation.save();
+
+      return NextResponse.json(
+        { message: "This invitation has expired", },
+        { status: 410 }
+      );
+    }
+
+    // Make sure this invitation belongs to
+    // the currently logged-in user
+    if (
+      currentUser.email.toLowerCase() !==
+      invitation.email.toLowerCase()
+    ) {
+      return NextResponse.json(
+        { message: "This invitation was sent to a different email address", },
+        { status: 403 }
+      );
+    }
+
+    // Mark invitation as declined
+    invitation.status = "DECLINED";
+
+    await invitation.save();
+
+    return NextResponse.json(
+      { message: "Invitation declined successfully", },
+      { status: 200 }
+    );
+
+  } catch (error) {
+
+    console.error("Decline invitation error:", error);
+    return NextResponse.json(
+      { message: "Failed to decline invitation", },
+      { status: 500 }
+    );
+  };
+
+}

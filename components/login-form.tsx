@@ -59,24 +59,17 @@ export function LoginForm({
   return (
     <form className={cn("flex flex-col gap-6", className)} {...props} onSubmit={handleSubmit}>
       
-      <div className="flex flex-col items-center gap-2 text-center max-[425px]:m-4 m-2">
-  
-        {invitationToken && (
-          <div className="rounded-lg border bg-muted/50 p-3 text-center text-sm">
-            You have been invited to join a workspace.
-            Login to continue.
-          </div>
-        )}
+    <div className="flex flex-row-reverse w-fit mx-auto gap-5">
 
-
-        {isInvitationFlow && (
-          <div className="rounded-xl border bg-muted/50 p-4 text-sm">
+    {isInvitationFlow && (
+      <div className="rounded-xl border bg-muted/50 flex items-center">
+          <div className="p-4 text-sm">
             <p className="font-medium">
               Workspace invitation
             </p>
 
             <p className="mt-1 text-muted-foreground">
-              Sign in to continue with your
+              Log in to continue with your
               invitation.
             </p>
 
@@ -86,12 +79,42 @@ export function LoginForm({
               </p>
             )}
           </div>
-        )}
+      </div>
+    )}
+
+
+      <div>
+      {/* <div className="flex flex-col items-center gap-2 text-center max-[425px]:m-4 m-2"> */}
+      <div className="flex flex-col items-center gap-2 text-center m-4 m-2">
+  
+        {/* {invitationToken && (
+          <div className="rounded-lg border bg-muted/50 p-3 text-center text-sm">
+            You have been invited to join a workspace.
+            Login to continue.
+          </div>
+        )} */}
+
+
+        {/* {isInvitationFlow && (
+          <div className="rounded-xl border bg-muted/50 p-4 text-sm">
+            <p className="font-medium">
+              Workspace invitation
+            </p>
+
+            <p className="mt-1 text-muted-foreground">
+              Log in to continue with your
+              invitation.
+            </p>
+
+            {invitationEmail && (
+              <p className="mt-2 text-xs text-muted-foreground">
+                Invitation for: {invitationEmail}
+              </p>
+            )}
+          </div>
+        )} */}
 
         <h1 className="text-2xl font-bold">Login to your account</h1>
-        {/* <p className="text-muted-foreground text-sm text-balance">
-          Enter your credentials to login to your account
-        </p> */}
       </div>
 
       <div className="grid gap-6 max-[425px]:gap-8">
@@ -227,6 +250,10 @@ export function LoginForm({
           )}
 
       </div>
+
+      </div>
+      
+    </div>
 
     </form>
   )
