@@ -87,8 +87,15 @@ const data = {
       ),
     },
     {
+      title: "Invitations",
+      url: "/invitations",
+      icon: (
+        <Users  />
+      ),
+    },
+    {
       title: "Team",
-      url: "/team",
+      url: "/blogs",
       icon: (
         <Users  />
       ),

@@ -353,3 +353,18 @@ export const declineInvitationApi = async (token: string) => {
     }
   );
 };
+
+
+// fetching user's invitations i.e invitaitons send to him
+// Fetch pending invitations sent TO the current logged-in user
+export const fetchUserPendingInvitationsApi = async () => {
+  const res = await fetch( `${BASE_URL}/api/user/pending-invitations`,
+    {
+      cache: "no-store",
+      method: "GET",
+      credentials: "include",
+    }
+  );
+
+  return res;
+};

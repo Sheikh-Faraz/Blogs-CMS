@@ -33,6 +33,7 @@ export default function AcceptInvitationPage() {
   // Context
   const {
     authUser,
+    logout,
     selectWorkspace,
     fetchWorkspaces,
     fetchUser,
@@ -41,6 +42,8 @@ export default function AcceptInvitationPage() {
 
   const [accountExists, setAccountExists] = useState<boolean | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [wrongAccount, setWrongAccount] = useState(false);
+  const [switchingAccount, setSwitchingAccount] = useState(false);
 
   const [accepting, setAccepting] = useState(false);
   const [declining, setDeclining] = useState(false);
@@ -75,8 +78,6 @@ export default function AcceptInvitationPage() {
 
         const res = await validateInvitationApi(token);
         const data = await res.json();
-
-        console.log("This is the data check the account exist or not: ", data);
         
         
         if (!res.ok) {
@@ -152,9 +153,8 @@ export default function AcceptInvitationPage() {
           invitation.email.toLowerCase();
 
         if (!emailMatches) {
-          setError(
-            `This invitation was sent to ${invitation.email}, but you are currently signed in as ${authUser.email}.`
-          );
+          setWrongAccount(true);
+          // setError(`This invitation was sent to ${invitation.email}, but you are currently signed in as ${authUser.email}.`);
         }
 
         return;
@@ -287,10 +287,75 @@ const handleDeclineInvitation = async () => {
 };
 
 
+
+// const handleSwitchAccount = async () => {
+//   if (!token) {
+//     setError("Invalid invitation link.");
+//     return;
+//   }
+
+//   try {
+//     setSwitchingAccount(true);
+
+//     const redirectTo = `/invitation/accept?token=${encodeURIComponent(token)}`;
+
+//     await logout(redirectTo);
+//   } catch (error) {
+//     // console.error("Account switch logout error:", error);
+//     setSwitchingAccount(false);
+//     setError("Failed to sign out. Please try again.");
+//   }
+// };
+
+
+const handleSwitchAccount = async () => {
+  if (!token || !invitation) {
+    setError("Invalid invitation link.");
+    return;
+  }
+
+  try {
+    const redirectTo = `/invitation/accept?token=${encodeURIComponent(token)}`;
+
+    const authUrl = accountExists
+      ? `/login?invitationToken=${encodeURIComponent(
+          token
+        )}&invitationEmail=${encodeURIComponent(
+          invitation.email
+        )}&redirect=${encodeURIComponent(redirectTo)}`
+      : `/signup?invitationToken=${encodeURIComponent(
+          token
+        )}&invitationEmail=${encodeURIComponent(
+          invitation.email
+        )}&redirect=${encodeURIComponent(redirectTo)}`;
+
+    // Log out the current account.
+    // Then go directly to the correct authentication page.
+    await logout(authUrl);
+  } catch (error) {
+    // console.error("Account switch logout error:", error);
+    
+    setError("Failed to sign out. Please try again.");
+  }
+};
+
+
   if (loading) {
     return (
       <main className="flex min-h-screen items-center justify-center">
         <p>Checking invitation...</p>
+      </main>
+    );
+  }
+
+  if (switchingAccount) {
+    return (
+      <main className="flex min-h-screen items-center justify-center p-6">
+        <div className="text-center">
+          <p className="text-sm text-muted-foreground">
+            Signing you out...
+          </p>
+        </div>
       </main>
     );
   }
@@ -306,6 +371,60 @@ const handleDeclineInvitation = async () => {
           <p className="mt-2 text-sm text-muted-foreground">
             {error || "This invitation could not be loaded."}
           </p>
+        </div>
+      </main>
+    );
+  }
+
+
+
+    if (wrongAccount && authUser) {
+    return (
+      <main className="flex min-h-screen items-center justify-center p-6">
+        <div className="w-full max-w-md rounded-xl border p-6">
+          <h1 className="text-2xl font-semibold">
+            This invitation is for another account
+          </h1>
+
+          <p className="mt-2 text-sm text-muted-foreground">
+            This invitation was sent to:
+          </p>
+
+          <p className="font-medium">
+            {invitation.email}
+          </p>
+
+          <p className="mt-4 text-sm text-muted-foreground">
+            You are currently signed in as:
+          </p>
+
+          <p className="font-medium">
+            {authUser.email}
+          </p>
+
+          <p className="mt-4 text-sm text-muted-foreground">
+            Please sign out and continue with the account this
+            invitation was sent to.
+          </p>
+
+          <div className="mt-6 flex flex-col gap-3">
+            <button
+              className="w-full rounded-lg bg-black px-4 py-2 text-white disabled:opacity-50"
+              onClick={handleSwitchAccount}
+              disabled={switchingAccount}
+            >
+              {switchingAccount
+                ? "Signing out..."
+                : "Sign out and continue"}
+            </button>
+
+            <button
+              className="w-full rounded-lg border px-4 py-2"
+              onClick={() => router.push("/blogs")}
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       </main>
     );

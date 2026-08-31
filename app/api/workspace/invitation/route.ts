@@ -70,6 +70,14 @@ export async function POST(req: NextRequest) {
 
     const normalizedEmail = email.trim().toLowerCase();
 
+    // Prevent users from inviting themselves to their own workspace
+    if (normalizedEmail === currentUser.email.toLowerCase()) {
+      return NextResponse.json(
+        { message: "You cannot invite yourself to this workspace", },
+        { status: 400 }
+      );
+    }
+
     // const allowedRoles = [
     //   "ADMIN",
     //   "EDITOR",
@@ -136,7 +144,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Check for an existing pending invitation
+    // Check for an existing pending invitation and if expired then mark it  
     const existingInvitation = await Invitation.findOne({
       workspace: workspace._id,
       email: normalizedEmail,
@@ -144,10 +152,17 @@ export async function POST(req: NextRequest) {
     });
 
     if (existingInvitation) {
-      return NextResponse.json(
-        { message: "A pending invitation already exists for this email", },
-        { status: 409 }
-      );
+      // If the invitation has expired, mark it as expired
+      // so a new invitation can be created.
+      if (existingInvitation.expiresAt < new Date()) {
+        existingInvitation.status = "EXPIRED";
+        await existingInvitation.save();
+      } else {
+        return NextResponse.json(
+          { message: "A pending invitation already exists for this email", },
+          { status: 409 }
+        );
+      }
     }
 
     // Generate secure token

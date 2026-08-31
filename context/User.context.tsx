@@ -27,6 +27,7 @@ import {
   createWorkspaceApi,
   fetchAnalyticsApi,
   fetchPendingInvitationsApi,
+  fetchUserPendingInvitationsApi,
 } from "@/services/auth.services";
 
 
@@ -61,6 +62,22 @@ export interface PendingInvitation {
   status: "PENDING";
   expiresAt: string;
   createdAt: string;
+}
+
+
+export interface ReceivedInvitation {
+  _id: string;
+  email: string;
+  role: "ADMIN" | "EDITOR" | "VIEWER";
+  expiresAt: string;
+  createdAt: string;
+
+  workspace: {
+    _id: string;
+    name: string;
+    slug?: string;
+    logo?: string;
+  } | null;
 }
 
 
@@ -179,6 +196,11 @@ interface UserContextType {
   fetchPendingInvitations: () => Promise<void>;
   pendingInvitations: PendingInvitation[];
   pendingInvitationsLoading: boolean;
+
+  // Invitations received by the current user
+  fetchReceivedInvitations: () => Promise<void>;
+  receivedInvitations: ReceivedInvitation[];
+  receivedInvitationsLoading: boolean;
 }
 
 // Context
@@ -218,6 +240,10 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   const [pendingInvitations, setPendingInvitations] = useState<PendingInvitation[]>([]);
   const [pendingInvitationsLoading, setPendingInvitationsLoading] = useState(false);
+
+
+  const [receivedInvitations, setReceivedInvitations] = useState<ReceivedInvitation[]>([]);
+  const [receivedInvitationsLoading, setReceivedInvitationsLoading] = useState(false);
 
 
 // --------------------------- AUTHENTICATION LOGIC ---------------------------
@@ -517,6 +543,30 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
 
 
+  // Fetch invitations received by the current logged-in user
+  const fetchReceivedInvitations = async () => {
+      try {
+        setReceivedInvitationsLoading(true);
+
+        const res = await fetchUserPendingInvitationsApi();
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.message || "Failed to fetch received invitations");
+        }
+
+        setReceivedInvitations(data.invitations || []);
+      } catch (err) {
+        toast.error(
+          getErrorMessage(err, "Failed to fetch received invitations")
+        );
+      } finally {
+        setReceivedInvitationsLoading(false);
+      }
+    };
+
+
+
 
   return (
     <UserContext.Provider
@@ -564,6 +614,10 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         pendingInvitations,
         pendingInvitationsLoading,
 
+
+        fetchReceivedInvitations,
+        receivedInvitations,
+        receivedInvitationsLoading,
       }}
     >
       {children}
