@@ -368,3 +368,57 @@ export const fetchUserPendingInvitationsApi = async () => {
 
   return res;
 };
+
+
+
+
+// Fetch a single received invitation
+export const fetchReceivedInvitationApi = async ( invitationId: string ) => {
+  const res = await fetch(`${BASE_URL}/api/user/pending-invitations/${invitationId}`,
+    {
+      cache: "no-store",
+      method: "GET",
+      credentials: "include",
+    }
+  );
+
+  return res;
+};
+
+
+// Accept an invitation from inside the app
+export const acceptInvitationByIdApi = async ( invitationId: string ) => {
+  const res = await fetch( `${BASE_URL}/api/workspace/invitation/accept`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        invitationId,
+      }),
+    }
+  );
+
+  return res;
+};
+
+
+// Decline an invitation from inside the app
+export const declineInvitationByIdApi = async ( invitationId: string ) => {
+  const res = await fetch( `${BASE_URL}/api/workspace/invitation/accept`,
+    {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        invitationId,
+      }),
+    }
+  );
+
+  return res;
+};
