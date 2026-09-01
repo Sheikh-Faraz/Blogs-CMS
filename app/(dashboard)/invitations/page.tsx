@@ -28,7 +28,7 @@ export default function InvitationsPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-5xl p-6">
+    <div className="mx-auto w-full max-w-5xl p-6 bg-card">
       <div className="mb-8">
         <h1 className="text-3xl font-semibold">
           Workspace Invitations

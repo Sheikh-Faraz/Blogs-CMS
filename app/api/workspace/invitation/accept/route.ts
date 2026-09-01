@@ -160,35 +160,39 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
 
-    const { token } = body;
+    const { token, invitationId } = body;
 
-    if (!token) {
+    if (!token && !invitationId) {
       return NextResponse.json(
-        {
-          message:
-            "Invitation token is required",
-        },
+        { message: "Invitation token or invitation ID is required", },
         { status: 400 }
       );
     }
 
-    const tokenHash = crypto
-      .createHash("sha256")
-      .update(token)
-      .digest("hex");
+    let invitation;
 
-    const invitation =
-      await Invitation.findOne({
+    if (token) {
+      const tokenHash = crypto
+        .createHash("sha256")
+        .update(token)
+        .digest("hex");
+
+      invitation = await Invitation.findOne({
         tokenHash,
         status: "PENDING",
       });
+    } else {
+      invitation = await Invitation.findOne({
+        _id: invitationId,
+        status: "PENDING",
+      });
+    }
+
+
 
     if (!invitation) {
       return NextResponse.json(
-        {
-          message:
-            "Invitation is invalid, expired, or has already been used",
-        },
+        { message: "Invitation is invalid, expired, or has already been used", },
         { status: 404 }
       );
     }
@@ -304,11 +308,11 @@ export async function DELETE(req: NextRequest) {
     await connectDB();
 
     const body = await req.json();
-    const { token } = body;
+    const { token, invitationId } = body;
 
-    if (!token) {
+    if (!token && !invitationId) {
       return NextResponse.json(
-        { message: "Invitation token is required", },
+        { message: "Invitation token or invitation ID is required", },
         { status: 400 }
       );
     }
@@ -322,24 +326,27 @@ export async function DELETE(req: NextRequest) {
         { status: 401 }
       );
     }
+    
 
-    // Hash token before looking it up
-    const tokenHash = crypto
-      .createHash("sha256")
-      .update(token)
-      .digest("hex");
+    let invitation;
 
-    // Find only pending invitations
-    const invitation = await Invitation.findOne({
-      tokenHash,
-      status: "PENDING",
-    });
+    if (token) {
+      // Email invitation flow
+      const tokenHash = crypto
+        .createHash("sha256")
+        .update(token)
+        .digest("hex");
 
-    if (!invitation) {
-      return NextResponse.json(
-        { message: "Invitation is invalid or has already been processed", },
-        { status: 404 }
-      );
+      invitation = await Invitation.findOne({
+        tokenHash,
+        status: "PENDING",
+      });
+    } else {
+      // In-app invitation flow
+      invitation = await Invitation.findOne({
+        _id: invitationId,
+        status: "PENDING",
+      });
     }
 
     // Check expiration

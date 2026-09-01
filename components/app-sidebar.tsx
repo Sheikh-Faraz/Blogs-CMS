@@ -31,6 +31,8 @@ import { CgOrganisation as Organization } from "react-icons/cg";
 import { LayoutDashboard } from 'lucide-react';
 
 import { RiPenNibLine as Penlogo } from "react-icons/ri";
+import { FcInvite as InviteLogo } from "react-icons/fc";
+
 
 import { WorkspaceSwitcher } from "@/app/blocks/Navbar/Workspace-Switcher";
 
@@ -90,7 +92,7 @@ const data = {
       title: "Invitations",
       url: "/invitations",
       icon: (
-        <Users  />
+        <InviteLogo />
       ),
     },
     {
