@@ -49,7 +49,7 @@ POSTPONDED FOR NOW
 
 
 <!-- WORKSAPCE PAGE --> --------------------------------------------------------------------------------------------------------
--- Add the edit and create new workspace pages
+<!-- -- Add the edit and create new workspace                                   -- DONE -->
 -- Add the delete workspace at the end and if only one default workspace 
    then do not allow to delete
 <!-- -- Add loading skeleton if needed                                          -- DONE -->

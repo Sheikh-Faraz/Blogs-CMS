@@ -35,6 +35,7 @@ export default function InvitationDetailsPage() {
 
   const invitationId = params.invitationId as string;
 
+
   const {
     fetchWorkspaces,
     fetchReceivedInvitations,
