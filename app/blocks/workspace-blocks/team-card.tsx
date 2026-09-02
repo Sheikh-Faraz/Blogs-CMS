@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 
 import { useUser } from "@/context/User.context";
 import { updateWorkspaceMemberRoleApi } from "@/services/team.services";
+import InviteMemberDialog from "@/app/blocks/workspace-blocks/invite-member-dialog";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -52,6 +53,7 @@ export default function TeamCard() {
   const [search, setSearch] = useState("");
   const [selectedMember, setSelectedMember] = useState<WorkspaceMember | null>(null);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [inviteOpen, setInviteOpen] = useState(false);
   const [updatingMembershipId, setUpdatingMembershipId] = useState<string | null>(null);
 
   const currentMember = members.find((member) => member.user._id === authUser?._id);
@@ -103,8 +105,13 @@ export default function TeamCard() {
               Add teammates to collaborate on projects together. Control permissions and manage access levels for each member.
             </p>
           </div>
-          <div className="text-sm text-muted-foreground whitespace-nowrap">
-            {members.length} {members.length === 1 ? "member" : "members"}
+          <div className="flex items-center gap-3">
+            <div className="hidden text-sm text-muted-foreground whitespace-nowrap sm:block">
+              {members.length} {members.length === 1 ? "member" : "members"}
+            </div>
+            {canManageRoles && (
+              <Button onClick={() => setInviteOpen(true)}>Invite Member</Button>
+            )}
           </div>
         </div>
 
@@ -112,6 +119,9 @@ export default function TeamCard() {
           <div className="relative w-full max-w-xs">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search" className="pl-9" />
+          </div>
+          <div className="text-sm text-muted-foreground sm:hidden">
+            {members.length} {members.length === 1 ? "member" : "members"}
           </div>
         </div>
 
@@ -171,6 +181,8 @@ export default function TeamCard() {
           )}
         </div>
       </div>
+
+      <InviteMemberDialog open={inviteOpen} onOpenChange={setInviteOpen} />
 
       <Dialog open={profileOpen} onOpenChange={setProfileOpen}>
         <DialogContent className="max-w-lg">
