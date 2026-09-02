@@ -44,44 +44,24 @@ const roleLabel: Record<Role, string> = {
 };
 
 function initials(name: string) {
-  return name
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0])
-    .join("")
-    .toUpperCase();
+  return name.split(" ").filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
 }
 
 export default function TeamCard() {
-  const {
-    members,
-    authUser,
-    workspace,
-    CurrentActiveWorkspace,
-    membersLoading,
-  } = useUser();
-
+  const { members, authUser, workspace, CurrentActiveWorkspace, membersLoading } = useUser();
   const [search, setSearch] = useState("");
   const [selectedMember, setSelectedMember] = useState<WorkspaceMember | null>(null);
   const [profileOpen, setProfileOpen] = useState(false);
   const [updatingMembershipId, setUpdatingMembershipId] = useState<string | null>(null);
 
-  const currentMember = members.find(
-    (member) => member.user._id === authUser?._id
-  );
-
-  const canManageRoles =
-    currentMember?.role === "OWNER" || currentMember?.role === "ADMIN";
+  const currentMember = members.find((member) => member.user._id === authUser?._id);
+  const canManageRoles = currentMember?.role === "OWNER" || currentMember?.role === "ADMIN";
 
   const filteredMembers = useMemo(() => {
     const query = search.trim().toLowerCase();
     if (!query) return members;
-
     return members.filter((member) =>
-      [member.user.fullName, member.user.email, member.role].some((value) =>
-        value.toLowerCase().includes(query)
-      )
+      [member.user.fullName, member.user.email, member.role].some((value) => value.toLowerCase().includes(query))
     );
   }, [members, search]);
 
@@ -98,28 +78,16 @@ export default function TeamCard() {
     return true;
   };
 
-  const handleRoleChange = async (
-    member: WorkspaceMember,
-    role: EditableRole
-  ) => {
-    if (!workspace?._id || !canEditMember(member)) return;
-    if (role === member.role) return;
+  const handleRoleChange = async (member: WorkspaceMember, role: EditableRole) => {
+    if (!workspace?._id || !canEditMember(member) || role === member.role) return;
 
     try {
       setUpdatingMembershipId(member._id);
-
-      await updateWorkspaceMemberRoleApi(
-        workspace._id,
-        member._id,
-        role
-      );
-
+      await updateWorkspaceMemberRoleApi(workspace._id, member._id, role);
       await CurrentActiveWorkspace();
       toast.success(`${member.user.fullName}'s role updated`);
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Failed to update member role"
-      );
+      toast.error(error instanceof Error ? error.message : "Failed to update member role");
     } finally {
       setUpdatingMembershipId(null);
     }
@@ -132,11 +100,9 @@ export default function TeamCard() {
           <div>
             <h1 className="text-2xl font-semibold tracking-tight">Workspace Members</h1>
             <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-              Add teammates to collaborate on projects together. Control permissions
-              and manage access levels for each member.
+              Add teammates to collaborate on projects together. Control permissions and manage access levels for each member.
             </p>
           </div>
-
           <div className="text-sm text-muted-foreground whitespace-nowrap">
             {members.length} {members.length === 1 ? "member" : "members"}
           </div>
@@ -145,21 +111,14 @@ export default function TeamCard() {
         <div className="mb-5 flex items-center justify-between gap-3">
           <div className="relative w-full max-w-xs">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search"
-              className="pl-9"
-            />
+            <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search" className="pl-9" />
           </div>
         </div>
 
         <div className="border-t">
           {membersLoading ? (
             <div className="space-y-3 py-5">
-              {[1, 2, 3, 4].map((item) => (
-                <div key={item} className="h-16 animate-pulse rounded-md bg-muted/40" />
-              ))}
+              {[1, 2, 3, 4].map((item) => <div key={item} className="h-16 animate-pulse rounded-md bg-muted/40" />)}
             </div>
           ) : filteredMembers.length === 0 ? (
             <div className="py-14 text-center text-sm text-muted-foreground">
@@ -171,70 +130,39 @@ export default function TeamCard() {
               const isUpdating = updatingMembershipId === member._id;
 
               return (
-                <div
-                  key={member._id}
-                  className="group flex min-h-20 items-center gap-3 border-b py-3"
-                >
-                  <button
-                    type="button"
-                    onClick={() => openProfile(member)}
-                    className="flex min-w-0 flex-1 items-center gap-3 text-left"
-                  >
+                <div key={member._id} className="group flex min-h-20 items-center gap-3 border-b py-3">
+                  <button type="button" onClick={() => openProfile(member)} className="flex min-w-0 flex-1 items-center gap-3 text-left">
                     <Avatar className="h-10 w-10 shrink-0">
                       <AvatarImage src={member.user.profilePic || undefined} />
                       <AvatarFallback>{initials(member.user.fullName)}</AvatarFallback>
                     </Avatar>
-
                     <span className="min-w-0">
-                      <span className="block truncate text-sm font-semibold">
-                        {member.user.fullName}
-                      </span>
-                      <span className="block truncate text-xs text-muted-foreground">
-                        {member.user.email}
-                      </span>
+                      <span className="block truncate text-sm font-semibold">{member.user.fullName}</span>
+                      <span className="block truncate text-xs text-muted-foreground">{member.user.email}</span>
                     </span>
                   </button>
 
                   <div className="hidden sm:block">
-                    <Select
-                      value={member.role}
-                      disabled={!editable || isUpdating}
-                      onValueChange={(value) =>
-                        handleRoleChange(member, value as EditableRole)
-                      }
-                    >
-                      <SelectTrigger className="h-9 w-28">
-                        <SelectValue />
-                      </SelectTrigger>
+                    <Select value={member.role} disabled={!editable || isUpdating} onValueChange={(value) => handleRoleChange(member, value as EditableRole)}>
+                      <SelectTrigger className="h-9 w-28"><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        {currentMember?.role === "OWNER" && (
-                          <SelectItem value="ADMIN">Admin</SelectItem>
-                        )}
+                        {currentMember?.role === "OWNER" && <SelectItem value="ADMIN">Admin</SelectItem>}
                         <SelectItem value="EDITOR">Editor</SelectItem>
                         <SelectItem value="VIEWER">Viewer</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
-                  <div className="sm:hidden">
-                    <Badge variant="outline">{roleLabel[member.role]}</Badge>
-                  </div>
+                  <div className="sm:hidden"><Badge variant="outline">{roleLabel[member.role]}</Badge></div>
 
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-9 w-9 shrink-0"
-                        aria-label={`Actions for ${member.user.fullName}`}
-                      >
+                      <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0" aria-label={`Actions for ${member.user.fullName}`}>
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => openProfile(member)}>
-                        View Profile
-                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => openProfile(member)}>View Profile</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
@@ -255,13 +183,9 @@ export default function TeamCard() {
                     <AvatarFallback>{initials(selectedMember.user.fullName)}</AvatarFallback>
                   </Avatar>
                   <div className="min-w-0">
-                    <DialogTitle className="truncate text-xl">
-                      {selectedMember.user.fullName}
-                    </DialogTitle>
+                    <DialogTitle className="truncate text-xl">{selectedMember.user.fullName}</DialogTitle>
                     <div className="mt-1 flex items-center gap-2">
-                      <Badge variant="secondary">
-                        {roleLabel[selectedMember.role]}
-                      </Badge>
+                      <Badge variant="secondary">{roleLabel[selectedMember.role]}</Badge>
                       <span className="text-xs text-muted-foreground">Workspace member</span>
                     </div>
                   </div>
@@ -270,37 +194,25 @@ export default function TeamCard() {
 
               <div className="grid gap-3 pt-2">
                 <div className="rounded-lg border p-3">
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Mail className="h-3.5 w-3.5" /> Email
-                  </div>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground"><Mail className="h-3.5 w-3.5" /> Email</div>
                   <p className="mt-1 break-all text-sm">{selectedMember.user.email}</p>
                 </div>
-
                 <div className="rounded-lg border p-3">
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <MapPin className="h-3.5 w-3.5" /> Location
-                  </div>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground"><MapPin className="h-3.5 w-3.5" /> Location</div>
+                  <p className="mt-1 text-sm">{selectedMember.user.location || "Location not specified"}</p>
+                </div>
+                <div className="rounded-lg border p-3">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground"><CalendarDays className="h-3.5 w-3.5" /> Joined</div>
                   <p className="mt-1 text-sm">
-                    {selectedMember.user.location || "Location not specified"}
+                    {(() => {
+                      const joinedAt = (selectedMember as WorkspaceMember & { createdAt?: string }).createdAt;
+                      return joinedAt ? new Date(joinedAt).toLocaleDateString() : "Not available";
+                    })()}
                   </p>
                 </div>
-
                 <div className="rounded-lg border p-3">
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <CalendarDays className="h-3.5 w-3.5" /> Joined
-                  </div>
-                  <p className="mt-1 text-sm">
-                    {new Date(selectedMember.createdAt).toLocaleDateString()}
-                  </p>
-                </div>
-
-                <div className="rounded-lg border p-3">
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <ShieldCheck className="h-3.5 w-3.5" /> About
-                  </div>
-                  <p className="mt-1 whitespace-pre-wrap text-sm leading-6">
-                    {selectedMember.user.about || "No information provided."}
-                  </p>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground"><ShieldCheck className="h-3.5 w-3.5" /> About</div>
+                  <p className="mt-1 whitespace-pre-wrap text-sm leading-6">{selectedMember.user.about || "No information provided."}</p>
                 </div>
               </div>
             </>
