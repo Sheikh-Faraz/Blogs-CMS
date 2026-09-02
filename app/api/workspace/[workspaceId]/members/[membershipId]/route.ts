@@ -59,13 +59,18 @@ export async function PATCH(
       );
     }
 
+    // Never allow a member to change their own role here.
+    if (targetMembership.user.toString() === currentUser._id.toString()) {
+      return NextResponse.json(
+        { success: false, message: "You cannot change your own workspace role" },
+        { status: 403 }
+      );
+    }
+
     // The owner is protected from normal role changes.
     if (targetMembership.role === "OWNER") {
       return NextResponse.json(
-        {
-          success: false,
-          message: "The workspace owner cannot be changed here",
-        },
+        { success: false, message: "The workspace owner cannot be changed here" },
         { status: 403 }
       );
     }
@@ -73,10 +78,7 @@ export async function PATCH(
     // Admins can manage editors/viewers, but not other admins.
     if (currentMembership.role === "ADMIN" && targetMembership.role === "ADMIN") {
       return NextResponse.json(
-        {
-          success: false,
-          message: "Admins cannot change another admin's role",
-        },
+        { success: false, message: "Admins cannot change another admin's role" },
         { status: 403 }
       );
     }
@@ -84,10 +86,7 @@ export async function PATCH(
     // Admins cannot promote a member to admin. Only the owner can do that.
     if (currentMembership.role === "ADMIN" && role === "ADMIN") {
       return NextResponse.json(
-        {
-          success: false,
-          message: "Only the workspace owner can promote a member to admin",
-        },
+        { success: false, message: "Only the workspace owner can promote a member to admin" },
         { status: 403 }
       );
     }
