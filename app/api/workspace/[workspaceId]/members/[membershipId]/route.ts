@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Membership from "@/models/Membership";
 import { getCurrentUser } from "@/lib/getCurrentUser";
+import { canManageTargetRole, hasPermission, type WorkspaceRole } from "@/lib/permissions";
 
 const MANAGEABLE_ROLES = ["ADMIN", "EDITOR", "VIEWER"] as const;
 type ManageableRole = (typeof MANAGEABLE_ROLES)[number];
@@ -18,15 +19,16 @@ export async function PATCH(
 
     if (!role || !MANAGEABLE_ROLES.includes(role as ManageableRole)) {
       return NextResponse.json(
-        {
-          success: false,
-          message: "Invalid role. Allowed roles are ADMIN, EDITOR and VIEWER.",
-        },
+        { success: false, message: "Invalid role. Allowed roles are ADMIN, EDITOR and VIEWER." },
         { status: 400 }
       );
     }
 
     const currentUser = await getCurrentUser(req);
+
+    if (!currentUser) {
+      return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+    }
 
     const currentMembership = await Membership.findOne({
       user: currentUser._id,
@@ -40,9 +42,11 @@ export async function PATCH(
       );
     }
 
-    if (currentMembership.role !== "OWNER" && currentMembership.role !== "ADMIN") {
+    const actorRole = currentMembership.role as WorkspaceRole;
+
+    if (!hasPermission(actorRole, "MANAGE_MEMBER_ROLES")) {
       return NextResponse.json(
-        { success: false, message: "Only the owner or an admin can change member roles" },
+        { success: false, message: "You do not have permission to change member roles" },
         { status: 403 }
       );
     }
@@ -59,7 +63,6 @@ export async function PATCH(
       );
     }
 
-    // Never allow a member to change their own role here.
     if (targetMembership.user.toString() === currentUser._id.toString()) {
       return NextResponse.json(
         { success: false, message: "You cannot change your own workspace role" },
@@ -67,24 +70,22 @@ export async function PATCH(
       );
     }
 
-    // The owner is protected from normal role changes.
-    if (targetMembership.role === "OWNER") {
+    const targetRole = targetMembership.role as WorkspaceRole;
+
+    if (!canManageTargetRole(actorRole, targetRole)) {
       return NextResponse.json(
-        { success: false, message: "The workspace owner cannot be changed here" },
+        {
+          success: false,
+          message:
+            actorRole === "ADMIN"
+              ? "Admins can only manage Editors and Viewers"
+              : "The workspace owner cannot be changed here",
+        },
         { status: 403 }
       );
     }
 
-    // Admins can manage editors/viewers, but not other admins.
-    if (currentMembership.role === "ADMIN" && targetMembership.role === "ADMIN") {
-      return NextResponse.json(
-        { success: false, message: "Admins cannot change another admin's role" },
-        { status: 403 }
-      );
-    }
-
-    // Admins cannot promote a member to admin. Only the owner can do that.
-    if (currentMembership.role === "ADMIN" && role === "ADMIN") {
+    if (actorRole === "ADMIN" && role === "ADMIN") {
       return NextResponse.json(
         { success: false, message: "Only the workspace owner can promote a member to admin" },
         { status: 403 }
@@ -101,11 +102,7 @@ export async function PATCH(
       });
 
     return NextResponse.json(
-      {
-        success: true,
-        message: "Member role updated successfully",
-        member: updatedMembership,
-      },
+      { success: true, message: "Member role updated successfully", member: updatedMembership },
       { status: 200 }
     );
   } catch (error) {
@@ -114,8 +111,7 @@ export async function PATCH(
     return NextResponse.json(
       {
         success: false,
-        message:
-          error instanceof Error ? error.message : "Failed to update member role",
+        message: error instanceof Error ? error.message : "Failed to update member role",
       },
       { status: 500 }
     );
