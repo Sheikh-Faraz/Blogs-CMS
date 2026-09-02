@@ -12,5 +12,9 @@ export default function TeamPage() {
     CurrentActiveWorkspace();
   }, []);
 
-  return <TeamCard />;
+  return (
+    <div className="px-4">
+      <TeamCard />
+    </div>
+  );
 }

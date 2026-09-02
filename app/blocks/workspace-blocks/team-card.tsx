@@ -104,7 +104,17 @@ function initials(name: string) {
 }
 
 export default function TeamCard() {
-  const { members, authUser, workspace, CurrentActiveWorkspace, membersLoading } = useUser();
+
+  // Context
+  const { 
+    members, 
+    authUser, 
+    workspace, 
+    CurrentActiveWorkspace, 
+    membersLoading,
+   } = useUser();
+
+
   const [search, setSearch] = useState("");
   const [selectedMember, setSelectedMember] = useState<WorkspaceMember | null>(null);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -179,7 +189,7 @@ export default function TeamCard() {
   );
 
   return (
-    <div className="w-full px-4 md:px-6 py-4 md:py-6">
+    <div className="w-full px-4 md:px-6 py-4 md:py-6 bg-card rounded-md">
       <div className="mx-auto w-full max-w-5xl">
         <div className="mb-7 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -198,7 +208,8 @@ export default function TeamCard() {
           </div>
         </div>
 
-        <div className="mb-5 flex items-center justify-between gap-3">
+        {/* <div className="mb-5 flex items-center justify-between gap-3"> */}
+        <div className="mb-5 flex items-center gap-3">
           <div className="relative w-full max-w-xs">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search" className="pl-9" />
@@ -248,18 +259,27 @@ export default function TeamCard() {
                   </button>
 
                   <div className="hidden items-center gap-2 sm:flex">
-                    <Select
-                      value={member.role}
-                      disabled={!editable || isUpdating}
-                      onValueChange={(value) => requestRoleChange(member, value as EditableRole)}
-                    >
-                      <SelectTrigger className="h-9 w-28"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        {currentMember?.role === "OWNER" && <SelectItem value="ADMIN">Admin</SelectItem>}
-                        <SelectItem value="EDITOR">Editor</SelectItem>
-                        <SelectItem value="VIEWER">Viewer</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    {member.role === "OWNER" ? (
+                      <span className="text-sm font-medium mr-10">
+                        Owner
+                      </span>
+                    ) : (
+                      <Select
+                        value={member.role}
+                        onValueChange={(value) => handleRoleChange(member._id, value as "ADMIN" | "EDITOR" | "VIEWER")}
+                        disabled={!canEditMember(member)}
+                      >
+                        <SelectTrigger className="w-32.5">
+                          <SelectValue />
+                        </SelectTrigger>
+
+                        <SelectContent>
+                          <SelectItem value="ADMIN">Admin</SelectItem>
+                          <SelectItem value="EDITOR">Editor</SelectItem>
+                          <SelectItem value="VIEWER">Viewer</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
                   </div>
 
                   <div className="sm:hidden"><Badge variant="outline">{roleLabel[member.role]}</Badge></div>
@@ -285,7 +305,9 @@ export default function TeamCard() {
       <InviteMemberDialog open={inviteOpen} onOpenChange={setInviteOpen} />
 
       <Dialog open={pendingRoleChange !== null} onOpenChange={(open) => !open && !updatingMembershipId && setPendingRoleChange(null)}>
-        <DialogContent className="max-w-lg">
+        
+        {/* <DialogContent className="max-w-lg"> */}
+        <DialogContent className="w-[calc(50%)]  max-w-none!">
           {pendingRoleChange && (
             <>
               <DialogHeader>
@@ -295,7 +317,7 @@ export default function TeamCard() {
                 </DialogDescription>
               </DialogHeader>
 
-              <div className="rounded-lg border bg-muted/20 p-4">
+              <div className="rounded-lg border bg-muted/20 p-4 my-4">
                 <div className="mb-4">
                   <div className="flex items-center justify-between gap-3">
                     <div>
@@ -312,7 +334,7 @@ export default function TeamCard() {
                     {renderPermissionList(rolePermissions[pendingRoleChange.role].can, "can")}
                   </div>
                   <div>
-                    <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">They can't</p>
+                    <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">They can&apos;t</p>
                     {rolePermissions[pendingRoleChange.role].cannot.length > 0 ? (
                       renderPermissionList(rolePermissions[pendingRoleChange.role].cannot, "cannot")
                     ) : (
@@ -336,7 +358,10 @@ export default function TeamCard() {
       </Dialog>
 
       <Dialog open={roleInfoOpen} onOpenChange={setRoleInfoOpen}>
-        <DialogContent className="max-w-2xl">
+        {/* <DialogContent className="max-w-2xl"> */}
+        {/* <DialogContent className="w-[calc(100%-20rem)]! border border-red-600"> */}
+        <DialogContent className="w-[calc(100%-20rem)]! max-w-none! ">
+
           <DialogHeader>
             <DialogTitle>Workspace role permissions</DialogTitle>
             <DialogDescription>
@@ -344,6 +369,8 @@ export default function TeamCard() {
             </DialogDescription>
           </DialogHeader>
 
+          {/* <div className="flex border border-blue-600"> */}
+          {/* <div className=""> */}
           <div className="grid gap-3 sm:grid-cols-2">
             {(Object.keys(rolePermissions) as Role[]).map((role) => (
               <div key={role} className="rounded-lg border p-4">
@@ -373,6 +400,7 @@ export default function TeamCard() {
             ))}
           </div>
         </DialogContent>
+
       </Dialog>
 
       <Dialog open={profileOpen} onOpenChange={setProfileOpen}>

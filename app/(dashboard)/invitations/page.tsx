@@ -28,7 +28,8 @@ export default function InvitationsPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-5xl p-6 bg-card">
+    // <div className="mx-auto w-full max-w-5xl p-6 bg-card rounded-md">
+      <div className="p-6 mx-4 bg-card rounded-md h-full">
       <div className="mb-8">
         <h1 className="text-3xl font-semibold">
           Workspace Invitations
@@ -40,7 +41,7 @@ export default function InvitationsPage() {
       </div>
 
       {receivedInvitations.length === 0 ? (
-        <div className="flex min-h-[300px] flex-col items-center justify-center rounded-xl border">
+        <div className="flex min-h-75 flex-col items-center justify-center rounded-xl border">
           <h2 className="text-lg font-medium">
             No pending invitations
           </h2>
