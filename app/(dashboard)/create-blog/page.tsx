@@ -423,7 +423,13 @@ const handleSubmit = async () => {
 
         </div>
 
-        <Button onClick={handleSubmit} disabled={createBlogLoading} className="rounded-none bg-card text-card-foreground">
+        {/* <Button  */}
+        <button 
+          onClick={handleSubmit} 
+          disabled={createBlogLoading} 
+          // className="rounded-none bg-card text-card-foreground">
+          className="border py-2 px-3 bg-card text-card-foreground rounded-md flex gap-2 items-center hover:bg-muted">
+
           {createBlogLoading ? 
           (
             <div className="flex gap-2">
@@ -431,14 +437,14 @@ const handleSubmit = async () => {
               <LoaderIcon />
             </div>
           )
-          : 
+            : 
             <p className="flex gap-2 items-center">
-              {/* Publish changes */}
                 Create
               <UploadIcon className="text-[#E85129] size-4"/>
             </p>
           }
-        </Button>
+        </button>
+        {/* </Button> */}
       </div>
 
           <div className="flex flex-wrap gap-8 px-6 py-3 border-b text-sm text-muted-foreground">

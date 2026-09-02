@@ -354,11 +354,13 @@ export default function ProfilePage() {
           </h1>
         </div>
 
-        <Button 
-          type="button"
+        {/* <Button  */}
+        <button 
+          // type="button"
           onClick={handleSubmit} 
           disabled={updateLoading} 
-          className="rounded-none bg-muted text-white"
+          // className="bg-card px-3 text-card-foreground rounded-md"
+          className="border py-2 px-3 bg-card text-card-foreground rounded-md flex gap-2 items-center hover:bg-muted"
         >
           {updateLoading ? 
           (
@@ -367,10 +369,11 @@ export default function ProfilePage() {
               <LoaderIcon />
             </div>
           )
-          : 
-          "Update Profile"
+            : 
+              "Update Profile"
           }
-        </Button>
+        </button>
+        {/* </Button> */}
       </div>
 
 

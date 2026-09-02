@@ -10,7 +10,7 @@ import { useUser } from "@/context/User.context";
 // Workspace Loading Skeleton
 import WorkspaceSkeleton from "@/app/blocks/loading/Workspace-Skeleton-Components/WorkspaceSkeleton";
 
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 
 // Header 
 import HeaderCard from "@/app/blocks/workspace-blocks/header-card";
@@ -123,20 +123,27 @@ export default function WorkspacePage() {
       <div className="flex items-center gap-3">
 
         {canInvite && (
-          <Button
-            variant="outline"
+          // <Button
+          <button
+            // variant="outline"
+            // variant="default"
+            className="border py-2 px-3 bg-card text-card-foreground rounded-md flex gap-2 items-center hover:bg-muted"
             onClick={() =>
               setInviteMemberOpen(true)
             }
           >
-            <FiUserPlus className="mr-2" />
+            <FiUserPlus className="mr-2 text-[#E85129]" />
             Invite Member
-          </Button>
+          </button>
+          // </Button>
         )}
       
 
       {/* Create new workspace */}
-      <Link href="/workspace?create=1" className="border py-2 px-3 bg-card text-card-foreground rounded-md flex gap-2 items-center hover:bg-muted">
+      <Link 
+        href="/workspace?create=1" 
+        className="border py-2 px-3 bg-card text-card-foreground rounded-md flex gap-2 items-center hover:bg-muted"
+      >
         <Plus className="text-[#E85129]" />
         Create New Workspace 
       </Link>

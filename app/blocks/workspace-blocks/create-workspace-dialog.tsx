@@ -43,6 +43,7 @@ export default function CreateWorkspaceDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
+        
         <DialogHeader>
           <DialogTitle>Create workspace</DialogTitle>
           <DialogDescription>

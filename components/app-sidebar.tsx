@@ -21,11 +21,12 @@ import {
   Settings2Icon,
   User,
   Users,
+  MailPlus, 
 } from "lucide-react"
 import { CgOrganisation as Organization } from "react-icons/cg";
 import { LayoutDashboard } from 'lucide-react';
 import { RiPenNibLine as Penlogo } from "react-icons/ri";
-import { FcInvite as InviteLogo } from "react-icons/fc";
+// import { FcInvite as InviteLogo } from "react-icons/fc";
 
 import { WorkspaceSwitcher } from "@/app/blocks/Navbar/Workspace-Switcher";
 import { useUser } from "@/context/User.context";
@@ -55,7 +56,7 @@ const data = {
     {
       title: "Invitations",
       url: "/invitations",
-      icon: (<InviteLogo />),
+      icon: (<MailPlus />),
     },
     {
       title: "Team",

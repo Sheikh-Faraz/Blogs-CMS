@@ -14,15 +14,31 @@ export function SiteHeader() {
 
   let headerName = "Blogs";
 
-  if (pathname === "/dashboard") {
+  if (pathname === "/blogs") {
     headerName = "All Blogs";
   }
 
-  if (pathname === "/dashboard/create") {
+  if (pathname === "/create-blog") {
     headerName = "Create Blog";
   }
 
-  if (pathname.startsWith("/dashboard/edit")) {
+  if (pathname === "/profile") {
+    headerName = "Profile";
+  }
+
+  if (pathname === "/workspace") {
+    headerName = "Workspace";
+  }
+
+  if (pathname === "/invitations") {
+    headerName = "Invitations";
+  }
+
+  if (pathname === "/team") {
+    headerName = "Team";
+  }
+
+  if (pathname.startsWith("/edit")) {
     headerName = "Edit Blog";
   }
   
