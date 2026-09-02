@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { MoreHorizontal, Search, MapPin, Mail, CalendarDays, ShieldCheck } from "lucide-react";
+import { MoreHorizontal, Search, MapPin, Mail, CalendarDays, ShieldCheck, CircleHelp, Check, X } from "lucide-react";
 import toast from "react-hot-toast";
 
 import { useUser } from "@/context/User.context";
@@ -23,6 +23,8 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import {
   Select,
@@ -44,6 +46,59 @@ const roleLabel: Record<Role, string> = {
   VIEWER: "Viewer",
 };
 
+const rolePermissions: Record<Role, { description: string; can: string[]; cannot: string[] }> = {
+  OWNER: {
+    description: "Full control over the workspace and its members.",
+    can: [
+      "Manage all workspace content",
+      "Invite and manage workspace members",
+      "Change member roles",
+      "Manage workspace settings",
+    ],
+    cannot: [],
+  },
+  ADMIN: {
+    description: "Manage the workspace and its members without ownership control.",
+    can: [
+      "Manage workspace content",
+      "Invite members",
+      "Manage Editors and Viewers",
+      "Manage day-to-day workspace settings",
+    ],
+    cannot: [
+      "Change or remove the Owner",
+      "Manage another Admin's role",
+      "Transfer workspace ownership",
+    ],
+  },
+  EDITOR: {
+    description: "Create and manage workspace content without member administration.",
+    can: [
+      "Create and edit blog content",
+      "Manage assigned content",
+      "View workspace members",
+    ],
+    cannot: [
+      "Invite or manage members",
+      "Change member roles",
+      "Manage workspace settings",
+    ],
+  },
+  VIEWER: {
+    description: "Read-only access to the workspace.",
+    can: [
+      "View workspace content",
+      "View workspace members",
+    ],
+    cannot: [
+      "Create or edit content",
+      "Invite or manage members",
+      "Change member roles",
+      "Manage workspace settings",
+    ],
+  },
+};
+
 function initials(name: string) {
   return name.split(" ").filter(Boolean).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
 }
@@ -55,6 +110,11 @@ export default function TeamCard() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [inviteOpen, setInviteOpen] = useState(false);
   const [updatingMembershipId, setUpdatingMembershipId] = useState<string | null>(null);
+  const [pendingRoleChange, setPendingRoleChange] = useState<{
+    member: WorkspaceMember;
+    role: EditableRole;
+  } | null>(null);
+  const [roleInfoOpen, setRoleInfoOpen] = useState(false);
 
   const currentMember = members.find((member) => member.user._id === authUser?._id);
   const canManageRoles = currentMember?.role === "OWNER" || currentMember?.role === "ADMIN";
@@ -80,20 +140,43 @@ export default function TeamCard() {
     return true;
   };
 
-  const handleRoleChange = async (member: WorkspaceMember, role: EditableRole) => {
+  const requestRoleChange = (member: WorkspaceMember, role: EditableRole) => {
     if (!workspace?._id || !canEditMember(member) || role === member.role) return;
+    setPendingRoleChange({ member, role });
+  };
+
+  const confirmRoleChange = async () => {
+    if (!pendingRoleChange || !workspace?._id) return;
+
+    const { member, role } = pendingRoleChange;
 
     try {
       setUpdatingMembershipId(member._id);
       await updateWorkspaceMemberRoleApi(workspace._id, member._id, role);
       await CurrentActiveWorkspace();
-      toast.success(`${member.user.fullName}'s role updated`);
+      setPendingRoleChange(null);
+      toast.success(`${member.user.fullName}'s role updated to ${roleLabel[role]}`);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Failed to update member role");
     } finally {
       setUpdatingMembershipId(null);
     }
   };
+
+  const renderPermissionList = (items: string[], type: "can" | "cannot") => (
+    <div className="space-y-2">
+      {items.map((item) => (
+        <div key={item} className="flex items-start gap-2 text-sm">
+          {type === "can" ? (
+            <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />
+          ) : (
+            <X className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+          )}
+          <span>{item}</span>
+        </div>
+      ))}
+    </div>
+  );
 
   return (
     <div className="w-full px-4 md:px-6 py-4 md:py-6">
@@ -120,8 +203,20 @@ export default function TeamCard() {
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search" className="pl-9" />
           </div>
-          <div className="text-sm text-muted-foreground sm:hidden">
-            {members.length} {members.length === 1 ? "member" : "members"}
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => setRoleInfoOpen(true)}
+              aria-label="View role permissions"
+            >
+              <CircleHelp className="h-4 w-4" />
+            </Button>
+            <span className="sm:hidden">
+              {members.length} {members.length === 1 ? "member" : "members"}
+            </span>
           </div>
         </div>
 
@@ -152,8 +247,12 @@ export default function TeamCard() {
                     </span>
                   </button>
 
-                  <div className="hidden sm:block">
-                    <Select value={member.role} disabled={!editable || isUpdating} onValueChange={(value) => handleRoleChange(member, value as EditableRole)}>
+                  <div className="hidden items-center gap-2 sm:flex">
+                    <Select
+                      value={member.role}
+                      disabled={!editable || isUpdating}
+                      onValueChange={(value) => requestRoleChange(member, value as EditableRole)}
+                    >
                       <SelectTrigger className="h-9 w-28"><SelectValue /></SelectTrigger>
                       <SelectContent>
                         {currentMember?.role === "OWNER" && <SelectItem value="ADMIN">Admin</SelectItem>}
@@ -173,6 +272,7 @@ export default function TeamCard() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem onClick={() => openProfile(member)}>View Profile</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setRoleInfoOpen(true)}>View Role Permissions</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
@@ -183,6 +283,97 @@ export default function TeamCard() {
       </div>
 
       <InviteMemberDialog open={inviteOpen} onOpenChange={setInviteOpen} />
+
+      <Dialog open={pendingRoleChange !== null} onOpenChange={(open) => !open && !updatingMembershipId && setPendingRoleChange(null)}>
+        <DialogContent className="max-w-lg">
+          {pendingRoleChange && (
+            <>
+              <DialogHeader>
+                <DialogTitle>Change member role?</DialogTitle>
+                <DialogDescription>
+                  You are changing <span className="font-medium text-foreground">{pendingRoleChange.member.user.fullName}</span> from {roleLabel[pendingRoleChange.member.role]} to {roleLabel[pendingRoleChange.role]}.
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="rounded-lg border bg-muted/20 p-4">
+                <div className="mb-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-semibold">{roleLabel[pendingRoleChange.role]}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">{rolePermissions[pendingRoleChange.role].description}</p>
+                    </div>
+                    <Badge variant="secondary">New role</Badge>
+                  </div>
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">They can</p>
+                    {renderPermissionList(rolePermissions[pendingRoleChange.role].can, "can")}
+                  </div>
+                  <div>
+                    <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">They can't</p>
+                    {rolePermissions[pendingRoleChange.role].cannot.length > 0 ? (
+                      renderPermissionList(rolePermissions[pendingRoleChange.role].cannot, "cannot")
+                    ) : (
+                      <p className="text-sm text-muted-foreground">No restrictions at this level.</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <DialogFooter>
+                <Button variant="outline" disabled={!!updatingMembershipId} onClick={() => setPendingRoleChange(null)}>
+                  Cancel
+                </Button>
+                <Button disabled={!!updatingMembershipId} onClick={confirmRoleChange}>
+                  {updatingMembershipId ? "Updating..." : `Change to ${roleLabel[pendingRoleChange.role]}`}
+                </Button>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={roleInfoOpen} onOpenChange={setRoleInfoOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Workspace role permissions</DialogTitle>
+            <DialogDescription>
+              Each role controls what a member can access and manage in the workspace.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            {(Object.keys(rolePermissions) as Role[]).map((role) => (
+              <div key={role} className="rounded-lg border p-4">
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-semibold">{roleLabel[role]}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">{rolePermissions[role].description}</p>
+                  </div>
+                  <Badge variant="outline">{roleLabel[role]}</Badge>
+                </div>
+
+                <div className="space-y-2">
+                  {rolePermissions[role].can.map((item) => (
+                    <div key={item} className="flex items-start gap-2 text-xs">
+                      <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-500" />
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                  {rolePermissions[role].cannot.map((item) => (
+                    <div key={item} className="flex items-start gap-2 text-xs text-muted-foreground">
+                      <X className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={profileOpen} onOpenChange={setProfileOpen}>
         <DialogContent className="max-w-lg">
