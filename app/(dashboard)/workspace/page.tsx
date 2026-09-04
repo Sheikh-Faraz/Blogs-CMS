@@ -53,8 +53,8 @@ export default function WorkspacePage() {
 
     // User Context
     const { 
-      authUser,
-      members,
+      // authUser,
+      // members,
 
       workspaceAnalyticsLoading,
       fetchAnalytics,
@@ -83,11 +83,11 @@ export default function WorkspacePage() {
       
     }, []);
 
-    const currentMember =
-      members.find(
-        (member) =>
-          member.user._id === authUser?._id
-      );
+    // const currentMember =
+    //   members.find(
+    //     (member) =>
+    //       member.user._id === authUser?._id
+    //   );
 
     // const canInvite = currentMember?.role === "OWNER" || currentMember?.role === "ADMIN";
 
