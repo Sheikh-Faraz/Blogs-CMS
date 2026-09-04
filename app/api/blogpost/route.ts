@@ -1,7 +1,4 @@
-
-// api/blogpost/route.ts
-
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 
 import Blog from "@/models/Blog";
@@ -11,263 +8,186 @@ import Membership from "@/models/Membership";
 
 import { getCurrentUser } from "@/lib/getCurrentUser";
 import { getActiveWorkspace } from "@/lib/workspace";
-import { requireMembership } from "@/lib/premission";
-
+import { hasPermission, type Permission } from "@/lib/permissions";
 import { uploadToCloudinary } from "@/lib/cloudinary-upload";
 
+const getPermissionResponse = (permission: Permission) =>
+  NextResponse.json(
+    { error: `You do not have permission to ${permission.toLowerCase().replaceAll("_", " ")}` },
+    { status: 403 }
+  );
 
 export async function GET(req: NextRequest) {
   try {
     await connectDB();
 
     const user = await getCurrentUser(req);
-
     if (!user) {
-      return Response.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const workspace = await getActiveWorkspace(
-      user._id.toString()
-    );
-
-    await requireMembership(
-      user._id.toString(),
-      workspace._id.toString()
-    );
-
-    // 1. Get blogs for workspace
-    const blogs = await Blog.find({
+    const workspace = await getActiveWorkspace(user._id.toString());
+    const membership = await Membership.findOne({
+      user: user._id,
       workspace: workspace._id,
-    })
+    });
+
+    if (!membership) {
+      return NextResponse.json({ error: "Not a member of this workspace" }, { status: 403 });
+    }
+
+    if (!hasPermission(membership.role, "VIEW_BLOGS")) {
+      return getPermissionResponse("VIEW_BLOGS");
+    }
+
+    const blogs = await Blog.find({ workspace: workspace._id })
       .populate("category")
       .populate("tags")
       .populate("author", "fullName profilePic email banner")
       .sort({ createdAt: -1 })
       .lean();
 
-    // 2. Get all memberships for this workspace (for roles)
-    const memberships = await Membership.find({
-      workspace: workspace._id,
-    }).lean();
-
-    // 3. Create userId -> role map
+    const memberships = await Membership.find({ workspace: workspace._id }).lean();
     const roleMap = new Map(
-      memberships.map((m) => [
-        m.user.toString(),
-        m.role,
-      ])
+      memberships.map((member) => [member.user.toString(), member.role])
     );
 
-    // 4. Attach role to each blog author
     const enrichedBlogs = blogs.map((blog) => ({
       ...blog,
-      authorRole:
-        roleMap.get(
-          blog.author._id.toString()
-        ) || "UNKNOWN",
+      authorRole: blog.author
+        ? roleMap.get(blog.author._id.toString()) || "UNKNOWN"
+        : "UNKNOWN",
     }));
 
-    return Response.json(enrichedBlogs);
+    return NextResponse.json(enrichedBlogs);
   } catch (error) {
     console.error("Error fetching blogs:", error);
-
-    return Response.json(
-      { error: "Failed to fetch blogs", },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to fetch blogs" }, { status: 500 });
   }
 }
-
-
-
-
-
 
 export async function POST(req: NextRequest) {
   try {
     await connectDB();
 
     const user = await getCurrentUser(req);
-
     if (!user) {
-      return Response.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const workspace = await getActiveWorkspace(
-      user._id.toString()
-    );
+    const workspace = await getActiveWorkspace(user._id.toString());
+    const membership = await Membership.findOne({
+      user: user._id,
+      workspace: workspace._id,
+    });
 
-    const membership = await requireMembership(
-      user._id.toString(),
-      workspace._id.toString()
-    );
-
-    // Optional: role restriction (recommended)
-    if (
-      membership.role === "VIEWER"
-    ) {
-      return Response.json(
-        {
-          error:
-            "You do not have permission to create blogs",
-        },
-        { status: 403 }
-      );
+    if (!membership) {
+      return NextResponse.json({ error: "Not a member of this workspace" }, { status: 403 });
     }
 
-    // const body = await req.json();
+    if (!hasPermission(membership.role, "CREATE_BLOG")) {
+      return getPermissionResponse("CREATE_BLOG");
+    }
+
     const formData = await req.formData();
+    const title = formData.get("title")?.toString().trim() || "";
+    const contentRaw = formData.get("content")?.toString() || "";
+    const slug = formData.get("slug")?.toString().trim() || "";
+    const category = formData.get("category")?.toString() || "";
+    const status = formData.get("status")?.toString() || "draft";
+    const tags = JSON.parse(formData.get("tags")?.toString() || "[]");
 
-    const title = formData.get("title") as string;
-    const content = JSON.parse(formData.get("content") as string);
-    const slug = formData.get("slug") as string;
-    const category = formData.get("category") as string;
-    const status = formData.get("status") as string;
+    if (!title || !slug || !contentRaw) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
 
-    const tags = JSON.parse(formData.get("tags") as string || "[]");
+    const content = JSON.parse(contentRaw);
+    if (!Array.isArray(content) || content.length === 0) {
+      return NextResponse.json({ error: "Blog content is required" }, { status: 400 });
+    }
 
-    const heroFile = formData.get("heroImage") as File | null;
-    const heroImageUrlFromClient = formData.get("heroImageUrl") as string | null;
+    const heroFile = formData.get("heroImage");
+    const heroImageUrlFromClient = formData.get("heroImageUrl")?.toString() || "";
 
     let heroImageUrl = "";
     let heroImagePublicId = "";
 
-    // CASE 1: File upload (device)
-    if (heroFile && heroFile.size > 0) {
+    if (heroFile instanceof File && heroFile.size > 0) {
       const uploaded = await uploadToCloudinary(heroFile, "blog-images");
-
       heroImageUrl = uploaded.url;
       heroImagePublicId = uploaded.public_id;
-    }
-
-    // CASE 2: Unsplash URL
-    else if (heroImageUrlFromClient) {
+    } else if (heroImageUrlFromClient) {
       heroImageUrl = heroImageUrlFromClient;
-    }
-
-
-    if (!title || !slug || !content || content.length === 0) {
-      return Response.json(
-        {
-          error:
-            "Missing required fields",
-        },
-        { status: 400 }
-      );
     }
 
     let finalSlug = slug;
     let count = 1;
-
-    while (await Blog.findOne({ slug: finalSlug })) {
+    while (await Blog.findOne({ slug: finalSlug, workspace: workspace._id })) {
       finalSlug = `${slug}-${count}`;
-      count++;
+      count += 1;
     }
 
-    // CATEGORY
     let categoryDoc = null;
+    if (category.trim()) {
+      const normalizedCategory = category.trim();
+      categoryDoc = await Category.findOne({
+        name: normalizedCategory,
+        workspace: workspace._id,
+      });
 
-    if (category?.trim()) {
-      const normalizedCategory =
-        category.trim();
-
-      categoryDoc =
-        await Category.findOne({
+      if (!categoryDoc) {
+        categoryDoc = await Category.create({
           name: normalizedCategory,
           workspace: workspace._id,
         });
-
-      if (!categoryDoc) {
-        categoryDoc =
-          await Category.create({
-            name: normalizedCategory,
-            workspace: workspace._id,
-          });
       }
     }
 
+    const tagDocs: any[] = [];
+    if (Array.isArray(tags)) {
+      for (const tag of tags) {
+        if (typeof tag !== "string" || !tag.trim()) continue;
+        const normalizedTag = tag.trim();
+        let existingTag = await Tag.findOne({
+          name: normalizedTag,
+          workspace: workspace._id,
+        });
 
-    // TAGS
-    let tagDocs: any[] = [];
+        if (!existingTag) {
+          existingTag = await Tag.create({
+            name: normalizedTag,
+            workspace: workspace._id,
+          });
+        }
 
-    if (tags?.length) {
-      tagDocs = await Promise.all(
-        tags.map(async (tag: string) => {
-
-          const normalizedTag =
-            tag.trim();
-
-          let existingTag =
-            await Tag.findOne({
-              name: normalizedTag,
-              workspace: workspace._id,
-            });
-
-          if (!existingTag) {
-            existingTag =
-              await Tag.create({
-                name: normalizedTag,
-                workspace: workspace._id,
-              });
-          }
-
-          return existingTag._id;
-        })
-      );
+        tagDocs.push(existingTag._id);
+      }
     }
 
-    // CREATE BLOG
     const blog = await Blog.create({
       title,
       content,
       slug: finalSlug,
-
-      status: status || "draft",
-
+      status,
       heroImage: heroImageUrl,
       heroImagePublicId,
-
       category: categoryDoc?._id,
       tags: tagDocs,
-
       workspace: workspace._id,
       author: user._id,
     });
 
+    const populatedBlog = await Blog.findById(blog._id)
+      .populate("category")
+      .populate("tags")
+      .populate("author", "fullName profilePic email")
+      .lean();
 
-    // Return populated blog
-    const populatedBlog =
-      await Blog.findById(
-        blog._id
-      )
-        .populate("category")
-        .populate("tags")
-        .populate(
-          "author",
-          "fullName profilePic email"
-        )
-        .lean();
-
-    return Response.json(
-      populatedBlog,
-      { status: 201 }
-    );
+    return NextResponse.json(populatedBlog, { status: 201 });
   } catch (error) {
     console.error("Error creating blog:", error);
-
-    return Response.json(
-      {
-        error:
-          error instanceof Error
-            ? error.message
-            : "Failed to create blog",
-      },
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Failed to create blog" },
       { status: 500 }
     );
   }
