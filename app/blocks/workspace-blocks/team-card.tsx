@@ -1,13 +1,20 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { MoreHorizontal, Search, MapPin, Mail, CalendarDays, ShieldCheck, CircleHelp, Check, X, Loader2 } from "lucide-react";
-import toast from "react-hot-toast";
 
+// Context
 import { useUser } from "@/context/User.context";
+import type { WorkspaceMember } from "@/context/User.context";
+
+// Services
 import { updateWorkspaceMemberRoleApi } from "@/services/team.services";
+
+// Custom
 import InviteMemberDialog from "@/app/blocks/workspace-blocks/invite-member-dialog";
 import TeamSkeleton from "@/app/blocks/workspace-blocks/team-skeleton";
+
+// Notifications
+import toast from "react-hot-toast";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -35,7 +42,23 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import type { WorkspaceMember } from "@/context/User.context";
+
+// Icons
+import { FiUserPlus } from "react-icons/fi";
+import { 
+  MoreHorizontal, 
+  Search, 
+  MapPin, 
+  Mail, 
+  CalendarDays, 
+  ShieldCheck, 
+  CircleHelp, 
+  Check, 
+  Loader2, 
+  X, 
+} from "lucide-react";
+
+
 
 type Role = "OWNER" | "ADMIN" | "EDITOR" | "VIEWER";
 type EditableRole = "ADMIN" | "EDITOR" | "VIEWER";
@@ -144,16 +167,29 @@ export default function TeamCard() {
   return (
     <div className="w-full rounded-md bg-card px-4 py-4 md:px-6 md:py-6">
       <div className="mx-auto w-full max-w-5xl">
+        
         <div className="mb-7 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h1 className="text-2xl font-semibold tracking-tight">Workspace Members</h1>
-            <p className="mt-2 max-w-2xl text-sm text-muted-foreground">Add teammates to collaborate on projects together. Control permissions and manage access levels for each member.</p>
+            <p className="mt-2 max-w-xl text-sm text-muted-foreground">
+              Add teammates to collaborate on projects together. Control permissions and manage access levels for each member.
+            </p>
           </div>
+
           <div className="flex items-center gap-3">
             <div className="hidden whitespace-nowrap text-sm text-muted-foreground sm:block">
               {members.length} {members.length === 1 ? "member" : "members"}
             </div>
-            {canManageRoles && <Button onClick={() => setInviteOpen(true)}>Invite Member</Button>}
+
+            {canManageRoles && 
+              <button
+                onClick={() => setInviteOpen(true)}
+                className="border py-2 px-3 bg-card text-card-foreground rounded-md flex gap-2 items-center hover:bg-muted"
+              >
+                <FiUserPlus className="mr-2 text-[#E85129]" />
+                Invite Member
+              </button>
+            }
           </div>
         </div>
 

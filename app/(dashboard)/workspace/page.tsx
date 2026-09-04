@@ -37,7 +37,9 @@ import PendingInvitationsCard from "@/app/blocks/workspace-blocks/pending-invita
 import InviteMemberDialog from "@/app/blocks/workspace-blocks/invite-member-dialog";
 
 
-import { FiPlusCircle as Plus, FiUserPlus } from "react-icons/fi";
+import { FiPlusCircle as Plus, } from "react-icons/fi";
+import { FaDoorOpen as LeaveIcon } from "react-icons/fa6";
+
 
 
 
@@ -87,7 +89,7 @@ export default function WorkspacePage() {
           member.user._id === authUser?._id
       );
 
-    const canInvite = currentMember?.role === "OWNER" || currentMember?.role === "ADMIN";
+    // const canInvite = currentMember?.role === "OWNER" || currentMember?.role === "ADMIN";
 
 
     const handleCreateWorkspaceOpenChange = (open: boolean) => {
@@ -106,37 +108,29 @@ export default function WorkspacePage() {
   return (
     <div>
 
+      {/* Create Dialog Opens to create new workspace */}
       <CreateWorkspaceDialog
         open={createWorkspaceRequested || createWorkspaceOpen}
         onOpenChange={handleCreateWorkspaceOpenChange}
       />
 
 
-      <InviteMemberDialog
+      {/* <InviteMemberDialog
         open={inviteMemberOpen}
         onOpenChange={setInviteMemberOpen}
-      />
+      /> */}
     
     <div className="flex justify-between items-center px-4 mb-8">
       <p className="text-3xl font-bold">Current Workspace</p>
 
       <div className="flex items-center gap-3">
 
-        {canInvite && (
-          // <Button
           <button
-            // variant="outline"
-            // variant="default"
             className="border py-2 px-3 bg-card text-card-foreground rounded-md flex gap-2 items-center hover:bg-muted"
-            onClick={() =>
-              setInviteMemberOpen(true)
-            }
           >
-            <FiUserPlus className="mr-2 text-[#E85129]" />
-            Invite Member
+            <LeaveIcon className="mr-2 text-[#E85129]" />
+            Leave current workspace
           </button>
-          // </Button>
-        )}
       
 
       {/* Create new workspace */}
