@@ -1,35 +1,15 @@
-import type { Types } from "mongoose";
+import { requirePermission, type WorkspaceRole } from "@/lib/permissions";
 
-import { requireRole } from "@/lib/roleValidator";
-
-export type WorkspaceRole =
-  | "OWNER"
-  | "ADMIN"
-  | "EDITOR"
-  | "VIEWER";
-
-export type InvitationRole =
-  | "ADMIN"
-  | "EDITOR"
-  | "VIEWER";
+export type InvitationRole = "ADMIN" | "EDITOR" | "VIEWER";
 
 export const getInvitationRolesForUser = (
   inviterRole: WorkspaceRole
 ): InvitationRole[] => {
   switch (inviterRole) {
     case "OWNER":
-      return [
-        "ADMIN",
-        "EDITOR",
-        "VIEWER",
-      ];
-
+      return ["ADMIN", "EDITOR", "VIEWER"];
     case "ADMIN":
-      return [
-        "EDITOR",
-        "VIEWER",
-      ];
-
+      return ["EDITOR", "VIEWER"];
     default:
       return [];
   }
@@ -38,21 +18,9 @@ export const getInvitationRolesForUser = (
 export const requireInvitationPermission = async (
   userId: string,
   workspaceId: string
-) => {
-  const membership = await requireRole(
-    userId,
-    workspaceId,
-    ["OWNER", "ADMIN"]
-  );
-
-  return membership;
-};
+) => requirePermission(userId, workspaceId, "INVITE_MEMBERS");
 
 export const canInviteRole = (
   inviterRole: WorkspaceRole,
   invitedRole: InvitationRole
-) => {
-  return getInvitationRolesForUser(
-    inviterRole
-  ).includes(invitedRole);
-};
+) => getInvitationRolesForUser(inviterRole).includes(invitedRole);
