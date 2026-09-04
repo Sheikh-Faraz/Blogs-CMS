@@ -1,62 +1,75 @@
-GENERAL ---------------------------------------------------------------------------------------------------------------
-<!-- -- Fix/Add the one stat in the blog page -- DONE -->
-<!-- -- Add the ability to delete the category for user and do not implement edit for it                    -- DONE -->
-<!-- -- Fix the ai feature where if the content contains image it ignores it and it stays there             -- DONE -->
+( GENERAL ) ----------------------------------------------------
+<!-- -- Fix/Add the one stat in the blog page                                                       -- DONE -->
+<!-- -- Add the ability to delete the category for user and do not implement edit for it            -- DONE -->
+<!-- -- Fix the ai feature where if the content contains image it ignores it and it stays there     -- DONE -->
 
 -- Add the functionality that if a user's role is not premitted and he can't perform certain actions
 -- Also maybe work on the side user showing
 
-<!-- Across PAGES -->
-<!-- -- Updating the loading and add loading skeleton across the pages                                      -- DONE KINDA -->
-<!-- -- Add subtle but beautiful showing animations                                                         -- ALSO DONE KINDA -->
 
-
-BLOGS PAGE  ---------------------------------------------------------------------------------------------------------------
+------------------------------------------------ ( BLOGS PAGE ) ------------------------------------------------
 <!-- -- Add pagination to the blogs                                                                 -- DONE -->
 <!-- -- Add the correct loading skeleton instead of the circle loading for showing blogs loading    -- DONE -->
-<!-- -- The top header of the blogs add stats to it                                     -- DONE just need to change one stat -->
+<!-- -- The top header of the blogs add stats to it                                                 -- DONE -->
 <!-- -- Add the author category showing when showing the blogs                                      -- DONE -->
 <!-- -- Update the filtering and the by author filter                                               -- DONE -->
 <!-- -- Add beautiful subtle animations to it                                                       -- DONE -->
 
 
-CREATE BLOG PAGE ---------------------------------------------------------------------------------------------------------------
-<!-- -- Add the cloudinary image feature -- DONE -->
-<!-- -- Add the author and maybe the workspace for the blog -- DONE kinda -->
-<!-- -- Check if correct loading skeleton are need and applied -- DONE -->
+------------------------------------------------ ( CREATE BLOG PAGE ) ------------------------------------------------
+<!-- -- Add the cloudinary image feature                                                            -- DONE -->
+<!-- -- Check if correct loading skeleton are need and applied                                      -- DONE -->
+<!-- -- Add the author and maybe the workspace for the blog                                         -- DONE -->
 
 POSPONDED FOR NOW
-<!-- -- See if you want to develop and look into seo tab otherwise remove it -- POSPONDED -->
-<!-- -- MAYBE add the people that iterated or edited the blog -- POSPONDED -->
+<!-- -- See if you want to develop and look into seo tab otherwise remove it                        -- POSPONDED -->
+<!-- -- MAYBE add the people that iterated or edited the blog                                       -- POSPONDED -->
 
 
 
-PROFILE PAGE    ---------------------------------------------------------------------------------------------------------------
-<!-- -- Add new fields to the profile page -- DONE -->
-<!-- -- Add subtle animations showing components of page -- DONE KINDA -->
-<!-- -- Showing loading skeleton if needed -- DONE -->
+------------------------------------------------ ( PROFILE PAGE ) ------------------------------------------------
+<!-- -- Add new fields to the profile page                                                          -- DONE -->
+<!-- -- Add subtle animations showing components of page                                            -- DONE -->
+<!-- -- Showing loading skeleton if needed                                                          -- DONE -->
 
 POSTPONDED FOR NOW
-<!-- -- Maybe add a delete user at the end -- POSTPONDED  -->
--- Add a list showing workspace inlcuded in and the role in them -- POSTPONDED
+<!-- -- Maybe add a delete user at the end                                                          -- POSTPONDED -->
 
 
-<!-- ANALYTICS PAGE -->  POSTPONDED FOR NOW -----------------------------------------------------------------------------------
+------------------------------------------------ ( WORKSAPCE PAGE ) ------------------------------------------------
+<!-- -- Add the edit and create new workspace                                                       -- DONE -->
+<!-- -- Add loading skeleton if needed                                                              -- DONE -->
+<!-- -- Add correct styling/tailwind to the page                                                    -- DONE -->
+<!-- -- Show stats relating to thr org                                                              -- DONE -->
+<!-- -- Fix the dialog confirmation for deletion                                                    -- DONE -->
+<!-- --  Maybe add the author/users data showing                                                    -- DONE -->
+<!-- -- Add loading icon when creating new workspace                                                -- DONE -->
+<!-- -- Add the delete workspace at the end and if only one default workspace then                  -- DONE FOR NOW -->
+<!--    do not allow to delete -->
+
+-- Add a way so that the member can leave the workspace
+
+
+
+------------------------------------------------ ( TEAM PAGE ) ------------------------------------------------
+<!-- -- Add and develope the teams page if needed                                                   -- DONE -->
+<!-- -- Add functionality to update team member's role                                              -- DONE -->
+-- Add functionality to delete/kick team member from org/workspace
+
+
+
+------------------------------------------------ ( INVITATION PAGE ) ------------------------------------------------
+<!-- -- Add the hover bg on view invitaion button                                                   -- DONE -->
+<!-- -- Also make the invitaion one (the one with accept or decline) bigger in width                -- DONE -->
+<!-- -- Also add a back button to go back to the invitaions page                                    -- DONE -->
+<!-- -- Show proper loading skeleton when loading invitation                                        -- DONE -->
+<!-- --  Add the loading spinner of accept and reject                                               -- DONE -->
+
+
+
+------------------------------------------------ ( ANALYTICS PAGE ) ------------------------------------------------
+POSTPONDED FOR NOW 
 -- Fix and add the analytics maps as react-simple-maps are not compatiable with react version 19
 -- Add filter analytics
 -- Maybe add a summarize or into tell AI feature extracted from the given analytics
 -- Add authors/org analytics
-
-
-<!-- WORKSAPCE PAGE --> --------------------------------------------------------------------------------------------------------
-<!-- -- Add the edit and create new workspace                                   -- DONE -->
--- Add the delete workspace at the end and if only one default workspace 
-   then do not allow to delete
-<!-- -- Add loading skeleton if needed                                          -- DONE -->
-<!-- -- Add correct styling/tailwind to the page                                -- DONE -->
-<!-- -- Show stats relating to thr org                                          -- DONE -->
-<!-- --  Maybe add the author/users data showing on hover                       -- POSTPONDED    -->
-
-<!-- TEAM PAGE --> ------------------------------------------------------------------------------------------------------------
--- Add and develope the teams page if needed
--- Add functionality maybe CRUD to the memebers/team member of the org

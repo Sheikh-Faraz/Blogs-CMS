@@ -104,7 +104,6 @@ export default function HeaderCard() {
     // User Context
     const { 
       fetchUser, 
-      // authUser, 
 
       CurrentActiveWorkspace, 
       workspace,
@@ -237,14 +236,14 @@ export default function HeaderCard() {
             {/* Company info */}
             <div className="my-3">
               <p className="text-lg mt-2 truncate max-w-90">
-                {workspace?.name || "Workspace Name"}
+                {workspace?.name || "Workspace Name Not Set"}
               </p>
               <p className="text-xs text-muted-foreground my-3 flex gap-2 items-center">
                 <Location className="size-4 text-[#E85129]" />
-                {workspace?.location || "Location NA"}
+                {workspace?.location || "Location not specified"}
               </p>
               <p className="text-xs text-muted-foreground leading-relaxedb truncate max-w-180">
-                {workspace?.about || "About"}
+                {workspace?.about || "No description available for this workspace yet."}
               </p>
             </div>
 

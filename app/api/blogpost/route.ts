@@ -75,9 +75,7 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching blogs:", error);
 
     return Response.json(
-      {
-        error: "Failed to fetch blogs",
-      },
+      { error: "Failed to fetch blogs", },
       { status: 500 }
     );
   }

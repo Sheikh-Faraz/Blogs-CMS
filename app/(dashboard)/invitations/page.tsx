@@ -34,7 +34,7 @@ export default function InvitationsPage() {
 
   if (receivedInvitationsLoading) {
     return (
-      <div className="mx-4 h-full rounded-md bg-card p-6">
+      <div className="mx-4 h-full rounded-md p-6">
         <div className="mb-8 space-y-3">
           <div className="h-8 w-64 animate-pulse rounded bg-muted" />
           <div className="h-4 w-80 max-w-full animate-pulse rounded bg-muted" />
@@ -45,21 +45,21 @@ export default function InvitationsPage() {
   }
 
   return (
-    <div className="mx-4 h-full rounded-md bg-card p-6">
+    <div className="mx-4 h-full rounded-md p-6">
       <div className="mb-8">
         <h1 className="text-3xl font-semibold">Workspace Invitations</h1>
         <p className="mt-2 text-sm text-muted-foreground">View and manage invitations to join workspaces.</p>
       </div>
 
       {receivedInvitations.length === 0 ? (
-        <div className="flex min-h-75 flex-col items-center justify-center rounded-xl border">
+        <div className="flex min-h-75 flex-col items-center justify-center rounded-md border bg-card"> 
           <h2 className="text-lg font-medium">No pending invitations</h2>
           <p className="mt-2 text-sm text-muted-foreground">You don&apos;t have any workspace invitations right now.</p>
         </div>
       ) : (
         <div className="space-y-4">
           {receivedInvitations.map((invitation) => (
-            <div key={invitation._id} className="flex flex-col justify-between gap-4 rounded-xl border p-5 sm:flex-row sm:items-center">
+            <div key={invitation._id} className="flex flex-col bg-card justify-between gap-4 rounded-xl border p-5 sm:flex-row sm:items-center">
               <div className="flex items-center gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg border bg-muted text-lg font-semibold">
                   {invitation.workspace?.name?.charAt(0).toUpperCase() || "W"}
@@ -74,7 +74,10 @@ export default function InvitationsPage() {
                   </p>
                 </div>
               </div>
-              <button onClick={() => router.push(`/invitations/${invitation._id}`)} className="rounded-lg bg-black px-4 py-2 text-sm text-white">
+              <button 
+                onClick={() => router.push(`/invitations/${invitation._id}`)} 
+                className="bg-card text-card-foreground rounded-md px-4 py-2 text-sm hover:bg-muted border"
+              >
                 View invitation
               </button>
             </div>

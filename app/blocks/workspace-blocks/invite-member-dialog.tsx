@@ -1,9 +1,20 @@
 "use client";
 
 import { useState } from "react";
+
+// Context
+import { useUser } from "@/context/User.context";
+
+// Services
+import { createInvitationApi } from "@/services/auth.services";
+
+import LoaderIcon from "@/app/blocks/loading/Loader";
+
+import toast from "react-hot-toast";
+
 import { FiUserPlus } from "react-icons/fi";
 import { Check, Loader2, X } from "lucide-react";
-import toast from "react-hot-toast";
+
 
 import {
   Dialog,
@@ -21,8 +32,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { createInvitationApi } from "@/services/auth.services";
-import { useUser } from "@/context/User.context";
+
+
 
 type InviteRole = "ADMIN" | "EDITOR" | "VIEWER";
 type MemberRole = "OWNER" | "ADMIN" | "EDITOR" | "VIEWER";
@@ -219,8 +230,9 @@ export default function InviteMemberDialog({ open, onOpenChange }: InviteMemberD
           <Button className="w-full" onClick={handleInvite} disabled={loading || !email.trim()}>
             {loading ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Sending...
+                <LoaderIcon 
+                  size="lg"
+                />
               </>
             ) : (
               <>

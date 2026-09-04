@@ -584,7 +584,7 @@ export default function EditWorkspaceDialog({
                 className="
                   absolute
                   inset-0
-                  bg-gradient-to-r
+                  bg-linear-to-r
                   from-orange-400
                   via-pink-500
                   to-purple-600

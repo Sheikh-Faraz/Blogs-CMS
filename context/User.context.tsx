@@ -482,6 +482,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       setWorkspace(data.workspace);
       await fetchWorkspaces();
       await fetchAnalytics();
+      await fetchReceivedInvitations();
 
       toast.success("Workspace created successfully");
       router.refresh();

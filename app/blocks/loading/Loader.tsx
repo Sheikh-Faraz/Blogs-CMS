@@ -2,10 +2,17 @@
 
 import { LuLoaderCircle } from "react-icons/lu";
 
-export default function LoaderIcon () {
+type LoaderIconProps = {
+  color?: string;
+  size?: string;
+};
+
+export default function LoaderIcon ({color = "#E85129", size = "text-3xl"}: LoaderIconProps) {
   return (
     <>
-      <LuLoaderCircle className="animate-spin text-3xl w-full text-[#E85129]"/>
+      <LuLoaderCircle 
+        className={`animate-spin w-full text-${color} text-${size}`}
+      />
     </>
   )
 }

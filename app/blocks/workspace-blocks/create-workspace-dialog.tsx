@@ -15,6 +15,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+import LoaderIcon from "@/app/blocks/loading/Loader";
+
+
 export default function CreateWorkspaceDialog({
   open,
   onOpenChange,
@@ -46,9 +49,11 @@ export default function CreateWorkspaceDialog({
         
         <DialogHeader>
           <DialogTitle>Create workspace</DialogTitle>
-          <DialogDescription>
+
+          <DialogDescription className="my-2">
             You will be the owner of this new workspace.
           </DialogDescription>
+
         </DialogHeader>
 
         <div className="space-y-2 py-2">
@@ -79,7 +84,14 @@ export default function CreateWorkspaceDialog({
             disabled={createWorkspaceLoading || !name.trim()}
             onClick={handleCreate}
           >
-            {createWorkspaceLoading ? "Creating..." : "Create workspace"}
+            {createWorkspaceLoading 
+                ? 
+              <LoaderIcon 
+                size="xl"
+              />
+                : 
+              "Create workspace"
+            }
           </Button>
         </DialogFooter>
       </DialogContent>

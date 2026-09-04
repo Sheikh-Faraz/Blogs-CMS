@@ -111,7 +111,6 @@ export default function AboutCard(
             <Card
               className={[
                 "relative overflow-hidden rounded-xl w-full",
-                // "bg-background/60 backdrop-blur-md",
                 "backdrop-blur-md",
                 "transition-all duration-300",
                 "hover:shadow-lg",

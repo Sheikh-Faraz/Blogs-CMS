@@ -1,13 +1,27 @@
 "use client";
 
+import { useState } from "react";
+
 // Context 
 import { useUser } from "@/context/User.context";
 
+import { motion } from "framer-motion";
+
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+
+import LoaderIcon from "@/app/blocks/loading/Loader";
 
 import { AiOutlineWarning as Warning } from "react-icons/ai";
 
-import { motion } from "framer-motion";
 
 
 export default function DeleteCard() {
@@ -15,19 +29,21 @@ export default function DeleteCard() {
     // User Context
     const {
       authUser,
+
       workspace,
-      deleteWorkspace,
       deleteWorkspaceLoading,
+      deleteWorkspace,
     } = useUser();
 
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
     const handleDeleteWorkspace = async () => {
-      const workspaceName = workspace?.name || "this workspace";
-
-      if (!window.confirm(`Delete ${workspaceName}? This permanently removes its blogs, categories, tags, and memberships.`)) {
-        return;
-      }
-
       await deleteWorkspace();
+
+      if(deleteWorkspaceLoading === false) {
+        setDeleteDialogOpen(false);
+      };
+      
     };
 
   return (
@@ -82,18 +98,93 @@ export default function DeleteCard() {
                 className="leading-relaxed flex justify-between"
               >
                 <div>
-                    <p className="text-md font-bold text-muted-foreground">Delete {workspace?.name || authUser?.defaultWorkspace?.name || "Workspace"}</p>
+                    <p className="text-md font-bold text-muted-foreground">
+                      Delete {workspace?.name || authUser?.defaultWorkspace?.name || "Workspace"}
+                    </p>
+                    <p className="text-xs text-muted-foreground my-4 w-sm">
+                      You must need to have atleast one workspace, therefore you cannot delete your last workspace.
+                    </p>
                     <p className="text-xs text-red-400 my-2">Are you sure you want to delete this workspace?</p>
                 </div>
-                <button
+
+                {/* <button
                   type="button"
                   onClick={handleDeleteWorkspace}
                   disabled={deleteWorkspaceLoading}
                   className="px-2 rounded-md bg-red-600 text-white disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  {deleteWorkspaceLoading ? "Deleting..." : "Delete Workspace"}
+                  {deleteWorkspaceLoading 
+                      ? 
+                    <LoaderIcon 
+                      color="white"
+                      size="xl"
+                    />
+                      : 
+                    "Delete Workspace"
+                  }
+                </button> */}
+
+                <button
+                  type="button"
+                  onClick={() => setDeleteDialogOpen(true)}
+                  disabled={deleteWorkspaceLoading}
+                  className="px-2 rounded-md bg-red-600 text-white disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {deleteWorkspaceLoading ? (
+                    <LoaderIcon
+                      color="white"
+                      size="xl"
+                    />
+                  ) : (
+                    "Delete Workspace"
+                  )}
                 </button>
+
+                <Dialog
+                  open={deleteDialogOpen}
+                  onOpenChange={setDeleteDialogOpen}
+                >
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>
+                        Delete {workspace?.name || "this workspace"}?
+                      </DialogTitle>
+
+                      <DialogDescription className="my-4">
+                        This action cannot be undone. This will permanently remove
+                        its blogs, categories, tags, and memberships.
+                      </DialogDescription>
+                    </DialogHeader>
+
+                    <DialogFooter>
+                      <Button
+                        variant="outline"
+                        onClick={() => setDeleteDialogOpen(false)}
+                        disabled={deleteWorkspaceLoading}
+                      >
+                        Cancel
+                      </Button>
+
+                      <Button
+                        variant="destructive"
+                        onClick={handleDeleteWorkspace}
+                        disabled={deleteWorkspaceLoading}
+                      >
+                        {deleteWorkspaceLoading ? (
+                          <LoaderIcon
+                            color="white"
+                            size="xl"
+                          />
+                        ) : (
+                          "Delete Workspace"
+                        )}
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+
               </motion.p>
+
             </CardContent>
           </Card>
         </motion.div>
