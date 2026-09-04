@@ -34,7 +34,7 @@ import PendingInvitationsCard from "@/app/blocks/workspace-blocks/pending-invita
 
 
 // Invite user/member dialog
-import InviteMemberDialog from "@/app/blocks/workspace-blocks/invite-member-dialog";
+// import InviteMemberDialog from "@/app/blocks/workspace-blocks/invite-member-dialog";
 
 
 import { FiPlusCircle as Plus, } from "react-icons/fi";
@@ -48,8 +48,8 @@ export default function WorkspacePage() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [createWorkspaceOpen, setCreateWorkspaceOpen] = useState(false);
-    const [inviteMemberOpen, setInviteMemberOpen] = useState(false);
     const createWorkspaceRequested = searchParams.get("create") === "1";
+    // const [inviteMemberOpen, setInviteMemberOpen] = useState(false);
 
     // User Context
     const { 
