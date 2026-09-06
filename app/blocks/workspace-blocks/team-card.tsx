@@ -6,6 +6,9 @@ import { useMemo, useState } from "react";
 import { useUser } from "@/context/User.context";
 import type { WorkspaceMember } from "@/context/User.context";
 
+// PERMISSONS BASED UPON ROLE
+import { useWorkspacePermissions } from "@/hooks/use-workspace-permissions";
+
 // Services
 import { updateWorkspaceMemberRoleApi } from "@/services/team.services";
 
@@ -98,7 +101,19 @@ function initials(name: string) {
 }
 
 export default function TeamCard() {
-  const { members, authUser, workspace, CurrentActiveWorkspace, membersLoading } = useUser();
+
+  // Context
+  const { 
+    members, 
+    authUser, 
+    workspace, 
+    CurrentActiveWorkspace, 
+    membersLoading 
+  } = useUser();
+
+    // Permission according to role
+    const { can, loading  } = useWorkspacePermissions();   
+
   const [search, setSearch] = useState("");
   const [selectedMember, setSelectedMember] = useState<WorkspaceMember | null>(null);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -181,7 +196,8 @@ export default function TeamCard() {
               {members.length} {members.length === 1 ? "member" : "members"}
             </div>
 
-            {canManageRoles && 
+            {/* {canManageRoles &&  */}
+            {can("MANAGE_MEMBER_ROLES") && 
               <button
                 onClick={() => setInviteOpen(true)}
                 className="border py-2 px-3 bg-card text-card-foreground rounded-md flex gap-2 items-center hover:bg-muted"
@@ -230,11 +246,17 @@ export default function TeamCard() {
                   </button>
 
                   <div className="hidden items-center gap-2 sm:flex">
-                    {member.role === "OWNER" ? (
-                      <span className="mr-10 text-sm font-medium">Owner</span>
+                    {/* {member.role === "OWNER" ? (
+                      <span className="mr-10 text-sm font-medium">Owner</span> */}
+                    {!editable ? (
+                      <span className="mr-10 text-sm font-medium">{member.role}</span>
                     ) : (
                       <div className="flex items-center gap-2">
-                        <Select value={member.role} onValueChange={(value) => requestRoleChange(member, value as EditableRole)} disabled={!editable || isUpdating}>
+                        <Select 
+                          value={member.role} 
+                          onValueChange={(value) => requestRoleChange(member, value as EditableRole)} 
+                          disabled={!editable || isUpdating}
+                          >
                           <SelectTrigger className="w-32.5"><SelectValue /></SelectTrigger>
                           <SelectContent>
                             {currentMember?.role === "OWNER" && <SelectItem value="ADMIN">Admin</SelectItem>}
@@ -345,19 +367,60 @@ export default function TeamCard() {
                 <div className="flex items-center gap-4">
                   <Avatar className="h-16 w-16">
                     <AvatarImage src={selectedMember.user.profilePic || undefined} />
-                    <AvatarFallback>{initials(selectedMember.user.fullName)}</AvatarFallback>
+                    <AvatarFallback className="turncate">
+                      {initials(selectedMember.user.fullName)}
+                    </AvatarFallback>
                   </Avatar>
                   <div className="min-w-0">
-                    <DialogTitle className="truncate text-xl">{selectedMember.user.fullName}</DialogTitle>
+                    <DialogTitle className="truncate max-w-60 text-xl ">
+                      {selectedMember.user.fullName}
+                    </DialogTitle>
                     <div className="mt-1 flex items-center gap-2"><Badge variant="secondary">{roleLabel[selectedMember.role]}</Badge><span className="text-xs text-muted-foreground">Workspace member</span></div>
                   </div>
                 </div>
               </DialogHeader>
               <div className="grid gap-3 pt-2">
-                <div className="rounded-lg border p-3"><div className="flex items-center gap-2 text-xs text-muted-foreground"><Mail className="h-3.5 w-3.5" /> Email</div><p className="mt-1 break-all text-sm">{selectedMember.user.email}</p></div>
-                <div className="rounded-lg border p-3"><div className="flex items-center gap-2 text-xs text-muted-foreground"><MapPin className="h-3.5 w-3.5" /> Location</div><p className="mt-1 text-sm">{selectedMember.user.location || "Location not specified"}</p></div>
-                <div className="rounded-lg border p-3"><div className="flex items-center gap-2 text-xs text-muted-foreground"><CalendarDays className="h-3.5 w-3.5" /> Joined</div><p className="mt-1 text-sm">{(() => { const joinedAt = (selectedMember as WorkspaceMember & { createdAt?: string }).createdAt; return joinedAt ? new Date(joinedAt).toLocaleDateString() : "Not available"; })()}</p></div>
-                <div className="rounded-lg border p-3"><div className="flex items-center gap-2 text-xs text-muted-foreground"><ShieldCheck className="h-3.5 w-3.5" /> About</div><p className="mt-1 whitespace-pre-wrap text-sm leading-6">{selectedMember.user.about || "No information provided."}</p></div>
+
+                <div className="rounded-lg border p-3">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Mail className="h-3.5 w-3.5" /> 
+                    Email
+                  </div>
+                  <p className="mt-1 break-all text-sm ">
+                    {selectedMember.user.email}
+                  </p>
+                </div>
+                
+                <div className="rounded-lg border p-3">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <MapPin className="h-3.5 w-3.5" /> 
+                      Location
+                  </div>
+                  <p className="mt-1 text-sm">
+                    {selectedMember.user.location || "Location not specified"}
+                    </p>
+                  </div>
+                
+                <div className="rounded-lg border p-3">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <CalendarDays className="h-3.5 w-3.5" /> 
+                      Joined
+                    </div>
+                  <p className="mt-1 text-sm">
+                    {(() => { const joinedAt = (selectedMember as WorkspaceMember & { createdAt?: string }).createdAt; return joinedAt ? new Date(joinedAt).toLocaleDateString() : "Not available"; })()}
+                  </p>
+                </div>
+                
+                <div className="rounded-lg border p-3">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <ShieldCheck className="h-3.5 w-3.5" /> 
+                      About
+                  </div>
+                  <p className="mt-1 whitespace-pre-wrap text-sm leading-6 ">
+                    {selectedMember.user.about || "No information provided."}
+                  </p>
+                </div>
+
               </div>
             </>
           )}

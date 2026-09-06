@@ -85,7 +85,7 @@ export default function ProfileSkeleton() {
         <Skeleton className="h-9 w-28" />
       </div>
 
-      <Skeleton className="h-10 w-32 rounded-none" />
+      <Skeleton className="h-10 w-32" />
     </div>
 
 

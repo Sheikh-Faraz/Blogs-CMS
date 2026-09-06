@@ -183,6 +183,7 @@ export async function DELETE(
     }
 
     const workspace = await getActiveWorkspace(user._id.toString());
+
     const membership = await Membership.findOne({
       user: user._id,
       workspace: workspace._id,
@@ -190,7 +191,8 @@ export async function DELETE(
 
     if (!membership) {
       return NextResponse.json({ error: "Not a member of this workspace" }, { status: 403 });
-    }
+    };
+    
 
     if (!hasPermission(membership.role, "DELETE_BLOG")) {
       return NextResponse.json(

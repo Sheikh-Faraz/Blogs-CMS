@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
-// import mongoose from "mongoose";
-
+import { hasPermission } from "@/lib/permissions";
 import { getCurrentUser } from "@/lib/getCurrentUser";
 
+// Models
 import Workspace from "@/models/Workspace";
 import Membership from "@/models/Membership";
 
@@ -31,12 +31,8 @@ export async function PUT(req: NextRequest) {
     // No active workspace means there is nothing to update.
     if (!activeWorkspaceId) {
       return NextResponse.json(
-        {
-          error: "No active workspace",
-        },
-        {
-          status: 404,
-        }
+        {error: "No active workspace",},
+        {status: 404,}
       );
     }
 
@@ -71,12 +67,8 @@ export async function PUT(req: NextRequest) {
 
     if (!currentUser?._id) {
       return NextResponse.json(
-        {
-          error: "Unauthorized",
-        },
-        {
-          status: 401,
-        }
+        {error: "Unauthorized",},
+        {status: 401,}
       );
     }
 
@@ -100,45 +92,21 @@ export async function PUT(req: NextRequest) {
 
     if (!membership) {
       return NextResponse.json(
-        {
-          error: "Not a member of this workspace",
-        },
-        {
-          status: 403,
-        }
+        {error: "Not a member of this workspace",},
+        {status: 403,}
       );
     }
 
 
-    /* =======================================================
-       5. CHECK USER'S ROLE
-       =======================================================
+    //  =======================================================
+    //   5. CHECK USER'S ROLE
+    //  =======================================================
 
-       OWNER and ADMIN:
-       - Can update workspace settings
-
-       EDITOR:
-       - Can work with content but should not change the
-         workspace's main settings.
-
-       VIEWER:
-       - Read-only.
-
-       If you eventually want EDITORs to be able to update workspace settings, you can add "EDITOR" here.
-       ======================================================= */
-
-    if (
-      membership.role !== "OWNER" 
-    //   &&
-    //   membership.role !== "ADMIN"
-    ) {
+       
+    if (!hasPermission(membership.role, "UPDATE_WORKSPACE")) {
       return NextResponse.json(
-        {
-          error: "You do not have permission to update this workspace",
-        },
-        {
-          status: 403,
-        }
+        { error: "You do not have permission to update this workspace" },
+        { status: 403 }
       );
     }
 
@@ -151,12 +119,8 @@ export async function PUT(req: NextRequest) {
 
     if (!workspace) {
       return NextResponse.json(
-        {
-          error: "Workspace not found",
-        },
-        {
-          status: 404,
-        }
+        {error: "Workspace not found",},
+        {status: 404,}
       );
     }
 
@@ -182,12 +146,8 @@ export async function PUT(req: NextRequest) {
 
     if (!name) {
       return NextResponse.json(
-        {
-          error: "Workspace name is required",
-        },
-        {
-          status: 400,
-        }
+        {error: "Workspace name is required",},
+        {status: 400,}
       );
     }
 
@@ -218,12 +178,8 @@ export async function PUT(req: NextRequest) {
 
       if (Number.isNaN(parsedFounded.getTime())) {
         return NextResponse.json(
-          {
-            error: "Invalid founded date",
-          },
-          {
-            status: 400,
-          }
+          {error: "Invalid founded date",},
+          {status: 400,}
         );
       }
 
@@ -259,12 +215,8 @@ export async function PUT(req: NextRequest) {
         socials = JSON.parse(socialsValue);
       } catch {
         return NextResponse.json(
-          {
-            error: "Invalid socials data",
-          },
-          {
-            status: 400,
-          }
+          {error: "Invalid socials data",},
+          {status: 400,}
         );
       }
     }
@@ -631,15 +583,13 @@ export async function PUT(req: NextRequest) {
         message: "Workspace updated successfully",
         workspace: updatedWorkspace,
       },
-      {
-        status: 200,
-      }
+      {status: 200,}
     );
 
 
   } catch (error) {
 
-        console.error("Update workspace error:", error);
+    console.error("Update workspace error:", error);
 
     return NextResponse.json(
       {error: "Failed to update workspace",}, 

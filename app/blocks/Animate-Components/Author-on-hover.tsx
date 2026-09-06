@@ -1,13 +1,17 @@
 "use client";
 
 import Image from "next/image";
+
+import UserImagePlaceholder from "@/public/UserImagePlaceholder.png";
+
+import { motion } from "framer-motion";
+
 import {
   HoverCard,
   HoverCardTrigger,
   HoverCardContent,
 } from "@/components/ui/hover-card";
 
-import { motion } from "framer-motion";
 
 type Author = {
   fullName: string;
@@ -25,7 +29,7 @@ export default function AuthorHoverCard({ author }: { author: Author }) {
       <HoverCardTrigger asChild>
         <div className="flex gap-2 items-center border rounded-full bg-card w-fit pl-2 pr-5 cursor-pointer hover:bg-muted/40 transition">
           <Image
-            src={author.profilePic || ""}
+            src={author.profilePic || UserImagePlaceholder.src}
             alt="Profile Picture"
             height={35}
             width={35}

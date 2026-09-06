@@ -77,8 +77,9 @@ export const updateWorkspaceApi = async (formData: FormData) => {
     body: formData,
   });
 
-  if (!res.ok) throw new Error("Failed to update workspace");
-  return res.json();
+  const result = await res.json();
+  if (!res.ok) throw new Error(result.error || "Failed to update workspace");
+  return result;
 };
 
 export const fetchAnalyticsApi = async () => {

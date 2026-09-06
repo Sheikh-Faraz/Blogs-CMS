@@ -2,11 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 
 // CONTEXT
 import { useBlog } from "@/context/Blog.context";
 import { useGlobalLoading } from "@/context/Loading.context";  // For transition animation
 
+// PERMISSONS BASED UPON ROLE
+import { useWorkspacePermissions } from "@/hooks/use-workspace-permissions";
 
 // BLOCKNOTE EDITOR
 import dynamic from "next/dynamic";
@@ -92,6 +95,7 @@ import {
   Loader2,
   Trash2,
   InfoIcon, 
+  CircleArrowLeft,
 } from "lucide-react";
 
 
@@ -173,19 +177,18 @@ export default function EditBlogPage() {
 
        } = useBlog();
 
-       
-    // Animation transition 
-    const { startTransition } = useGlobalLoading();
-    
 
-       
+    // Animation transition 
+    const { startTransition } = useGlobalLoading();    
+
+    // Permission according to role
+    const { can, loading } = useWorkspacePermissions();   
+           
     const { id } = useParams();
     const router = useRouter();
 
-
     const [editorInstance, setEditorInstance] = useState<any>(null);
     const [activeTab, setActiveTab] = useState("hero");
-
     
     const [title, setTitle] = useState("");
     const [slug, setSlug] = useState("");
@@ -430,19 +433,13 @@ export default function EditBlogPage() {
         formData.append("status", status);
 
         // Get the latest content directly from the editor
-        formData.append(
-            "content",
-            JSON.stringify(editorInstance.document)
-        );
+        formData.append("content", JSON.stringify(editorInstance.document));
 
         if (selectedCategory) {
             formData.append("category", selectedCategory);
         }
 
-        formData.append(
-            "tags",
-            JSON.stringify(selectedTags)
-        );
+        formData.append("tags", JSON.stringify(selectedTags));
 
         // CASE 1: New file uploaded from device
         if (heroImage.file) {
@@ -469,17 +466,35 @@ export default function EditBlogPage() {
 
 
     // WHILE LOADING/FETCHING DATA SHOW THIS 
-    if (
-      !singleBlog ||
-      singleBlog._id !== String(id)
-    ) {
+    if ( !singleBlog || singleBlog._id !== String(id) || loading) {
       return <BlogSkeleton />;
     }
-    // if (!singleBlog) {
-    //   return (
-    //     <BlogSkeleton />
-    //   )
-    // }
+
+    // If the the author role doesn't allow then don't show the page and display this 
+    if (!can("UPDATE_BLOG")) {
+      return (
+        <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
+          <h2 className="text-xl font-semibold">Access Denied</h2>
+
+          <p className="mt-2 text-sm text-muted-foreground">
+            You don&apos;t have permission to edit this blog.
+          </p>
+
+          <Link 
+            href="/blogs" 
+            onClick={(e) => {                              
+              e.preventDefault();
+              startTransition(`/blogs`);
+            }}
+            className="mt-6 border py-2 px-3 bg-card text-card-foreground rounded-md flex gap-2 items-center hover:bg-muted"
+          >
+            <CircleArrowLeft className="text-[#E85129]" />
+              Go back to blogs page
+          </Link>
+
+        </div>
+      );
+    };
 
 
   return (
@@ -495,7 +510,11 @@ export default function EditBlogPage() {
 
         </div>
 
-        <Button onClick={handleSubmit} disabled={updateBlogLoading} className="rounded-none bg-card text-card-foreground">
+        <Button 
+          onClick={handleSubmit} 
+          disabled={updateBlogLoading || !can("UPDATE_BLOG")} 
+          className="bg-card text-card-foreground rounded-md hover:bg-muted py-2 px-3"
+        >
           {updateBlogLoading ? 
           (
             <div className="flex gap-2">
@@ -542,6 +561,7 @@ export default function EditBlogPage() {
                 <span className="text-red-400">*</span>
               </Label>
               <Input
+                disabled={!can("UPDATE_BLOG")} 
                 value={title}
                 onChange={(e) => handleTitleChange(e.target.value)}
                 required
@@ -637,11 +657,17 @@ export default function EditBlogPage() {
                         setStatus(value as "draft" | "published")
                       }
                     >
-                        <DropdownMenuRadioItem value="draft">
+                        <DropdownMenuRadioItem 
+                          value="draft" 
+                          disabled={!can("UPDATE_BLOG")}
+                        >
                             Draft
                           </DropdownMenuRadioItem>
 
-                          <DropdownMenuRadioItem value="published">
+                          <DropdownMenuRadioItem 
+                            value="published" 
+                            disabled={!can("UPDATE_BLOG")}
+                          >
                             Published
                           </DropdownMenuRadioItem>
 
@@ -658,6 +684,7 @@ export default function EditBlogPage() {
 
                 <div className="w-full flex items-center">
                 <Input
+                  disabled={!can("UPDATE_BLOG")} 
                   className="rounded-none my-2"
                   placeholder="Create new category..."
                   value={newCategory}
@@ -671,6 +698,7 @@ export default function EditBlogPage() {
                 />
 
                   <Button 
+                    disabled={!can("UPDATE_BLOG")}
                     variant="outline"   
                     onClick={handleCategorySubmit}
                     className="rounded-none"
@@ -685,7 +713,11 @@ export default function EditBlogPage() {
 
                 <DropdownMenu>
                 <DropdownMenuTrigger className="w-full">
-                  <Button variant="outline" className="w-full flex justify-between bg-transparent rounded-none">
+                  <Button 
+                    disabled={!can("UPDATE_BLOG")} 
+                    variant="outline" 
+                    className="w-full flex justify-between bg-transparent rounded-none"
+                  >
                         <p className="truncate max-w-55">
                           {selectedCategory ? selectedCategory : "Select category"}
                         </p>
@@ -737,7 +769,7 @@ export default function EditBlogPage() {
                                 <Button
                                   size="icon"
                                   variant="ghost"
-                                  disabled={deletingCategoryId === cat._id}
+                                  disabled={deletingCategoryId === cat._id || !can("UPDATE_BLOG")}
                                   className="
                                     mr-1
                                     size-7
@@ -787,6 +819,7 @@ export default function EditBlogPage() {
                                   </AlertDialogCancel>
 
                                   <AlertDialogAction
+                                    disabled={!can("UPDATE_BLOG")}
                                     className="rounded-none bg-red-600 hover:bg-red-700"
                                     onClick={async () => {
                                       // e.preventDefault();
@@ -846,6 +879,7 @@ export default function EditBlogPage() {
                   </div>
 
                   <Input
+                    disabled={!can("UPDATE_BLOG")} 
                     id="input-badge"
                     className="rounded-none"
                     placeholder="Add tag..."
@@ -1028,7 +1062,7 @@ export default function EditBlogPage() {
                             >
                               <Button
                                 variant="outline"
-                                disabled={loadingAction === item.action}
+                                disabled={loadingAction === item.action || !can("UPDATE_BLOG")}
                                 className="
                                   gap-2
                                   rounded-none

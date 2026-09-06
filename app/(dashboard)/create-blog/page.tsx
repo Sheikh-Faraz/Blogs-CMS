@@ -1,26 +1,47 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
-// Context 
+// CONTEXTS
 import { useBlog } from "@/context/Blog.context";
+import { useGlobalLoading } from "@/context/Loading.context";
 
+// PERMISSONS BASED UPON ROLE
+import { useWorkspacePermissions } from "@/hooks/use-workspace-permissions";
+
+// CUSTOM BLOCKS
+import BlogSkeleton from "@/app/blocks/loading/BlogSkeleton";
+import LoaderIcon from "@/app/blocks/loading/Loader";
+
+// IMAGES
+import HeroImagePicker from "@/app/blocks/HeroImagePicker";
+import LinkedInPostUI from "@/app/blocks/LinkedIn-Post-UI";
+
+// NOTIFICATIONS
+import toast from "react-hot-toast";
+
+// ANIMATION
+import { motion, AnimatePresence } from "framer-motion";
+
+// UI COMPONENTS
 import { Button } from "@/components/ui/button";
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-
-import { RiDraftLine as Draft } from "react-icons/ri";
-import { ChevronDown, X, Send, CircleCheck } from 'lucide-react';
-import { MdDoneOutline as UploadIcon } from "react-icons/md";
-
+import { Field, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Separator } from "@/components/ui/separator"
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,41 +50,6 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-import { Field, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator"
-
-import dynamic from "next/dynamic";
-
-const Editor = dynamic(() => import("@/app/blocks/editor/Editor"), {
-  ssr: false,
-});
-
-
-import HeroImagePicker from "@/app/blocks/HeroImagePicker";
-import LinkedInPostUI from "@/app/blocks/LinkedIn-Post-UI";
-
-import toast from "react-hot-toast";
-import LoaderIcon from "@/app/blocks/loading/Loader";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { motion, AnimatePresence } from "framer-motion";
-
-import {
-  Sparkles,
-  PenLine,
-  FileText,
-  WandSparkles,
-  BookOpen,
-  Loader2,
-  Trash2,
-  InfoIcon, 
-} from "lucide-react";
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -75,6 +61,33 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+
+
+// ICONS
+import { RiDraftLine as Draft } from "react-icons/ri";
+import { ChevronDown, X, Send, CircleCheck } from 'lucide-react';
+import { MdDoneOutline as UploadIcon } from "react-icons/md";
+import {
+  Sparkles,
+  PenLine,
+  FileText,
+  WandSparkles,
+  BookOpen,
+  Loader2,
+  Trash2,
+  InfoIcon, 
+  CircleArrowLeft,
+} from "lucide-react";
+
+
+// EDITOR
+import dynamic from "next/dynamic";
+
+const Editor = dynamic(() => import("@/app/blocks/editor/Editor"), {
+  ssr: false,
+});
+
+
 
 
 export default function CreateBlogPage() {
@@ -123,7 +136,9 @@ export default function CreateBlogPage() {
   ] as const;
   
 
-  // CONTEXT
+  // CONTEXTS
+  const { startTransition } = useGlobalLoading();
+
   const { 
         createBlog, 
         createBlogLoading,
@@ -148,6 +163,9 @@ export default function CreateBlogPage() {
         createCategory
        } = useBlog();
 
+
+  // Permission according to role
+  const { can, loading  } = useWorkspacePermissions();   
 
   const [activeTab, setActiveTab] = useState("hero");
        
@@ -196,7 +214,6 @@ export default function CreateBlogPage() {
   ) => {
 
     if (!editorInstance) return;
-
 
     setLoadingAction(action);
 
@@ -410,6 +427,40 @@ const handleSubmit = async () => {
   };
 
 
+      // Wait until permissions are loaded and show skeleton
+      if (loading) {
+        return  <BlogSkeleton />
+      };
+
+
+      // After loading completes, If the the author's role doesn't allow then don't show the page and display this 
+      if (!can("CREATE_BLOG")) {
+        return (
+          <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
+            <h2 className="text-xl font-semibold">Access Denied</h2>
+  
+            <p className="mt-2 text-sm text-muted-foreground">
+              You don&apos;t have permission to create blog.
+            </p>
+  
+            <Link 
+              href="/blogs" 
+              onClick={(e) => {                              
+                e.preventDefault();
+                startTransition(`/blogs`);
+              }}
+              className="mt-6 border py-2 px-3 bg-card text-card-foreground rounded-md flex gap-2 items-center hover:bg-muted"
+            >
+              <CircleArrowLeft className="text-[#E85129]" />
+                Go to blogs page
+            </Link>
+  
+          </div>
+        );
+      };
+  
+
+
   return (
     <div className="w-full">
 
@@ -432,7 +483,7 @@ const handleSubmit = async () => {
 
           {createBlogLoading ? 
           (
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-center text-center">
               Saving
               <LoaderIcon />
             </div>

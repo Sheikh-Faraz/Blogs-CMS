@@ -13,8 +13,10 @@ export async function GET(req: NextRequest) {
 
     const user = await getCurrentUser(req);
     if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+      return NextResponse.json(
+        { error: "Unauthorized" }, 
+        { status: 401 }
+      )};
 
     const workspace = await getActiveWorkspace(user._id.toString());
     const membership = await Membership.findOne({
@@ -26,12 +28,12 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Not a member of this workspace" }, { status: 403 });
     }
 
-    if (!hasPermission(membership.role, "VIEW_ANALYTICS")) {
-      return NextResponse.json(
-        { error: "You do not have permission to view analytics" },
-        { status: 403 }
-      );
-    }
+    // if (!hasPermission(membership.role, "VIEW_ANALYTICS")) {
+    //   return NextResponse.json(
+    //     { error: "You do not have permission to view analytics" },
+    //     { status: 403 }
+    //   );
+    // }
 
     const workspaceId = workspace._id;
 

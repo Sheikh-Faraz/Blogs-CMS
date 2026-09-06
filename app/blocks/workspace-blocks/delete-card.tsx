@@ -5,6 +5,9 @@ import { useState } from "react";
 // Context 
 import { useUser } from "@/context/User.context";
 
+// Permission to show buttons bases on role
+import { useWorkspacePermissions } from "@/hooks/use-workspace-permissions";
+
 import { motion } from "framer-motion";
 
 import { Card, CardContent } from "@/components/ui/card";
@@ -16,6 +19,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 
 import LoaderIcon from "@/app/blocks/loading/Loader";
@@ -34,6 +42,9 @@ export default function DeleteCard() {
       deleteWorkspaceLoading,
       deleteWorkspace,
     } = useUser();
+
+    // Permission according to role
+    const { can } = useWorkspacePermissions();
 
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
@@ -124,10 +135,13 @@ export default function DeleteCard() {
                   }
                 </button> */}
 
+        <Tooltip>
+          <TooltipTrigger asChild>
+            {/* <span className="border border-blue-600"> */}
                 <button
                   type="button"
                   onClick={() => setDeleteDialogOpen(true)}
-                  disabled={deleteWorkspaceLoading}
+                  disabled={deleteWorkspaceLoading || !can("DELETE_WORKSPACE") }
                   className="px-2 rounded-md bg-red-600 text-white disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {deleteWorkspaceLoading ? (
@@ -139,6 +153,16 @@ export default function DeleteCard() {
                     "Delete Workspace"
                   )}
                 </button>
+              {/* </ span> */}
+            </TooltipTrigger>
+                  <TooltipContent>
+                    {can("DELETE_WORKSPACE") ? (
+                      <p>Delete this workspace</p>
+                    ) : (
+                      <p>You do not have permission to delete this workspace</p>
+                    )}
+                  </TooltipContent>
+          </Tooltip>
 
                 <Dialog
                   open={deleteDialogOpen}
@@ -164,11 +188,14 @@ export default function DeleteCard() {
                       >
                         Cancel
                       </Button>
-
+                  
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span>
                       <Button
                         variant="destructive"
                         onClick={handleDeleteWorkspace}
-                        disabled={deleteWorkspaceLoading}
+                        disabled={deleteWorkspaceLoading || !can("DELETE_WORKSPACE")}
                       >
                         {deleteWorkspaceLoading ? (
                           <LoaderIcon
@@ -179,6 +206,16 @@ export default function DeleteCard() {
                           "Delete Workspace"
                         )}
                       </Button>
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {can("DELETE_WORKSPACE") ? (
+                      <p>Delete this workspace</p>
+                    ) : (
+                      <p>You do not have permission to delete this workspace</p>
+                    )}
+                  </TooltipContent>
+                </Tooltip>
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>

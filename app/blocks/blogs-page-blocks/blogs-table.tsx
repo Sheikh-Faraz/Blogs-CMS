@@ -2,30 +2,32 @@
 
 import { useState } from "react";
 import Link from "next/link";
+
 import { motion } from "framer-motion";
 
-// Blogs Table loading skeleton
-import BlogTableSkeleton from "@/app/blocks/blogs-page-blocks/blogs-page-skeleton/BlogsTable-skeleton";
-
-// When no blogs or blog length = 0
-import EmptyBlogState from "@/app/blocks/blogs-page-blocks/empty-blogs-state";
-
-// Context
+// Contexts
 import { useBlog } from "@/context/Blog.context";
-
-// Loading context
 import { useGlobalLoading } from "@/context/Loading.context";
 
-// Blog Type
+// Permission to show buttons bases on role
+import { useWorkspacePermissions } from "@/hooks/use-workspace-permissions";
+
+// Types
 import { Blog } from "@/app/Types/blog.type";
 
-// Image show on hover animation
-import ImageOnHover from "@/app/blocks/Animate-Components/Image-on-hover";
-// Author show on hover animation
-import AuthorHoverCard from "@/app/blocks/Animate-Components/Author-on-hover";
-
+// Images
+import UserImagePlaceholder from "@/public/UserImagePlaceholder.png";
 import NoImagePic from "@/public/No-img-placeholder.png";
 
+// Skeletons
+import BlogTableSkeleton from "@/app/blocks/blogs-page-blocks/blogs-page-skeleton/BlogsTable-skeleton";
+
+// Custom Blocks
+import EmptyBlogState from "@/app/blocks/blogs-page-blocks/empty-blogs-state";
+import ImageOnHover from "@/app/blocks/Animate-Components/Image-on-hover";
+import AuthorHoverCard from "@/app/blocks/Animate-Components/Author-on-hover";
+
+// UI blocks
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -47,7 +49,14 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
+
+// Icons
 import { FiMoreHorizontal, FiEdit, FiTrash2 } from "react-icons/fi";
 
 
@@ -59,11 +68,12 @@ interface BlogsTableProps {
 
 export default function BlogsTable({ blogsData, loadingData }: BlogsTableProps) {
 
-  // Context
+  // Contexts
   const { deleteBlog } = useBlog();
-
-  // Loading context 
   const { startTransition } = useGlobalLoading();
+
+  // Permission according to role
+  const { can } = useWorkspacePermissions();
 
   // Get the filtered blogs
   const filteredBlogs = blogsData;
@@ -193,7 +203,8 @@ export default function BlogsTable({ blogsData, loadingData }: BlogsTableProps) 
                     author={{
                       fullName: blog.author?.fullName,
                       banner: blog.author?.banner || "",
-                      profilePic: blog.author?.profilePic || "",
+                      profilePic: blog.author?.profilePic || UserImagePlaceholder.src,
+
                       role: blog.authorRole,
                       email: blog.author?.email,
                     }}
@@ -218,32 +229,66 @@ export default function BlogsTable({ blogsData, loadingData }: BlogsTableProps) 
 
                       <DropdownMenuContent align="end" className="w-44">
 
-                        {/* EDIT */}
-                        <DropdownMenuItem asChild>
-                          <Link
-                            href={`/edit-blog/${blog._id}`}
-                            onClick={(e) => {                              
-                              e.preventDefault();
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span>
                               
-                              startTransition(`/edit-blog/${blog._id}`);
-                            }}
-                            className="flex items-center gap-2 cursor-pointer my-2"
-                          >
-                            <FiEdit size={14} />
-                            Edit Blog
-                          </Link>
-                        </DropdownMenuItem>
+                              {/* EDIT */}
+                              <DropdownMenuItem 
+                                asChild
+                                disabled={!can("UPDATE_BLOG")}
+                              >
+                                <Link
+                                  href={`/edit-blog/${blog._id}`}
+                                  onClick={(e) => {                              
+                                    e.preventDefault();
+                                    startTransition(`/edit-blog/${blog._id}`);
+                                  }}
+                                  className="flex items-center gap-2 cursor-pointer my-2"
+                                >
+                                  <FiEdit size={14} />
+                                    Edit Blog
+                                </Link>
+                              </DropdownMenuItem>
+                            </span>
+                          </TooltipTrigger>
+
+                            {!can("UPDATE_BLOG") && (
+                              <TooltipContent>
+                                You don&apos;t have permission to edit blogs.
+                              </TooltipContent>
+                            )}
+                        </Tooltip>
+
+
 
                         {/* DELETE (opens modal) */}
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
-                            <DropdownMenuItem
-                              onSelect={(e) => e.preventDefault()}
-                              className="flex items-center gap-2 text-red-500 cursor-pointer"
-                            >
-                              <FiTrash2 size={14} />
-                              Delete Blog
-                            </DropdownMenuItem>
+
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span>
+                                <DropdownMenuItem
+                                  onSelect={(e) => e.preventDefault()}
+                                  disabled={!can("DELETE_BLOG")}
+                                  className="flex items-center gap-2 text-red-500 cursor-pointer"
+                                >
+                                  <FiTrash2 size={14} />
+                                  Delete Blog
+                                </DropdownMenuItem>
+
+                              </span>
+                            </TooltipTrigger>
+
+                            {!can("DELETE_BLOG") && (
+                              <TooltipContent>
+                                You don&apos;t have permission to delete blogs.
+                              </TooltipContent>
+                            )}
+
+                          </Tooltip>
+                          
                           </AlertDialogTrigger>
 
                           <AlertDialogContent>
@@ -259,8 +304,8 @@ export default function BlogsTable({ blogsData, loadingData }: BlogsTableProps) 
 
                               <AlertDialogAction
                                 onClick={() => deleteBlog(blog._id)}
-                                className="bg-red-600 hover:bg-red-700"
-                                disabled={loadingData}
+                                className="bg-red-600 hover:bg-red-700 text-white"
+                                disabled={loadingData || !can("DELETE_BLOG")}
                               >
                                 Delete
                               </AlertDialogAction>

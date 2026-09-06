@@ -1,7 +1,21 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Mail, Clock, X, RefreshCw } from "lucide-react";
+
+// Context
+import { useUser } from "@/context/User.context";
+
+// Permission to show buttons bases on role
+import { useWorkspacePermissions } from "@/hooks/use-workspace-permissions";
+
+// Services
+import { 
+  revokeInvitationApi,
+  resendInvitationApi, 
+} from "@/services/auth.services";
+
+import toast from "react-hot-toast";
+
 
 import {
   Card,
@@ -9,10 +23,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,14 +37,8 @@ import {
 } from "@/components/ui/alert-dialog";
 
 
-import toast from "react-hot-toast";
+import { Mail, Clock, X, RefreshCw } from "lucide-react";
 
-import { useUser } from "@/context/User.context";
-
-import { 
-  revokeInvitationApi,
-  resendInvitationApi, 
-} from "@/services/auth.services";
 
 
 export default function PendingInvitationsCard() {
@@ -49,11 +55,11 @@ export default function PendingInvitationsCard() {
   }, []);
 
 
+  // Permission according to role
+  const { can } = useWorkspacePermissions();
 
   const [ revokeInvitationId, setRevokeInvitationId, ] = useState<string | null>(null);
   const [ revoking, setRevoking, ] = useState(false);
-
-
 
   const handleRevoke = async () => {
     if (!revokeInvitationId) {
@@ -126,7 +132,6 @@ export default function PendingInvitationsCard() {
     try {
 
       const res = await resendInvitationApi(invitationId);
-
       const data = await res.json();
 
       if (!res.ok) {
@@ -140,7 +145,6 @@ export default function PendingInvitationsCard() {
     } catch (error) {
 
       console.error("Resend invitation error:", error);
-
       toast.error(
         error instanceof Error
           ? error.message
@@ -211,6 +215,7 @@ export default function PendingInvitationsCard() {
                     </Badge>
 
                     <button
+                      disabled={!can("MANAGE_INVITATIONS")}
                       type="button"
                       onClick={() =>
                         handleResend(invitation._id)
@@ -223,6 +228,7 @@ export default function PendingInvitationsCard() {
 
                     <button
                       type="button"
+                      disabled={!can("MANAGE_INVITATIONS")}
                       // onClick={() =>
                       //   handleRevoke(invitation._id)
                       // }

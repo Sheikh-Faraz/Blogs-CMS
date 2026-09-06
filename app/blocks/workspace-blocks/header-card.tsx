@@ -3,20 +3,20 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 
+// Context 
+import { useUser } from "@/context/User.context";
+
+// Permission to show buttons bases on role
+import { useWorkspacePermissions } from "@/hooks/use-workspace-permissions";
+
 // Full Page Image preview/show
 import ImagePreview from "@/app/blocks/Animate-Components/Image-preview";
-
 
 // For editing the active workspace
 import EditWorkspaceDialog from "@/app/blocks/workspace-blocks/workspace-edit-dialog";
 
 // Images
 import EmptyStateImage from "@/public/No-img-placeholder.png";
-
-
-// Context 
-import { useUser } from "@/context/User.context";
-
 
 // For Animation
 import { motion } from "framer-motion";
@@ -110,11 +110,13 @@ export default function HeaderCard() {
     } = useUser();
 
 
+  // Permission according to role
+  const { can } = useWorkspacePermissions();
+
 
     useEffect(() => {
 
         fetchUser();                // Fetch the authorized/current user's info
-
         CurrentActiveWorkspace();   // Fetch the current active workspace details
 
     }, [])
@@ -220,16 +222,27 @@ export default function HeaderCard() {
                 )}
               </div>
 
-
+            
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span>
               <Button 
+                disabled={!can("UPDATE_WORKSPACE")}
                 variant="outline"
-                // className="flex items-center gap-1.5 mt-5 text-md font-medium border rounded-full px-3 py-2 hover:bg-muted transition-colors bg-card text-card-foreground"
                 className="flex items-center gap-1.5 mt-5 text-md font-medium  px-3 py-2"
                 onClick={() => setEditWorkspaceOpen(true)}
               >
                   <Edit className="w-4 h-4 text-[#E85129]" />
-                  edit workspace
+                    Edit Workspace
               </Button>
+            </span>
+          </TooltipTrigger>
+          {!can("UPDATE_WORKSPACE") && (
+            <TooltipContent>
+              <p>You do not have permission to edit this workspace.</p>
+            </TooltipContent>
+          )}
+        </Tooltip>
 
             </div>
 

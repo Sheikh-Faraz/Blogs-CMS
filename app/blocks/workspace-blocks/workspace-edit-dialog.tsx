@@ -3,6 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import type { ElementType } from "react";
 
+// Permission to show buttons bases on role
+import { useWorkspacePermissions } from "@/hooks/use-workspace-permissions";
+
 // Loading spinning icon
 import LoaderIcon from "@/app/blocks/loading/Loader";
 
@@ -210,11 +213,14 @@ export default function EditWorkspaceDialog({
   const bannerInputRef = useRef<HTMLInputElement>(null);
 
 
-      // User Context
-      const { 
-        updateWorkspaceLoading,
-        updateWorkspace,
-      } = useUser();
+    // User Context
+    const { 
+      updateWorkspaceLoading,
+      updateWorkspace,
+    } = useUser();
+
+    // Permission according to role
+    const { can } = useWorkspacePermissions();
 
   /* ---------------------------------------------------------
      Basic information
@@ -608,6 +614,7 @@ export default function EditWorkspaceDialog({
               "
             >
               <button
+                disabled={!can("UPDATE_WORKSPACE")}
                 type="button"
                 onClick={() =>
                   bannerInputRef.current?.click()
@@ -631,6 +638,7 @@ export default function EditWorkspaceDialog({
 
               {bannerPreview && (
                 <button
+                  disabled={!can("UPDATE_WORKSPACE")}
                   type="button"
                   onClick={removeBannerImage}
                   className="
@@ -653,6 +661,7 @@ export default function EditWorkspaceDialog({
             </div>
 
             <input
+              disabled={!can("UPDATE_WORKSPACE")}
               ref={bannerInputRef}
               type="file"
               accept="image/*"
@@ -720,6 +729,7 @@ export default function EditWorkspaceDialog({
                 {/* Logo camera */}
 
                 <button
+                  disabled={!can("UPDATE_WORKSPACE")}
                   type="button"
                   onClick={() =>
                     logoInputRef.current?.click()
@@ -748,6 +758,7 @@ export default function EditWorkspaceDialog({
 
                 {logoPreview && (
                   <button
+                    disabled={!can("UPDATE_WORKSPACE")}
                     type="button"
                     onClick={removeLogoImage}
                     className="
@@ -772,6 +783,7 @@ export default function EditWorkspaceDialog({
               </div>
 
               <input
+                disabled={!can("UPDATE_WORKSPACE")}
                 ref={logoInputRef}
                 type="file"
                 accept="image/*"
@@ -803,6 +815,7 @@ export default function EditWorkspaceDialog({
               <Label>Workspace name</Label>
 
               <Input
+                disabled={!can("UPDATE_WORKSPACE")}
                 value={name}
                 onChange={(event) =>
                   setName(event.target.value)
@@ -830,6 +843,7 @@ export default function EditWorkspaceDialog({
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
+                      disabled={!can("UPDATE_WORKSPACE")}
                       type="button"
                       variant="outline"
                       className={`
@@ -895,6 +909,7 @@ export default function EditWorkspaceDialog({
               </div>
 
               <Textarea
+                disabled={!can("UPDATE_WORKSPACE")}
                 value={about}
                 onChange={(event) => {
                   if (
@@ -974,6 +989,7 @@ export default function EditWorkspaceDialog({
 
                           {social.visible && (
                             <Input
+                              disabled={!can("UPDATE_WORKSPACE")}
                               value={social.url}
                               onChange={(event) =>
                                 updateSocialUrl(
@@ -1058,10 +1074,7 @@ export default function EditWorkspaceDialog({
 
           <Button
             type="button"
-            disabled={
-              saving ||
-              !name.trim()
-            }
+            disabled={saving || !name.trim() || !can("UPDATE_WORKSPACE")}
             onClick={handleSubmit}
           >
             {updateWorkspaceLoading ? 

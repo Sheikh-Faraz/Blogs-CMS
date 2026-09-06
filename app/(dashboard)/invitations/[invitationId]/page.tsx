@@ -96,20 +96,15 @@ export default function InvitationDetailsPage() {
     fetchReceivedInvitations,
   } = useUser();
 
-  const [invitation, setInvitation] =
-    useState<InvitationDetails | null>(null);
+  const [invitation, setInvitation] = useState<InvitationDetails | null>(null);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] = useState(true);
 
-  const [error, setError] =
-    useState("");
+  const [error, setError] = useState("");
 
-  const [accepting, setAccepting] =
-    useState(false);
+  const [accepting, setAccepting] = useState(false);
 
-  const [declining, setDeclining] =
-    useState(false);
+  const [declining, setDeclining] = useState(false);
 
 
   // Fetch invitation details
@@ -127,19 +122,13 @@ export default function InvitationDetailsPage() {
         const data = await res.json();
 
         if (!res.ok) {
-          throw new Error(
-            data.message ||
-            "Failed to fetch invitation"
-          );
+          throw new Error(data.message || "Failed to fetch invitation");
         }
 
         setInvitation(data.invitation);
 
       } catch (error) {
-        console.error(
-          "Fetch invitation error:",
-          error
-        );
+        console.error("Fetch invitation error:", error);
 
         setError(
           error instanceof Error
@@ -161,21 +150,14 @@ export default function InvitationDetailsPage() {
     try {
       setAccepting(true);
 
-      const res =
-        await acceptInvitationByIdApi(invitationId);
-
+      const res = await acceptInvitationByIdApi(invitationId);
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(
-          data.message ||
-          "Failed to accept invitation"
-        );
+        throw new Error(data.message || "Failed to accept invitation");
       }
 
-      toast.success(
-        "Invitation accepted successfully"
-      );
+      toast.success("Invitation accepted successfully");
 
       // Refresh user's workspace list because
       // they now belong to a new workspace.
@@ -184,13 +166,10 @@ export default function InvitationDetailsPage() {
       // Remove it from received invitations.
       await fetchReceivedInvitations();
 
-      router.replace("/");
+      router.replace("/blogs");
 
     } catch (error) {
-      console.error(
-        "Accept invitation error:",
-        error
-      );
+      console.error("Accept invitation error:", error);
 
       toast.error(
         error instanceof Error
@@ -209,8 +188,7 @@ export default function InvitationDetailsPage() {
     try {
       setDeclining(true);
 
-      const res =
-        await declineInvitationByIdApi(invitationId);
+      const res = await declineInvitationByIdApi(invitationId);
 
       const data = await res.json();
 
@@ -221,9 +199,7 @@ export default function InvitationDetailsPage() {
         );
       }
 
-      toast.success(
-        "Invitation declined"
-      );
+      toast.success("Invitation declined");
 
       // Remove declined invitation from
       // the received invitations list.

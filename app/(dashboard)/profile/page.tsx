@@ -17,6 +17,7 @@ import { motion } from "framer-motion";
 
 // Images
 import EmptyStateImage from "@/public/No-img-placeholder.png";
+import UserImagePlaceholder from "@/public/UserImagePlaceholder.png"
 
 
 // Theme
@@ -397,7 +398,7 @@ export default function ProfilePage() {
                                   {previewBanner ? (
                                         <ImagePreview src={previewBanner}>
                                           <img
-                                            src={previewBanner || EmptyStateImage.src}
+                                            src={previewBanner || UserImagePlaceholder.src}
                                             alt="Profile Banner"
                                             className="w-full h-full"
                                           />
@@ -469,21 +470,27 @@ export default function ProfilePage() {
                                         (
                                           <ImagePreview src={previewImage}>
                                             <Image
-                                              src={previewImage || EmptyStateImage}
+                                              src={previewImage || UserImagePlaceholder}
                                               height={100}
                                               width={100}
                                               alt="Profile Image"
                                               className="object-cover object-center rounded-full w-30 h-30 border-4 border-orange-500"
-                                              />
+                                            />
                                           </ImagePreview>
                         
                                         )
                                         :
                                         (
-                                          // <div className="z-99 justify-center">
-                                          <div className="justify-center">
-                                            <User className="text-orange-600 p-2 border-4 border-orange-600 w-30 h-30 rounded-full" />
-                                          </div>
+                                          <Image
+                                              src={UserImagePlaceholder}
+                                              height={100}
+                                              width={100}
+                                              alt="Profile Image"
+                                              className="object-cover object-center rounded-full w-30 h-30 border-4 border-orange-500"
+                                            />
+                                          // <div className="justify-center">
+                                          //   <User className="text-orange-600 p-2 border-4 border-orange-600 w-30 h-30 rounded-full" />
+                                          // </div>
                                       )}
                                     </div>
 
@@ -526,7 +533,7 @@ export default function ProfilePage() {
                                                 </p>
                                                 <p className="text-xs text-muted-foreground my-3 flex gap-2 items-center justify-center text-center">
                                                   <Location className="size-4 text-orange-500" />
-                                                  {authUser?.location || "Location"}
+                                                  {authUser?.location || "Location not set"}
                                                 </p>
                                               </div>
 

@@ -204,25 +204,18 @@ export async function POST(req: NextRequest) {
       await invitation.save();
 
       return NextResponse.json(
-        {
-          message:
-            "This invitation has expired",
-        },
-        { status: 410 }
+        {message: "This invitation has expired",},
+        {status: 410}
       );
     }
 
     // User must be logged in for the
     // existing-user acceptance flow
-    const currentUser =
-      await getCurrentUser(req);
+    const currentUser = await getCurrentUser(req);
 
     if (!currentUser) {
       return NextResponse.json(
-        {
-          message:
-            "You must be logged in to accept this invitation",
-        },
+        {message: "You must be logged in to accept this invitation",},
         { status: 401 }
       );
     }
@@ -234,11 +227,8 @@ export async function POST(req: NextRequest) {
       invitation.email.toLowerCase()
     ) {
       return NextResponse.json(
-        {
-          message:
-            "This invitation was sent to a different email address",
-        },
-        { status: 403 }
+        {message: "This invitation was sent to a different email address",},
+        {status: 403}
       );
     }
 
@@ -251,11 +241,8 @@ export async function POST(req: NextRequest) {
 
     if (existingMembership) {
       return NextResponse.json(
-        {
-          message:
-            "You are already a member of this workspace",
-        },
-        { status: 409 }
+        {message: "You are already a member of this workspace",},
+        {status: 409}
       );
     }
 
@@ -273,9 +260,7 @@ export async function POST(req: NextRequest) {
     await invitation.save();
 
     return NextResponse.json(
-      {
-        message:
-          "Invitation accepted successfully",
+      {message: "Invitation accepted successfully",
 
         membership: {
           id: membership._id,

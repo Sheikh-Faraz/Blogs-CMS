@@ -151,6 +151,6 @@ export default function StatsCard ( { blogsData }: StatsCardProps ) {
                     </Card>
                   </motion.div>
                 ))}
-                        </div>
+        </div>
     )
 }

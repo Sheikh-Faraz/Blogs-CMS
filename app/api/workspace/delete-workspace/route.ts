@@ -1,8 +1,10 @@
 import mongoose from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
 
-import connectDB from "@/lib/db";
 import { getCurrentUser } from "@/lib/getCurrentUser";
+import { hasPermission } from "@/lib/permissions";
+
+import connectDB from "@/lib/db";
 import cloudinary from "@/lib/cloudinary";
 
 // Models
@@ -53,7 +55,7 @@ export async function DELETE(req: NextRequest) {
     // Get workspace, requester membership and blogs.
     const [
       workspace,
-      requesterMembership,
+      // requesterMembership,
       blogs,
     ] = await Promise.all([
       Workspace.findById(workspaceId),
@@ -74,12 +76,31 @@ export async function DELETE(req: NextRequest) {
     }
 
     // Requester must be the owner of the workspace being deleted.
-    if (
-      !requesterMembership ||
-      requesterMembership.role !== "OWNER"
-    ) {
-      throw new WorkspaceDeletionError("Only the workspace owner can delete a workspace", 403);
-    }
+        const membership = await Membership.findOne({
+          user: userId,
+          workspace: activeWorkspaceId,
+        });
+    
+    
+        if (!membership) {
+          return NextResponse.json(
+            {error: "Not a member of this workspace",},
+            {status: 403,}
+          );
+        };
+
+        if (!hasPermission(membership.role, "UPDATE_WORKSPACE")) {
+          return NextResponse.json(
+            { error: "You don't have the permission to delete this workspace only the owner can" },
+            { status: 403 }
+          );
+        }
+    // if (
+    //   !requesterMembership ||
+    //   requesterMembership.role !== "OWNER"
+    // ) {
+    //   throw new WorkspaceDeletionError("Only the workspace owner can delete a workspace", 403);
+    // }
 
     /*
      * ---------------------------------------------------------

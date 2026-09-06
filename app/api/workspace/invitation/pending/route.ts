@@ -1,16 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import crypto from "crypto";
-import { sendInvitationEmail } from "@/lib/email";
 
 import connectDB from "@/lib/db";
+
+import { hasPermission } from "@/lib/permissions";
+import { sendInvitationEmail } from "@/lib/email";
 import { getCurrentUser } from "@/lib/getCurrentUser";
 import { getActiveWorkspace } from "@/lib/workspace";
 
+// Models
 import Invitation from "@/models/Invitation";
+import Membership from "@/models/Membership";
 
 // import { requireRole } from "@/lib/roleValidator";
-import { requireInvitationPermission, } from "@/lib/invitationPermissions";
+// import { requireInvitationPermission, } from "@/lib/invitationPermissions";
 
 
 export async function GET(req: NextRequest) {
@@ -35,10 +39,21 @@ export async function GET(req: NextRequest) {
     //   ["OWNER"]
     // );
 
-    await requireInvitationPermission(
-      currentUser._id.toString(),
-      workspace._id.toString()
-    );
+    // await requireInvitationPermission(
+    //   currentUser._id.toString(),
+    //   workspace._id.toString()
+    // );
+
+
+    const membership = await Membership.findOne({
+      user: currentUser._id,
+      workspace: workspace._id,
+    });
+
+    if (!membership) {
+      return NextResponse.json({ error: "Not a member of this workspace" }, { status: 403 });
+    };
+
 
     const invitations = await Invitation.find({
       workspace: workspace._id,
@@ -120,10 +135,26 @@ export async function DELETE(req: NextRequest) {
     //   ["OWNER"]
     // );
 
-    await requireInvitationPermission(
-      currentUser._id.toString(),
-      workspace._id.toString()
-    );
+    const membership = await Membership.findOne({
+      user: currentUser._id,
+      workspace: workspace._id,
+    });
+
+    if (!membership) {
+      return NextResponse.json({ error: "Not a member of this workspace" }, { status: 403 });
+    };
+
+    if (!hasPermission(membership.role, "MANAGE_INVITATIONS")) {
+      return NextResponse.json(
+        { error: "You do not have permission to manage invitations" },
+        { status: 403 }
+      );
+    };
+
+    // await requireInvitationPermission(
+    //   currentUser._id.toString(),
+    //   workspace._id.toString()
+    // );
 
     const body = await req.json();
 
@@ -191,16 +222,27 @@ export async function POST(req: NextRequest) {
       currentUser._id.toString()
     );
 
-    // await requireRole(
-    //   currentUser._id.toString(),
-    //   workspace._id.toString(),
-    //   ["OWNER"]
-    // );
 
-    await requireInvitationPermission(
-      currentUser._id.toString(),
-      workspace._id.toString()
-    );
+    const membership = await Membership.findOne({
+      user: currentUser._id,
+      workspace: workspace._id,
+    });
+
+    if (!membership) {
+      return NextResponse.json({ error: "Not a member of this workspace" }, { status: 403 });
+    };
+
+    if (!hasPermission(membership.role, "MANAGE_INVITATIONS")) {
+      return NextResponse.json(
+        { error: "You do not have permission to manage invitations" },
+        { status: 403 }
+      );
+    };
+
+    // await requireInvitationPermission(
+    //   currentUser._id.toString(),
+    //   workspace._id.toString()
+    // );
 
     const body = await req.json();
 
@@ -254,6 +296,9 @@ export async function POST(req: NextRequest) {
       const invitationUrl = `${appUrl}/invitation/accept?token=${encodeURIComponent(rawToken)}`;
 
       await sendInvitationEmail({
+        
+        inviterName: invitation.email.split("@")[0],
+
         email: invitation.email,
         workspaceName: workspace.name,
         role: invitation.role,

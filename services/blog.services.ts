@@ -145,6 +145,10 @@ export const deleteBlog = async (id: string) => {
     method: "DELETE",
   });
 
-  if (!res.ok) throw new Error("Failed to delete blog");
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.error || "Failed to delete blog");
+  }
+
   return res.json();
 };

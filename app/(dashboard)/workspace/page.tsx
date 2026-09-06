@@ -7,10 +7,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 // Context 
 import { useUser } from "@/context/User.context";
 
+// Permission to show buttons bases on role
+import { useWorkspacePermissions } from "@/hooks/use-workspace-permissions";
+
 // Workspace Loading Skeleton
 import WorkspaceSkeleton from "@/app/blocks/loading/Workspace-Skeleton-Components/WorkspaceSkeleton";
-
-// import { Button } from "@/components/ui/button";
 
 // Header 
 import HeaderCard from "@/app/blocks/workspace-blocks/header-card";
@@ -53,9 +54,6 @@ export default function WorkspacePage() {
 
     // User Context
     const { 
-      // authUser,
-      // members,
-
       workspaceAnalyticsLoading,
       fetchAnalytics,
       analytics,
@@ -63,6 +61,9 @@ export default function WorkspacePage() {
       CurrentActiveWorkspace,
       fetchPendingInvitations,
     } = useUser();
+
+    // Permission according to role
+    const { can, loading } = useWorkspacePermissions();
 
 
     useEffect(() => {
@@ -101,7 +102,7 @@ export default function WorkspacePage() {
     };
 
 
-    if(workspaceAnalyticsLoading) {
+    if(workspaceAnalyticsLoading || loading) {
       return <WorkspaceSkeleton />
     };
 
@@ -181,7 +182,11 @@ export default function WorkspacePage() {
             })) ?? []}
           />
 
+        {/* {can("INVITE_MEMBERS") && ( */}
           <PendingInvitationsCard />
+          
+        {/* // )} */}
+
           {/* <TeamCard /> */}
           
           <DeleteCard />
