@@ -63,7 +63,6 @@ POSTPONDED FOR NOW
 <!-- -- Add loading icon when creating new workspace                                                -- DONE -->
 <!-- -- Add the delete workspace at the end and if only one default workspace then                  -- DONE FOR NOW -->
 <!--    do not allow to delete -->
-  -- Little work on the invitations showing section for roles i.e don't allow to press button and then not show the invitaions depending upon roles
 
 -- Add a way so that the member can leave the workspace
 
@@ -73,6 +72,7 @@ POSTPONDED FOR NOW
 <!-- -- Add and develope the teams page if needed                                                   -- DONE -->
 <!-- -- Add functionality to update team member's role                                              -- DONE -->
 <!-- -- The image of the owner of workspace where I am added is not showing    -- Showing now checked again -->
+
 -- Add functionality to delete/kick team member from org/workspace
 
 
@@ -83,7 +83,7 @@ POSTPONDED FOR NOW
 <!-- -- Also add a back button to go back to the invitaions page                                    -- DONE -->
 <!-- -- Show proper loading skeleton when loading invitation                                        -- DONE -->
 <!-- --  Add the loading spinner of accept and reject                                               -- DONE -->
--- I think there is a bug, when the user is logged in and the accept the invitaion it is accepted but no toast notification is given on success and the workspace are not swithced to the accepted one 
+
 
 -- If the user rejects the invitation then there should be a way the sender knows that invitation was rejected
 

@@ -135,10 +135,7 @@ export async function POST(req: NextRequest) {
 
       if (existingMembership) {
         return NextResponse.json(
-          {
-            message:
-              "This user is already a member of this workspace",
-          },
+          {message: "This user is already a member of this workspace", },
           { status: 409 }
         );
       }

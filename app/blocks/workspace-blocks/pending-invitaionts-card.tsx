@@ -221,14 +221,14 @@ export default function PendingInvitationsCard() {
                         handleResend(invitation._id)
                       }
                       className="inline-flex h-8 w-8 items-center justify-center rounded-md border text-muted-foreground transition-colors hover:bg-muted"
-                      title="Resend invitation"
+                      title={`${can("MANAGE_INVITATIONS") ? "Resend invitation" : "You do not have permission to resend invitation"}`}
                     >
                       <RefreshCw className="h-4 w-4" />
                     </button>
 
                     <button
-                      type="button"
                       disabled={!can("MANAGE_INVITATIONS")}
+                      type="button"
                       // onClick={() =>
                       //   handleRevoke(invitation._id)
                       // }
@@ -236,7 +236,7 @@ export default function PendingInvitationsCard() {
                         setRevokeInvitationId(invitation._id)
                       }
                       className="inline-flex h-8 w-8 items-center justify-center rounded-md border text-muted-foreground transition-colors hover:bg-destructive hover:text-destructive-foreground"
-                      title="Revoke invitation"
+                      title={`${can("MANAGE_INVITATIONS") ? "Revoke invitation" : "You do not have permission to revoke invitation"}`}
                     >
                       <X className="h-4 w-4" />
                     </button>

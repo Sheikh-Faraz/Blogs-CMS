@@ -182,10 +182,9 @@ export default function WorkspacePage() {
             })) ?? []}
           />
 
-        {/* {can("INVITE_MEMBERS") && ( */}
+        {can("INVITE_MEMBERS") && (
           <PendingInvitationsCard />
-          
-        {/* // )} */}
+         )} 
 
           {/* <TeamCard /> */}
           

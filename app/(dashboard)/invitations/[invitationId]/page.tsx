@@ -13,7 +13,7 @@ import {
 } from "@/services/auth.services";
 
 
-import { toast } from "sonner";
+import toast from "react-hot-toast";
 
 import { CircleArrowLeft } from 'lucide-react';
 
@@ -94,6 +94,8 @@ export default function InvitationDetailsPage() {
   const {
     fetchWorkspaces,
     fetchReceivedInvitations,
+
+    selectWorkspace,
   } = useUser();
 
   const [invitation, setInvitation] = useState<InvitationDetails | null>(null);
@@ -157,7 +159,29 @@ export default function InvitationDetailsPage() {
         throw new Error(data.message || "Failed to accept invitation");
       }
 
-      toast.success("Invitation accepted successfully");
+      const workspaceId = data.membership?.workspace;
+
+    if (!workspaceId) {
+      throw new Error(
+        "Invitation accepted, but workspace information was not returned"
+      );
+    }
+    
+    // toast.success("Invitation accepted successfully");
+
+    // // Refresh workspace list so the newly joined workspace
+    // // exists in the User context.
+    // await fetchWorkspaces();
+
+    // // Make the newly joined workspace the active workspace.
+    // await selectWorkspace(workspaceId);
+
+    // // Remove the invitation from the received invitations list.
+    // await fetchReceivedInvitations();
+
+    
+
+      toast.success("Invitation accepted successfully, you can now access the workspace through the workspace list in the sidebar.");
 
       // Refresh user's workspace list because
       // they now belong to a new workspace.
@@ -166,7 +190,8 @@ export default function InvitationDetailsPage() {
       // Remove it from received invitations.
       await fetchReceivedInvitations();
 
-      router.replace("/blogs");
+      router.replace("/invitations");
+      // router.replace("/blogs");
 
     } catch (error) {
       console.error("Accept invitation error:", error);
@@ -189,14 +214,10 @@ export default function InvitationDetailsPage() {
       setDeclining(true);
 
       const res = await declineInvitationByIdApi(invitationId);
-
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(
-          data.message ||
-          "Failed to decline invitation"
-        );
+        throw new Error(data.message || "Failed to decline invitation");
       }
 
       toast.success("Invitation declined");

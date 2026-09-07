@@ -230,3 +230,16 @@ export const declineInvitationByIdApi = async (invitationId: string) => {
     body: JSON.stringify({ invitationId }),
   });
 };
+
+
+// Allow the user to leave workspace if he wants
+export const leaveWorkspaceApi = async (workspaceId: string) => {
+  return fetch(`${BASE_URL}/api/workspace/leave-workspace`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify({ workspaceId }),
+  });
+};
