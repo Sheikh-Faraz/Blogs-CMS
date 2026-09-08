@@ -16,6 +16,9 @@ import { updateWorkspaceMemberRoleApi } from "@/services/team.services";
 import InviteMemberDialog from "@/app/blocks/workspace-blocks/invite-member-dialog";
 import TeamSkeleton from "@/app/blocks/workspace-blocks/team-skeleton";
 
+// Loading icons spinner
+import LoaderIcon from "@/app/blocks/loading/Loader";
+
 // Notifications
 import toast from "react-hot-toast";
 
@@ -112,7 +115,10 @@ export default function TeamCard() {
   } = useUser();
 
     // Permission according to role
-    const { can, loading  } = useWorkspacePermissions();   
+    const { 
+      can, 
+      // loading  
+    } = useWorkspacePermissions();   
 
   const [search, setSearch] = useState("");
   const [selectedMember, setSelectedMember] = useState<WorkspaceMember | null>(null);
@@ -121,6 +127,8 @@ export default function TeamCard() {
   const [updatingMembershipId, setUpdatingMembershipId] = useState<string | null>(null);
   const [pendingRoleChange, setPendingRoleChange] = useState<{ member: WorkspaceMember; role: EditableRole } | null>(null);
   const [roleInfoOpen, setRoleInfoOpen] = useState(false);
+
+  const [kickMemberDialog, setKickMemberDialog] = useState(false);
 
   const currentMember = members.find((member) => member.user._id === authUser?._id);
   const canManageRoles = currentMember?.role === "OWNER" || currentMember?.role === "ADMIN";
@@ -279,6 +287,11 @@ export default function TeamCard() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem onClick={() => openProfile(member)}>View Profile</DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => {setKickMemberDialog(true)}}
+                      >
+                        Kick Member
+                      </DropdownMenuItem>
                       <DropdownMenuItem onClick={() => setRoleInfoOpen(true)}>View Role Permissions</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -288,6 +301,50 @@ export default function TeamCard() {
           )}
         </div>
       </div>
+
+
+            {/* Kick user form workspace dialog */}
+                <Dialog open={kickMemberDialog} onOpenChange={setKickMemberDialog}>
+                  <DialogContent className="sm:max-w-md">
+                    
+                    <DialogHeader>
+                      <DialogTitle>Kick member</DialogTitle>
+            
+                      <DialogDescription className="my-2">
+                        {/* {`Are you sure you want to kick '${member.user.fullName}' from '${workspace?.name}' workspace?`} */}
+                        {`Are you sure you want to kick 'TESTER' from '${workspace?.name}' workspace?`}
+                      </DialogDescription>
+            
+                    </DialogHeader>
+          
+            
+                    <DialogFooter>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        // disabled={leaveWorkspaceLoading}
+                        onClick={() => setKickMemberDialog(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        // disabled={leaveWorkspaceLoading}
+                        // onClick={handleLeaveWorkspace}
+                      >
+                        {/* {leaveWorkspaceLoading 
+                            ?  */}
+                          <LoaderIcon 
+                            size="xl"
+                          />
+                            {/* : 
+                          "Leave workspace"
+                        } */}
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
 
       <InviteMemberDialog open={inviteOpen} onOpenChange={setInviteOpen} />
 
@@ -335,10 +392,12 @@ export default function TeamCard() {
 
       <Dialog open={roleInfoOpen} onOpenChange={setRoleInfoOpen}>
         <DialogContent className="w-[calc(100%-20rem)]! max-w-none!">
+
           <DialogHeader>
             <DialogTitle>Workspace role permissions</DialogTitle>
             <DialogDescription>Each role controls what a member can access and manage in the workspace.</DialogDescription>
           </DialogHeader>
+
           <div className="grid gap-3 sm:grid-cols-2">
             {(Object.keys(rolePermissions) as Role[]).map((role) => (
               <div key={role} className="rounded-lg border p-4">

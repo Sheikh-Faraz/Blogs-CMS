@@ -64,7 +64,7 @@ POSTPONDED FOR NOW
 <!-- -- Add the delete workspace at the end and if only one default workspace then                  -- DONE FOR NOW -->
 <!--    do not allow to delete -->
 
--- Add a way so that the member can leave the workspace
+<!-- -- Add a way so that the member can leave the workspace                                        -- DONE -->
 
 
 

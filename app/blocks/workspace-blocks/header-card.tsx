@@ -105,7 +105,7 @@ export default function HeaderCard() {
     const { 
       fetchUser, 
 
-      CurrentActiveWorkspace, 
+      // CurrentActiveWorkspace, 
       workspace,
     } = useUser();
 
@@ -117,7 +117,7 @@ export default function HeaderCard() {
     useEffect(() => {
 
         fetchUser();                // Fetch the authorized/current user's info
-        CurrentActiveWorkspace();   // Fetch the current active workspace details
+        // CurrentActiveWorkspace();   // Fetch the current active workspace details
 
     }, [])
 

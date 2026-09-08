@@ -116,4 +116,111 @@ export async function PATCH(
       { status: 500 }
     );
   }
+};
+
+
+
+// Kick a member from the workspace
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ workspaceId: string; membershipId: string }> }
+) {
+  try {
+    await connectDB();
+
+    const { workspaceId, membershipId } = await params;
+
+    const user = await getCurrentUser(req);
+
+    if (!user) {
+      return NextResponse.json(
+        { message: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    // Find the person performing the action
+    const actorMembership = await Membership.findOne({
+      user: user._id,
+      workspace: workspaceId,
+    });
+
+    if (!actorMembership) {
+      return NextResponse.json(
+        { message: "You are not a member of this workspace" },
+        { status: 403 }
+      );
+    }
+
+    const actorRole = actorMembership.role as WorkspaceRole;
+
+    // Must have permission to manage members
+    if (!hasPermission(actorRole, "MANAGE_MEMBER_ROLES")) {
+      return NextResponse.json(
+        { message: "You don't have permission to kick members" },
+        { status: 403 }
+      );
+    }
+
+    // Find target membership
+    const targetMembership = await Membership.findOne({
+      _id: membershipId,
+      workspace: workspaceId,
+    });
+
+    if (!targetMembership) {
+      return NextResponse.json(
+        { message: "Member not found in this workspace" },
+        { status: 404 }
+      );
+    }
+
+    const targetRole = targetMembership.role as WorkspaceRole;
+
+    // Cannot kick yourself
+    if (targetMembership.user.toString() === user._id.toString()) {
+      return NextResponse.json(
+        { message: "You cannot kick yourself. Use Leave Workspace instead.", },
+        { status: 400 }
+      );
+    }
+
+    // Owner cannot be kicked
+    if (targetRole === "OWNER") {
+      return NextResponse.json(
+        { message: "The workspace owner cannot be kicked", },
+        { status: 403 }
+      );
+    }
+
+    // Check whether actor can manage this target's role
+    if (!canManageTargetRole(actorRole, targetRole)) {
+      return NextResponse.json(
+        { message: "You don't have permission to kick this member", },
+        { status: 403 }
+      );
+    }
+
+    // Remove membership
+    await Membership.deleteOne({
+      _id: targetMembership._id,
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: "Member removed from the workspace",
+    });
+  } catch (error) {
+    console.error("Kick member error:", error);
+
+    return NextResponse.json(
+      {
+        message:
+          error instanceof Error
+            ? error.message
+            : "Failed to remove member",
+      },
+      { status: 500 }
+    );
+  }
 }

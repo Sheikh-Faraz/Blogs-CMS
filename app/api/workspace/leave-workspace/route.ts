@@ -85,11 +85,48 @@ export async function DELETE(req: NextRequest) {
       _id: membership._id,
     });
 
-    return NextResponse.json({
-      success: true,
-      message: "You have left the workspace",
-      leavingActiveWorkspace,
+
+    const defaultWorkspaceId = user.defaultWorkspace._id;
+
+    if (!defaultWorkspaceId) {
+    return NextResponse.json(
+        { error: "No default workspace found" },
+        { status: 404 }
+    );
+    }
+
+
+    // return NextResponse.json({
+    //   success: true,
+    //   message: "You have left the workspace",
+    //   leavingActiveWorkspace,
+    // });
+
+    const response = NextResponse.json({
+        success: true,
+        message: "You have left the workspace",
+        leavingActiveWorkspace,
+
+        newActiveWorkspaceId: leavingActiveWorkspace
+        ? defaultWorkspaceId.toString()
+        : null,
     });
+
+    // Only change active workspace if they were actually using
+    // the workspace they just left.
+    if (leavingActiveWorkspace) {
+    response.cookies.set("activeWorkspaceId", defaultWorkspaceId.toString(),
+        {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            path: "/",
+            maxAge: 60 * 60 * 24 * 7,
+        }
+    );
+    }
+
+    return response;
   } catch (error) {
     console.error("Leave workspace error:", error);
 

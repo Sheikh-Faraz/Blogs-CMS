@@ -10,6 +10,12 @@ import { useUser } from "@/context/User.context";
 // Permission to show buttons bases on role
 import { useWorkspacePermissions } from "@/hooks/use-workspace-permissions";
 
+// Services
+import { leaveWorkspaceApi, } from "@/services/auth.services";
+
+// For notifications
+import toast from "react-hot-toast";
+
 // Workspace Loading Skeleton
 import WorkspaceSkeleton from "@/app/blocks/loading/Workspace-Skeleton-Components/WorkspaceSkeleton";
 
@@ -33,6 +39,18 @@ import DeleteCard from "@/app/blocks/workspace-blocks/delete-card";
 import CreateWorkspaceDialog from "@/app/blocks/workspace-blocks/create-workspace-dialog";
 import PendingInvitationsCard from "@/app/blocks/workspace-blocks/pending-invitaionts-card";
 
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
+// Loading icons spinner
+import LoaderIcon from "@/app/blocks/loading/Loader";
 
 // Invite user/member dialog
 // import InviteMemberDialog from "@/app/blocks/workspace-blocks/invite-member-dialog";
@@ -58,12 +76,17 @@ export default function WorkspacePage() {
       fetchAnalytics,
       analytics,
 
+      workspace,     
       CurrentActiveWorkspace,
+      selectWorkspace,
       fetchPendingInvitations,
     } = useUser();
 
     // Permission according to role
     const { can, loading } = useWorkspacePermissions();
+
+    const [ openLeaveDialog, setOpenLeaveDialog ] = useState(false); 
+    const [ leaveWorkspaceLoading, setLeaveWorkspaceLoading ] = useState(false);
 
 
     useEffect(() => {
@@ -84,20 +107,50 @@ export default function WorkspacePage() {
       
     }, []);
 
-    // const currentMember =
-    //   members.find(
-    //     (member) =>
-    //       member.user._id === authUser?._id
-    //   );
-
-    // const canInvite = currentMember?.role === "OWNER" || currentMember?.role === "ADMIN";
-
 
     const handleCreateWorkspaceOpenChange = (open: boolean) => {
       setCreateWorkspaceOpen(open);
 
       if (!open && createWorkspaceRequested) {
         router.replace("/workspace");
+      }
+    };
+
+    
+    const handleLeaveWorkspace = async () => {
+      const workspaceId = workspace?._id;
+
+      if (!workspaceId) {
+        setOpenLeaveDialog(false);
+        setLeaveWorkspaceLoading(false);
+        toast.error("No active workspace found");
+        return;
+      }
+
+      setLeaveWorkspaceLoading(true);
+
+      try {
+        const res = await leaveWorkspaceApi(workspaceId);
+        const data = await res.json();
+
+        if (!res.ok) {
+          toast.error(data.message);
+          return;
+        };
+
+        if (data.leavingActiveWorkspace && data.newActiveWorkspaceId) {
+          await selectWorkspace(data.newActiveWorkspaceId);
+        }
+
+        setOpenLeaveDialog(false);
+        toast.success("You left the workspace");
+
+        // Refresh workspace/user context here
+      } catch (error) {
+        console.error("Failed to leave workspace:", error);
+        toast.error("Failed to leave workspace");
+      } finally {
+        setLeaveWorkspaceLoading(false);
       }
     };
 
@@ -116,10 +169,48 @@ export default function WorkspacePage() {
       />
 
 
-      {/* <InviteMemberDialog
-        open={inviteMemberOpen}
-        onOpenChange={setInviteMemberOpen}
-      /> */}
+      {/* Leave workspace dialog */}
+          <Dialog open={openLeaveDialog} onOpenChange={setOpenLeaveDialog}>
+            <DialogContent className="sm:max-w-md">
+              
+              <DialogHeader>
+                <DialogTitle>Leave workspace</DialogTitle>
+      
+                <DialogDescription className="my-2">
+                  {`Are you sure you want to leave '${workspace?.name}' workspace? You will lose access to all its blogs and content.`}
+                </DialogDescription>
+      
+              </DialogHeader>
+    
+      
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={leaveWorkspaceLoading}
+                  onClick={() => setOpenLeaveDialog(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  disabled={leaveWorkspaceLoading}
+                  onClick={handleLeaveWorkspace}
+                >
+                  {leaveWorkspaceLoading 
+                      ? 
+                    <LoaderIcon 
+                      size="xl"
+                    />
+                      : 
+                    "Leave workspace"
+                  }
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
     
     <div className="flex justify-between items-center px-4 mb-8">
       <p className="text-3xl font-bold">Current Workspace</p>
@@ -127,6 +218,8 @@ export default function WorkspacePage() {
       <div className="flex items-center gap-3">
 
           <button
+            disabled={leaveWorkspaceLoading}
+            onClick = {()=> setOpenLeaveDialog(true)}
             className="border py-2 px-3 bg-card text-card-foreground rounded-md flex gap-2 items-center hover:bg-muted"
           >
             <LeaveIcon className="mr-2 text-[#E85129]" />

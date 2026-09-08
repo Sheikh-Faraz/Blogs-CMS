@@ -95,7 +95,7 @@ export default function InvitationDetailsPage() {
     fetchWorkspaces,
     fetchReceivedInvitations,
 
-    selectWorkspace,
+    // selectWorkspace,
   } = useUser();
 
   const [invitation, setInvitation] = useState<InvitationDetails | null>(null);

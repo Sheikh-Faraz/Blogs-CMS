@@ -55,15 +55,16 @@ export async function DELETE(req: NextRequest) {
     // Get workspace, requester membership and blogs.
     const [
       workspace,
-      // requesterMembership,
       blogs,
+      // requesterMembership,
     ] = await Promise.all([
+
       Workspace.findById(workspaceId),
 
-      Membership.findOne({
-        user: userId,
-        workspace: workspaceId,
-      }),
+      // Membership.findOne({
+      //   user: userId,
+      //   workspace: workspaceId,
+      // }),
 
       Blog.find({
         workspace: workspaceId,
