@@ -2,18 +2,17 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 
-
-// Light & Dark Mode 
+// Light & Dark Mode
 import { ThemeProvider } from "@/providers/theme-provider";
 
-import { TooltipProvider } from "@/components/ui/tooltip"
-
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 // Context
-import { BlogProvider  } from "@/context/Blog.context";
-import { UserProvider  } from "@/context/User.context";
-import { LoadingProvider } from "@/context/Loading.context"; // Showing loading ui 
+import { BlogProvider } from "@/context/Blog.context";
+import { UserProvider } from "@/context/User.context";
+import { LoadingProvider } from "@/context/Loading.context";
 
+import WorkspaceAccessGuard from "@/components/workspace-access-guard";
 
 import { Toaster } from "react-hot-toast";
 
@@ -48,39 +47,29 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-inter">
-
-        {/* Context */}
         <BlogProvider>
-        <UserProvider>
+          <UserProvider>
+            <LoadingProvider>
+              <ThemeProvider>
+                <TooltipProvider>
+                  <WorkspaceAccessGuard>
+                    {children}
+                  </WorkspaceAccessGuard>
+                </TooltipProvider>
+              </ThemeProvider>
+            </LoadingProvider>
+          </UserProvider>
+        </BlogProvider>
 
-
-          <LoadingProvider>
-
-
-          {/* Light & Dark Mode */}
-          <ThemeProvider>
-            <TooltipProvider>
-              {children}
-            </TooltipProvider>
-          </ThemeProvider>
-
-        {/* Toast Notifications */}
         <Toaster
           position="top-center"
           toastOptions={{
-              style: {
-                      background: "#333",
-                      color: "#fff",
-                      },
-                  }}
-          />
-              
-              </LoadingProvider>
-
-
-        </UserProvider>
-
-        </BlogProvider>
+            style: {
+              background: "#333",
+              color: "#fff",
+            },
+          }}
+        />
       </body>
     </html>
   );
