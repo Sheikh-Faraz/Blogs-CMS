@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Membership from "@/models/Membership";
+import WorkspaceRemoval from "@/models/WorkspaceRemoval";
 import { getCurrentUser } from "@/lib/getCurrentUser";
 import { canManageTargetRole, hasPermission, type WorkspaceRole } from "@/lib/permissions";
 
@@ -116,30 +117,22 @@ export async function PATCH(
       { status: 500 }
     );
   }
-};
+}
 
-
-
-// Kick a member from the workspace
 export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ workspaceId: string; membershipId: string }> }
 ) {
   try {
-    await connectDB();
+    await dbConnect();
 
     const { workspaceId, membershipId } = await params;
-
     const user = await getCurrentUser(req);
 
     if (!user) {
-      return NextResponse.json(
-        { message: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    // Find the person performing the action
     const actorMembership = await Membership.findOne({
       user: user._id,
       workspace: workspaceId,
@@ -154,7 +147,6 @@ export async function DELETE(
 
     const actorRole = actorMembership.role as WorkspaceRole;
 
-    // Must have permission to manage members
     if (!hasPermission(actorRole, "MANAGE_MEMBER_ROLES")) {
       return NextResponse.json(
         { message: "You don't have permission to kick members" },
@@ -162,7 +154,6 @@ export async function DELETE(
       );
     }
 
-    // Find target membership
     const targetMembership = await Membership.findOne({
       _id: membershipId,
       workspace: workspaceId,
@@ -177,34 +168,44 @@ export async function DELETE(
 
     const targetRole = targetMembership.role as WorkspaceRole;
 
-    // Cannot kick yourself
     if (targetMembership.user.toString() === user._id.toString()) {
       return NextResponse.json(
-        { message: "You cannot kick yourself. Use Leave Workspace instead.", },
+        { message: "You cannot kick yourself. Use Leave Workspace instead." },
         { status: 400 }
       );
     }
 
-    // Owner cannot be kicked
     if (targetRole === "OWNER") {
       return NextResponse.json(
-        { message: "The workspace owner cannot be kicked", },
+        { message: "The workspace owner cannot be kicked" },
         { status: 403 }
       );
     }
 
-    // Check whether actor can manage this target's role
     if (!canManageTargetRole(actorRole, targetRole)) {
       return NextResponse.json(
-        { message: "You don't have permission to kick this member", },
+        { message: "You don't have permission to kick this member" },
         { status: 403 }
       );
     }
 
-    // Remove membership
-    await Membership.deleteOne({
-      _id: targetMembership._id,
-    });
+    // Record the reason before deleting membership so the kicked user's
+    // next workspace validation can distinguish a kick from other access loss.
+    await WorkspaceRemoval.findOneAndUpdate(
+      {
+        user: targetMembership.user,
+        workspace: workspaceId,
+        reason: "KICKED",
+      },
+      {
+        user: targetMembership.user,
+        workspace: workspaceId,
+        reason: "KICKED",
+      },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
+
+    await Membership.deleteOne({ _id: targetMembership._id });
 
     return NextResponse.json({
       success: true,
