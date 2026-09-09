@@ -1,9 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useUser } from "@/context/User.context";
-import { getWorkspaceApi } from "@/services/auth.services";
+import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+
+import { useUser } from "@/context/User.context";
+import { useBlog } from "@/context/Blog.context";
+import { getWorkspaceApi, selectWorkspaceApi } from "@/services/auth.services";
 
 const CHECK_INTERVAL = 15_000;
 
@@ -22,8 +25,10 @@ export default function WorkspaceAccessGuard({
     authUser,
     workspace,
     CurrentActiveWorkspace,
-    selectWorkspace,
+    fetchAnalytics,
   } = useUser();
+  const { getAllBlogs } = useBlog();
+  const router = useRouter();
 
   const [recovering, setRecovering] = useState(false);
   const recoveryInProgress = useRef(false);
@@ -37,8 +42,8 @@ export default function WorkspaceAccessGuard({
         workspace?: unknown;
       };
 
-      // The server may have silently recovered an ordinary stale workspace
-      // to the user's valid default workspace.
+      // Ordinary stale/invalid active workspace is recovered by the server
+      // to the user's valid default workspace and returned as a 200.
       if (res.ok) {
         if (data.workspace) {
           await CurrentActiveWorkspace();
@@ -46,12 +51,9 @@ export default function WorkspaceAccessGuard({
         return;
       }
 
-      if (res.status !== 403) return;
-
-      // A normal access denial should not be treated as a kick.
-      // The server already handles ordinary stale workspace access by
-      // recovering to the default workspace when possible.
-      if (data.code !== "WORKSPACE_ACCESS_REVOKED") return;
+      if (res.status !== 403 || data.code !== "WORKSPACE_ACCESS_REVOKED") {
+        return;
+      }
 
       if (!data.defaultWorkspaceId) return;
 
@@ -63,7 +65,12 @@ export default function WorkspaceAccessGuard({
       );
 
       try {
-        await selectWorkspace(data.defaultWorkspaceId);
+        await selectWorkspaceApi(data.defaultWorkspaceId);
+        await CurrentActiveWorkspace();
+        await fetchAnalytics();
+        await getAllBlogs();
+        router.push("/blogs");
+
         toast.success("You were removed from the workspace.", {
           id: toastId,
           duration: 3500,
@@ -78,10 +85,16 @@ export default function WorkspaceAccessGuard({
         recoveryInProgress.current = false;
       }
     } catch {
-      // Access checks are a background safety mechanism. Network/server
-      // failures should not interrupt the user's current UI.
+      // Background access validation should not interrupt the UI when the
+      // network/server is temporarily unavailable.
     }
-  }, [authUser, CurrentActiveWorkspace, selectWorkspace]);
+  }, [
+    authUser,
+    CurrentActiveWorkspace,
+    fetchAnalytics,
+    getAllBlogs,
+    router,
+  ]);
 
   useEffect(() => {
     if (!authUser || !workspace) return;
