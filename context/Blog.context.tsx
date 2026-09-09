@@ -306,6 +306,8 @@ export const BlogProvider = ({ children }: { children: React.ReactNode }) => {
         formData
       );
 
+      
+
       setBlogs((prev) =>
         prev.map((blog) =>
           blog._id === id ? updated : blog

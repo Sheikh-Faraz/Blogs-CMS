@@ -47,7 +47,7 @@ export async function PUT(
     });
 
     if (!existingBlog) {
-      return NextResponse.json({ error: "Blog not found" }, { status: 404 });
+      return NextResponse.json({ error: "Blog not found in your workspace" }, { status: 404 });
     }
 
     const formData = await req.formData();
