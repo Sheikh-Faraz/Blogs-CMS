@@ -14,48 +14,51 @@ export default function WorkspaceAccessHandler() {
   const handling = useRef(false);
   const [recovering, setRecovering] = useState(false);
 
-  useEffect(() => {
-    const handleAccessError = async (event: Event) => {
-      const detail = (event as CustomEvent<WorkspaceAccessEvent>).detail;
+  const recoverToDefault = async (detail: WorkspaceAccessEvent) => {
+    if (handling.current || !authUser || !detail.defaultWorkspaceId) return;
 
-      if (!detail || handling.current || !authUser) return;
-      if (!detail.defaultWorkspaceId) return;
+    handling.current = true;
+    setRecovering(true);
 
-      handling.current = true;
-      setRecovering(true);
+    const isRevoked = detail.code === "WORKSPACE_ACCESS_REVOKED";
+    const toastId = isRevoked
+      ? toast.loading(
+          "You were removed from this workspace. Switching to your default workspace..."
+        )
+      : undefined;
 
-      const isRevoked = detail.code === "WORKSPACE_ACCESS_REVOKED";
-      const toastId = isRevoked
-        ? toast.loading(
-            "You were removed from this workspace. Switching to your default workspace..."
-          )
-        : undefined;
+    try {
+      await selectWorkspaceApi(detail.defaultWorkspaceId);
+      await CurrentActiveWorkspace();
+      await fetchAnalytics();
 
-      try {
-        await selectWorkspaceApi(detail.defaultWorkspaceId);
-        await CurrentActiveWorkspace();
-        await fetchAnalytics();
+      router.push("/blogs");
+      router.refresh();
 
-        router.push("/blogs");
-        router.refresh();
-
-        if (toastId) {
-          toast.success("You were removed from the workspace.", {
-            id: toastId,
-            duration: 3500,
-          });
-        }
-      } catch {
-        if (toastId) {
-          toast.error("We couldn't switch to your default workspace.", {
-            id: toastId,
-            duration: 4000,
-          });
-        }
-      } finally {
-        setRecovering(false);
-        handling.current = false;
+      if (toastId) {
+        toast.success("You were removed from the workspace.", {
+          id: toastId,
+          duration: 3500,
+        });
       }
+    } catch {
+      if (toastId) {
+        toast.error("We couldn't switch to your default workspace.", {
+          id: toastId,
+          duration: 4000,
+        });
+      }
+    } finally {
+      setRecovering(false);
+      handling.current = false;
+    }
+  };
+
+  useEffect(() => {
+    const handleAccessError = (event: Event) => {
+      void recoverToDefault(
+        (event as CustomEvent<WorkspaceAccessEvent>).detail
+      );
     };
 
     window.addEventListener("workspace-access-error", handleAccessError);
@@ -63,24 +66,31 @@ export default function WorkspaceAccessHandler() {
     return () => {
       window.removeEventListener("workspace-access-error", handleAccessError);
     };
-  }, [authUser, CurrentActiveWorkspace, fetchAnalytics, router]);
+  }, [authUser]);
 
-  // Also handle an ordinary stale active-workspace cookie when the app
-  // starts or the user navigates back to a page.
+  // Check the active workspace when authentication becomes available.
+  // There is no polling: this runs only when auth state changes/mounts.
   useEffect(() => {
     if (!authUser || handling.current) return;
 
-    const recoverStaleWorkspace = async () => {
+    const validateActiveWorkspace = async () => {
       try {
         const response = await getWorkspaceApi();
-        if (!response.ok) return;
-
-        const data = (await response.json()) as {
+        const data = (await response.json()) as WorkspaceAccessEvent & {
           recovered?: boolean;
+          previousWorkspaceId?: string;
           workspace?: unknown;
         };
 
-        if (data.recovered) {
+        if (
+          response.status === 403 &&
+          data.code === "WORKSPACE_ACCESS_REVOKED"
+        ) {
+          await recoverToDefault(data);
+          return;
+        }
+
+        if (response.ok && data.recovered) {
           await CurrentActiveWorkspace();
           await fetchAnalytics();
           router.push("/blogs");
@@ -91,7 +101,7 @@ export default function WorkspaceAccessHandler() {
       }
     };
 
-    recoverStaleWorkspace();
+    validateActiveWorkspace();
   }, [authUser, CurrentActiveWorkspace, fetchAnalytics, router]);
 
   if (!recovering) return null;
