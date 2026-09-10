@@ -15,20 +15,14 @@ export async function GET(req: NextRequest) {
     const user = await getCurrentUser(req);
 
     if (!user) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const cookieStore = await cookies();
     const activeWorkspaceId = cookieStore.get("activeWorkspaceId")?.value;
 
     if (!activeWorkspaceId) {
-      return NextResponse.json(
-        { error: "No active workspace" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "No active workspace" }, { status: 404 });
     }
 
     const membership = await Membership.findOne({
@@ -40,10 +34,7 @@ export async function GET(req: NextRequest) {
       const workspace = await Workspace.findById(activeWorkspaceId);
 
       if (!workspace) {
-        return NextResponse.json(
-          { error: "Workspace not found" },
-          { status: 404 }
-        );
+        return NextResponse.json({ error: "Workspace not found" }, { status: 404 });
       }
 
       return NextResponse.json({
@@ -52,8 +43,6 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    // The user no longer belongs to the active workspace.
-    // Distinguish a kick from an ordinary stale/invalid workspace.
     const removal = await WorkspaceRemoval.findOne({
       user: user._id,
       workspace: activeWorkspaceId,
@@ -74,8 +63,6 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Not a member for another reason. Recover the active workspace
-    // to a valid default workspace when possible.
     if (!defaultWorkspaceId) {
       return NextResponse.json(
         {
@@ -108,6 +95,8 @@ export async function GET(req: NextRequest) {
     const response = NextResponse.json({
       workspace: defaultWorkspace,
       recovered: true,
+      recoveryCode: "WORKSPACE_ACCESS_RECOVERED",
+      defaultWorkspaceId,
       previousWorkspaceId: activeWorkspaceId,
     });
 
