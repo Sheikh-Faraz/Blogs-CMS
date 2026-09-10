@@ -19,10 +19,8 @@ const notifyWorkspaceAccess = (detail: WorkspaceAccessEvent) => {
 };
 
 /**
- * Shared client-side fetch wrapper for protected API calls.
- * Normal responses are returned untouched. When a workspace-scoped API
- * denies access, we ask the canonical current-workspace endpoint why access
- * was lost and notify the recovery handler once the reason is known.
+ * Shared client-side fetch wrapper.
+ * Workspace access failures are identified by the API error code directly.
  */
 export const apiFetch = async (
   input: RequestInfo | URL,
@@ -41,60 +39,35 @@ export const apiFetch = async (
   }
 
   let responseData: Record<string, unknown> = {};
+
   try {
     responseData = (await response.clone().json()) as Record<string, unknown>;
   } catch {
     return response;
   }
 
-  const responseMessage =
-    typeof responseData.message === "string" ? responseData.message : "";
-  const responseError =
-    typeof responseData.error === "string" ? responseData.error : "";
+  const code = responseData.code;
 
-  const looksLikeWorkspaceAccessError =
-    responseMessage.toLowerCase().includes("not a member") ||
-    responseError.toLowerCase().includes("not a member");
-
-  if (!looksLikeWorkspaceAccessError) {
+  if (
+    code !== "WORKSPACE_ACCESS_REVOKED" &&
+    code !== "WORKSPACE_ACCESS_DENIED"
+  ) {
     return response;
   }
 
-  try {
-    const accessResponse = await fetch(
-      `${BASE_URL}/api/workspace/currentActiveWorkspace`,
-      {
-        cache: "no-store",
-        method: "GET",
-        credentials: "include",
-      }
-    );
-
-    const accessData = (await accessResponse.json()) as WorkspaceAccessEvent & {
-      recovered?: boolean;
-    };
-
-    if (accessData.code === "WORKSPACE_ACCESS_REVOKED") {
-      notifyWorkspaceAccess({
-        code: accessData.code,
-        workspaceId: accessData.workspaceId,
-        defaultWorkspaceId: accessData.defaultWorkspaceId,
-        message: accessData.error || responseMessage || responseError,
-      });
-      return response;
-    }
-
-    if (accessData.recovered && accessData.defaultWorkspaceId) {
-      notifyWorkspaceAccess({
-        code: "WORKSPACE_ACCESS_DENIED",
-        workspaceId: accessData.previousWorkspaceId,
-        defaultWorkspaceId: accessData.defaultWorkspaceId,
-        message: accessData.error || responseMessage || responseError,
-      });
-    }
-  } catch {
-    // Do not replace the original API response when recovery lookup fails.
-  }
+  notifyWorkspaceAccess({
+    code,
+    workspaceId:
+      typeof responseData.workspaceId === "string"
+        ? responseData.workspaceId
+        : undefined,
+    defaultWorkspaceId:
+      typeof responseData.defaultWorkspaceId === "string"
+        ? responseData.defaultWorkspaceId
+        : null,
+    message:
+      typeof responseData.error === "string" ? responseData.error : undefined,
+  });
 
   return response;
 };

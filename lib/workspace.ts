@@ -3,47 +3,37 @@ import { cookies } from "next/headers";
 import Membership from "@/models/Membership";
 import Workspace from "@/models/Workspace";
 import User from "@/models/User";
+import { requireWorkspaceMembership } from "@/lib/workspace-access";
 
-export async function getActiveWorkspace( userId: string ) {
+export async function getActiveWorkspace(userId: string) {
+  const cookieStore = await cookies();
+  const activeWorkspaceId = cookieStore.get("activeWorkspaceId")?.value;
 
-    const cookieStore = await cookies();
+  // If an active workspace is selected, access is checked centrally.
+  if (activeWorkspaceId) {
+    const membership = await requireWorkspaceMembership(
+      userId,
+      activeWorkspaceId
+    );
 
-    const activeWorkspaceId = cookieStore.get("activeWorkspaceId")?.value;
+    const workspace = await Workspace.findById(membership.workspace);
 
-      // STEP 1
-      // Try cookie workspace
-
-      // Get the current active workspace
-      if (activeWorkspaceId) {
-        const membership = await Membership.findOne({
-          user: userId,
-          workspace: activeWorkspaceId,
-      });
-
-
-      // Check if the user is a member of the workspace
-      if (membership) {
-        const workspace = await Workspace.findById(activeWorkspaceId);
-      
-      if (workspace) {
-        return workspace;
-      }
-
-    }
+    if (workspace) return workspace;
   }
 
-  // STEP 2
-  // Fallback to default workspace
-
-  const user = await User.findById(userId);
+  // No active workspace: use the user's valid default workspace.
+  const user = await User.findById(userId).select("defaultWorkspace");
 
   if (!user?.defaultWorkspace) {
     throw new Error("User has no default workspace");
   }
 
-  const workspace = await Workspace.findById(
-    user.defaultWorkspace
+  await requireWorkspaceMembership(
+    userId,
+    user.defaultWorkspace.toString()
   );
+
+  const workspace = await Workspace.findById(user.defaultWorkspace);
 
   if (!workspace) {
     throw new Error("Default workspace not found");

@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
-import { getCurrentUser } from "@/lib/getCurrentUser";
 import connectDB from "@/lib/db";
-
+import { getCurrentUser } from "@/lib/getCurrentUser";
+import {
+  getWorkspaceFallback,
+  requireWorkspaceMembership,
+  WorkspaceAccessError,
+} from "@/lib/workspace-access";
 import Workspace from "@/models/Workspace";
-import Membership from "@/models/Membership";
-import WorkspaceRemoval from "@/models/WorkspaceRemoval";
+import User from "@/models/User";
 
 export async function GET(req: NextRequest) {
   try {
@@ -21,83 +24,77 @@ export async function GET(req: NextRequest) {
     const cookieStore = await cookies();
     const activeWorkspaceId = cookieStore.get("activeWorkspaceId")?.value;
 
-    if (!activeWorkspaceId) {
-      return NextResponse.json({ error: "No active workspace" }, { status: 404 });
-    }
+    if (activeWorkspaceId) {
+      try {
+        await requireWorkspaceMembership(
+          user._id.toString(),
+          activeWorkspaceId
+        );
 
-    const membership = await Membership.findOne({
-      user: user._id,
-      workspace: activeWorkspaceId,
-    });
+        const workspace = await Workspace.findById(activeWorkspaceId);
 
-    if (membership) {
-      const workspace = await Workspace.findById(activeWorkspaceId);
+        if (!workspace) {
+          return NextResponse.json(
+            { error: "Workspace not found" },
+            { status: 404 }
+          );
+        }
 
-      if (!workspace) {
-        return NextResponse.json({ error: "Workspace not found" }, { status: 404 });
+        return NextResponse.json({ workspace, recovered: false });
+      } catch (error) {
+        if (error instanceof WorkspaceAccessError) {
+          return NextResponse.json(
+            {
+              error: error.message,
+              code: error.code,
+              workspaceId: error.workspaceId,
+              defaultWorkspaceId: error.defaultWorkspaceId,
+            },
+            { status: 403 }
+          );
+        }
+
+        throw error;
       }
-
-      return NextResponse.json({
-        workspace,
-        recovered: false,
-      });
     }
 
-    const removal = await WorkspaceRemoval.findOne({
-      user: user._id,
-      workspace: activeWorkspaceId,
-      reason: "KICKED",
-    }).sort({ createdAt: -1 });
+    const userWithDefault = await User.findById(user._id).select(
+      "defaultWorkspace"
+    );
 
-    const defaultWorkspaceId = user.defaultWorkspace?.toString();
-
-    if (removal) {
+    if (!userWithDefault?.defaultWorkspace) {
       return NextResponse.json(
-        {
-          error: "You were removed from this workspace",
-          code: "WORKSPACE_ACCESS_REVOKED",
-          workspaceId: activeWorkspaceId,
-          defaultWorkspaceId: defaultWorkspaceId || null,
-        },
-        { status: 403 }
+        { error: "No active workspace" },
+        { status: 404 }
       );
     }
+
+    const defaultWorkspaceId = await getWorkspaceFallback(
+      user._id.toString()
+    );
 
     if (!defaultWorkspaceId) {
       return NextResponse.json(
-        {
-          error: "You are not a member of this workspace",
-          code: "WORKSPACE_ACCESS_DENIED",
-        },
-        { status: 403 }
+        { error: "No workspace available" },
+        { status: 404 }
       );
     }
 
-    const defaultMembership = await Membership.findOne({
-      user: user._id,
-      workspace: defaultWorkspaceId,
-    });
+    const workspace = await Workspace.findById(defaultWorkspaceId);
 
-    const defaultWorkspace = defaultMembership
-      ? await Workspace.findById(defaultWorkspaceId)
-      : null;
-
-    if (!defaultMembership || !defaultWorkspace) {
+    if (!workspace) {
       return NextResponse.json(
-        {
-          error: "You are not a member of this workspace",
-          code: "WORKSPACE_ACCESS_DENIED",
-        },
-        { status: 403 }
+        { error: "Workspace not found" },
+        { status: 404 }
       );
     }
 
     const response = NextResponse.json({
-      workspace: defaultWorkspace,
+      workspace,
       recovered: true,
       recoveryCode: "WORKSPACE_ACCESS_RECOVERED",
       defaultWorkspaceId,
-      previousWorkspaceId: activeWorkspaceId,
+      previousWorkspaceId: null,
     });
 
     response.cookies.set("activeWorkspaceId", defaultWorkspaceId, {

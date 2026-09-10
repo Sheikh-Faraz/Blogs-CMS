@@ -8,17 +8,43 @@ import Blog from "@/models/Blog";
 import Category from "@/models/Category";
 import Tag from "@/models/Tags";
 import Membership from "@/models/Membership";
+// import { requirePermission, type Permission } from "@/lib/permissions";
+import { WorkspaceAccessError } from "@/lib/workspace-access";
+
+import {
+  requirePermission,
+  hasPermission,
+  type Permission,
+} from "@/lib/permissions";
 
 import { getCurrentUser } from "@/lib/getCurrentUser";                // Get's the current authenticated user
 import { getActiveWorkspace } from "@/lib/workspace";                 // Get's the currect active workspace
-import { hasPermission, type Permission } from "@/lib/permissions";   // Check if the role of user has permission to perform the action 
+// import { hasPermission, type Permission } from "@/lib/permissions";   // Check if the role of user has permission to perform the action 
 import { uploadToCloudinary } from "@/lib/cloudinary-upload";         // Used for uploading images to cloudinary 
 
 const getPermissionResponse = (permission: Permission) =>
   NextResponse.json(
-    { error: `You do not have permission to ${permission.toLowerCase().replaceAll("_", " ")}` },
+    {
+      error: `You do not have permission to ${permission
+        .toLowerCase()
+        .replaceAll("_", " ")}`,
+    },
     { status: 403 }
   );
+
+const getWorkspaceAccessResponse = (error: unknown) => {
+  if (!(error instanceof WorkspaceAccessError)) return null;
+
+  return NextResponse.json(
+    {
+      error: error.message,
+      code: error.code,
+      workspaceId: error.workspaceId,
+      defaultWorkspaceId: error.defaultWorkspaceId,
+    },
+    { status: error.status }
+  );
+};
 
 export async function GET(req: NextRequest) {
   try {
@@ -30,6 +56,11 @@ export async function GET(req: NextRequest) {
     }
 
     const workspace = await getActiveWorkspace(user._id.toString());
+    await requirePermission(
+      user._id.toString(),
+      workspace._id.toString(),
+      "VIEW_BLOGS"
+    );
     
     const membership = await Membership.findOne({
       user: user._id,
@@ -65,6 +96,9 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(enrichedBlogs);
   } catch (error) {
+    const accessResponse = getWorkspaceAccessResponse(error);
+    if (accessResponse) return accessResponse;
+
     console.error("Error fetching blogs:", error);
     return NextResponse.json({ error: "Failed to fetch blogs" }, { status: 500 });
   }
@@ -80,18 +114,11 @@ export async function POST(req: NextRequest) {
     }
 
     const workspace = await getActiveWorkspace(user._id.toString());
-    const membership = await Membership.findOne({
-      user: user._id,
-      workspace: workspace._id,
-    });
-
-    if (!membership) {
-      return NextResponse.json({ error: "Not a member of this workspace" }, { status: 403 });
-    }
-
-    if (!hasPermission(membership.role, "CREATE_BLOG")) {
-      return getPermissionResponse("CREATE_BLOG");
-    }
+    await requirePermission(
+      user._id.toString(),
+      workspace._id.toString(),
+      "CREATE_BLOG"
+    );
 
     const formData = await req.formData();
     const title = formData.get("title")?.toString().trim() || "";
@@ -189,6 +216,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(populatedBlog, { status: 201 });
   } catch (error) {
+    const accessResponse = getWorkspaceAccessResponse(error);
+    if (accessResponse) return accessResponse;
+
     console.error("Error creating blog:", error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Failed to create blog" },
