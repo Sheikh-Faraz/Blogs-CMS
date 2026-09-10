@@ -12,6 +12,8 @@ import { BlogProvider } from "@/context/Blog.context";
 import { UserProvider } from "@/context/User.context";
 import { LoadingProvider } from "@/context/Loading.context";
 
+import WorkspaceAccessHandler from "@/components/workspace-access-handler";
+
 import { Toaster } from "react-hot-toast";
 
 const inter = Inter({
@@ -49,7 +51,10 @@ export default function RootLayout({
           <UserProvider>
             <LoadingProvider>
               <ThemeProvider>
-                <TooltipProvider>{children}</TooltipProvider>
+                <TooltipProvider>
+                  {children}
+                  <WorkspaceAccessHandler />
+                </TooltipProvider>
               </ThemeProvider>
             </LoadingProvider>
           </UserProvider>
