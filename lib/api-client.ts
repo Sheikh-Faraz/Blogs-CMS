@@ -3,6 +3,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 export type WorkspaceAccessEvent = {
   code: "WORKSPACE_ACCESS_REVOKED" | "WORKSPACE_ACCESS_DENIED";
   workspaceId?: string;
+  previousWorkspaceId?: string;
   defaultWorkspaceId?: string | null;
   message?: string;
 };
@@ -21,7 +22,7 @@ const notifyWorkspaceAccess = (detail: WorkspaceAccessEvent) => {
  * Shared client-side fetch wrapper for protected API calls.
  * Normal responses are returned untouched. When a workspace-scoped API
  * denies access, we ask the canonical current-workspace endpoint why access
- * was lost and notify the UserProvider once recovery information is known.
+ * was lost and notify the recovery handler once the reason is known.
  */
 export const apiFetch = async (
   input: RequestInfo | URL,
