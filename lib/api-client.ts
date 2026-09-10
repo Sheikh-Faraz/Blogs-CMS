@@ -35,7 +35,6 @@ export const apiFetch = async (
 
   const url = typeof input === "string" ? input : input.toString();
 
-  // This endpoint is itself the source of truth for workspace recovery.
   if (url.includes("/api/workspace/currentActiveWorkspace")) {
     return response;
   }
@@ -47,7 +46,6 @@ export const apiFetch = async (
     return response;
   }
 
-  // Only workspace access failures should trigger recovery handling.
   const responseMessage =
     typeof responseData.message === "string" ? responseData.message : "";
   const responseError =
@@ -71,15 +69,24 @@ export const apiFetch = async (
       }
     );
 
-    const accessData = (await accessResponse.json()) as WorkspaceAccessEvent;
+    const accessData = (await accessResponse.json()) as WorkspaceAccessEvent & {
+      recovered?: boolean;
+    };
 
-    if (
-      accessData.code === "WORKSPACE_ACCESS_REVOKED" ||
-      accessData.code === "WORKSPACE_ACCESS_DENIED"
-    ) {
+    if (accessData.code === "WORKSPACE_ACCESS_REVOKED") {
       notifyWorkspaceAccess({
         code: accessData.code,
         workspaceId: accessData.workspaceId,
+        defaultWorkspaceId: accessData.defaultWorkspaceId,
+        message: accessData.error || responseMessage || responseError,
+      });
+      return response;
+    }
+
+    if (accessData.recovered && accessData.defaultWorkspaceId) {
+      notifyWorkspaceAccess({
+        code: "WORKSPACE_ACCESS_DENIED",
+        workspaceId: accessData.previousWorkspaceId,
         defaultWorkspaceId: accessData.defaultWorkspaceId,
         message: accessData.error || responseMessage || responseError,
       });
