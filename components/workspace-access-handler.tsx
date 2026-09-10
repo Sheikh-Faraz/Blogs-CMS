@@ -68,8 +68,8 @@ export default function WorkspaceAccessHandler() {
     };
   }, [authUser]);
 
-  // Check the active workspace when authentication becomes available.
-  // There is no polling: this runs only when auth state changes/mounts.
+  // Validate the active workspace when authentication becomes available.
+  // There is no polling: this runs on mount and when the authenticated user changes.
   useEffect(() => {
     if (!authUser || handling.current) return;
 
@@ -102,7 +102,7 @@ export default function WorkspaceAccessHandler() {
     };
 
     validateActiveWorkspace();
-  }, [authUser, CurrentActiveWorkspace, fetchAnalytics, router]);
+  }, [authUser]);
 
   if (!recovering) return null;
 
