@@ -1,4 +1,7 @@
-import Membership from "@/models/Membership";
+import {
+  requireWorkspaceMembership,
+  requireWorkspacePermission,
+} from "@/lib/workspace-access";
 import {
   canManageTargetRole,
   getPermissionsForRole,
@@ -17,23 +20,10 @@ export {
   hasPermission,
 };
 
+export const requireMembership = requireWorkspaceMembership;
+
 export const requirePermission = async (
   userId: string,
   workspaceId: string,
   permission: Permission
-) => {
-  const membership = await Membership.findOne({
-    user: userId,
-    workspace: workspaceId,
-  });
-
-  if (!membership) {
-    throw new Error("You are not a member of this workspace");
-  }
-
-  if (!hasPermission(membership.role as WorkspaceRole, permission)) {
-    throw new Error("Insufficient permissions");
-  }
-
-  return membership;
-};
+) => requireWorkspacePermission(userId, workspaceId, permission);
