@@ -27,3 +27,24 @@ export const updateWorkspaceMemberRoleApi = async (
 
   return result;
 };
+
+export const kickWorkspaceMemberApi = async (
+  workspaceId: string,
+  membershipId: string
+) => {
+  const res = await apiFetch(
+    `${BASE_URL}/api/workspace/${workspaceId}/members/${membershipId}`,
+    {
+      method: "DELETE",
+      credentials: "include",
+    }
+  );
+
+  const result = await res.json();
+
+  if (!res.ok) {
+    throw new Error(result.message || "Failed to remove member");
+  }
+
+  return result;
+};
