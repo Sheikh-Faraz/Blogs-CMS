@@ -38,9 +38,7 @@ export async function getActiveWorkspace( userId: string ) {
   const user = await User.findById(userId);
 
   if (!user?.defaultWorkspace) {
-    throw new Error(
-      "User has no default workspace"
-    );
+    throw new Error("User has no default workspace");
   }
 
   const workspace = await Workspace.findById(
@@ -48,9 +46,7 @@ export async function getActiveWorkspace( userId: string ) {
   );
 
   if (!workspace) {
-    throw new Error(
-      "Default workspace not found"
-    );
+    throw new Error("Default workspace not found");
   }
 
   return workspace;

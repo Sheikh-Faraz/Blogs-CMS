@@ -1,13 +1,32 @@
 "use client";
 
 import { useMemo, useState } from "react";
+
+// Context
 import { useUser } from "@/context/User.context";
+
+// Type
 import type { WorkspaceMember } from "@/context/User.context";
+
+// For permission
 import { useWorkspacePermissions } from "@/hooks/use-workspace-permissions";
-import { kickWorkspaceMemberApi, updateWorkspaceMemberRoleApi } from "@/services/team.services";
-import InviteMemberDialog from "@/app/blocks/workspace-blocks/invite-member-dialog";
+
+// Services
+import { 
+  kickWorkspaceMemberApi, 
+  updateWorkspaceMemberRoleApi 
+} from "@/services/team.services";
+
+// Skeleton
 import TeamSkeleton from "@/app/blocks/workspace-blocks/team-skeleton";
+
+// Notificatoin
 import toast from "react-hot-toast";
+
+// Invite Member Dialog
+import InviteMemberDialog from "@/app/blocks/workspace-blocks/invite-member-dialog";
+
+// UI blocks
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,8 +34,12 @@ import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+// Icons
 import { FiUserPlus } from "react-icons/fi";
 import { MoreHorizontal, Search, MapPin, Mail, CalendarDays, ShieldCheck, CircleHelp, Check, Loader2, X } from "lucide-react";
+
+
 
 type Role = "OWNER" | "ADMIN" | "EDITOR" | "VIEWER";
 type EditableRole = "ADMIN" | "EDITOR" | "VIEWER";
@@ -34,8 +57,14 @@ function initials(name: string) {
 }
 
 export default function TeamCard() {
+  
+  // Context
   const { members, authUser, workspace, CurrentActiveWorkspace, membersLoading } = useUser();
+
+  // For persmission based upon role 
   const { can } = useWorkspacePermissions();
+
+  // States
   const [search, setSearch] = useState("");
   const [selectedMember, setSelectedMember] = useState<WorkspaceMember | null>(null);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -62,6 +91,7 @@ export default function TeamCard() {
     return true;
   };
 
+  // Determines who can kick who
   const canKickMember = (member: WorkspaceMember) => {
     if (!can("MANAGE_MEMBER_ROLES")) return false;
     if (member.role === "OWNER" || member.user._id === authUser?._id) return false;

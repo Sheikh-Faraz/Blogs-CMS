@@ -1,15 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
+
+// To connect to the DB
 import connectDB from "@/lib/db";
 
+// Models
 import Blog from "@/models/Blog";
 import Category from "@/models/Category";
 import Tag from "@/models/Tags";
 import Membership from "@/models/Membership";
 
-import { getCurrentUser } from "@/lib/getCurrentUser";
-import { getActiveWorkspace } from "@/lib/workspace";
-import { hasPermission, type Permission } from "@/lib/permissions";
-import { uploadToCloudinary } from "@/lib/cloudinary-upload";
+import { getCurrentUser } from "@/lib/getCurrentUser";                // Get's the current authenticated user
+import { getActiveWorkspace } from "@/lib/workspace";                 // Get's the currect active workspace
+import { hasPermission, type Permission } from "@/lib/permissions";   // Check if the role of user has permission to perform the action 
+import { uploadToCloudinary } from "@/lib/cloudinary-upload";         // Used for uploading images to cloudinary 
 
 const getPermissionResponse = (permission: Permission) =>
   NextResponse.json(
@@ -27,6 +30,7 @@ export async function GET(req: NextRequest) {
     }
 
     const workspace = await getActiveWorkspace(user._id.toString());
+    
     const membership = await Membership.findOne({
       user: user._id,
       workspace: workspace._id,

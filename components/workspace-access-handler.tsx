@@ -107,6 +107,6 @@ export default function WorkspaceAccessHandler() {
   if (!recovering) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] cursor-wait bg-background/60 backdrop-blur-[1px]" />
+    <div className="fixed inset-0 z-99999999999999 cursor-wait bg-background/60 backdrop-blur-[1px]" />
   );
 }
