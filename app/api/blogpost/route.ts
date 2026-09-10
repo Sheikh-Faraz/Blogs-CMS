@@ -4,12 +4,10 @@ import connectDB from "@/lib/db";
 import Blog from "@/models/Blog";
 import Category from "@/models/Category";
 import Tag from "@/models/Tags";
+import Membership from "@/models/Membership";
 import { getCurrentUser } from "@/lib/getCurrentUser";
 import { getActiveWorkspace } from "@/lib/workspace";
-import {
-  requirePermission,
-  type Permission,
-} from "@/lib/permissions";
+import { requirePermission, type Permission } from "@/lib/permissions";
 import { WorkspaceAccessError } from "@/lib/workspace-access";
 import { uploadToCloudinary } from "@/lib/cloudinary-upload";
 
@@ -60,10 +58,7 @@ export async function GET(req: NextRequest) {
       .sort({ createdAt: -1 })
       .lean();
 
-    const memberships = await import("@/models/Membership").then(({ default: Membership }) =>
-      Membership.find({ workspace: workspace._id }).lean()
-    );
-
+    const memberships = await Membership.find({ workspace: workspace._id }).lean();
     const roleMap = new Map(
       memberships.map((member) => [member.user.toString(), member.role])
     );
