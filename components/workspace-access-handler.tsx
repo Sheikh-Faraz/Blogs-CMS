@@ -4,12 +4,29 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
+// Context
 import { useUser } from "@/context/User.context";
+
+// Services
 import { getWorkspaceApi, selectWorkspaceApi } from "@/services/auth.services";
+
+
+
 import type { WorkspaceAccessEvent } from "@/lib/api-client";
 
+
+
 export default function WorkspaceAccessHandler() {
-  const { authUser, CurrentActiveWorkspace, fetchAnalytics } = useUser();
+
+  // Context
+  const { 
+    authUser, 
+    CurrentActiveWorkspace, 
+    fetchAnalytics,
+
+    selectWorkspace,
+  } = useUser();
+
   const router = useRouter();
   const handling = useRef(false);
   const [recovering, setRecovering] = useState(false);
@@ -28,12 +45,15 @@ export default function WorkspaceAccessHandler() {
       : undefined;
 
     try {
-      await selectWorkspaceApi(detail.defaultWorkspaceId);
-      await CurrentActiveWorkspace();
-      await fetchAnalytics();
+      // await selectWorkspaceApi(detail.defaultWorkspaceId);
 
-      router.push("/blogs");
-      router.refresh();
+      selectWorkspace(detail.defaultWorkspaceId);
+
+      // await CurrentActiveWorkspace();
+      // await fetchAnalytics();
+
+      // router.push("/blogs");
+      // router.refresh();
 
       if (toastId) {
         toast.success("You were removed from the workspace.", {
@@ -106,7 +126,7 @@ export default function WorkspaceAccessHandler() {
 
   if (!recovering) return null;
 
-  return (
-    <div className="fixed inset-0 z-99999999999999 cursor-wait bg-background/60 backdrop-blur-[1px]" />
-  );
+  // return (
+  //   <div className="fixed inset-0 z-99999999999999 cursor-wait bg-background/60 backdrop-blur-[1px]" />
+  // );
 }

@@ -304,9 +304,7 @@ export const BlogProvider = ({ children }: { children: React.ReactNode }) => {
       const updated = await updateBlogService(
         id,
         formData
-      );
-
-      
+      );      
 
       setBlogs((prev) =>
         prev.map((blog) =>
