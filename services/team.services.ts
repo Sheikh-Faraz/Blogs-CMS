@@ -1,3 +1,5 @@
+import { apiFetch } from "@/lib/api-client";
+
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 export const updateWorkspaceMemberRoleApi = async (
@@ -5,7 +7,7 @@ export const updateWorkspaceMemberRoleApi = async (
   membershipId: string,
   role: "ADMIN" | "EDITOR" | "VIEWER"
 ) => {
-  const res = await fetch(
+  const res = await apiFetch(
     `${BASE_URL}/api/workspace/${workspaceId}/members/${membershipId}`,
     {
       method: "PATCH",
