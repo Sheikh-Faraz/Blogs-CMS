@@ -131,25 +131,49 @@ export const BlogProvider = ({ children }: { children: React.ReactNode }) => {
 
   // 🔥 Fetch all blogs
   const getAllBlogs = async () => {
-    try {
-      setLoading(true);
+  try {
+    setLoading(true);
 
-      const res = await getBlogs();
-      
-      if (!res.ok) {
-        const text = await res.text();
-        throw new Error(text);
-      }
-      
-      const data = await res.json();
-      setBlogs(data);
-      
-    } catch (err) {
-      toast.error(getErrorMessage(err, "Failed to fetch blogs"));
-    } finally {
-      setLoading(false);
+    const res = await getBlogs();
+    const data = await res.json();
+
+    if (data.accessDenied) {
+      toast.error(data.message);
+      window.location.reload();
+      return;
     }
-  };
+
+    if (!res.ok) {
+      throw new Error(data.error || "Failed to fetch blogs");
+    }
+
+    setBlogs(data);
+  } catch (err) {
+    toast.error(getErrorMessage(err, "Failed to fetch blogs"));
+  } finally {
+    setLoading(false);
+  }
+};
+  // const getAllBlogs = async () => {
+  //   try {
+  //     setLoading(true);
+
+  //     const res = await getBlogs();
+      
+  //     if (!res.ok) {
+  //       const text = await res.text();
+  //       throw new Error(text);
+  //     }
+      
+  //     const data = await res.json();
+  //     setBlogs(data);
+      
+  //   } catch (err) {
+  //     toast.error(getErrorMessage(err, "Failed to fetch blogs"));
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
 
   // Fetch categories and tags

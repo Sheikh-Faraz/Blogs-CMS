@@ -28,9 +28,9 @@ export const apiFetch = async (
 ): Promise<Response> => {
   const response = await fetch(input, init);
 
-  if (response.status !== 403 || typeof window === "undefined") {
-    return response;
-  }
+  // if (response.status !== 403 || typeof window === "undefined") {
+  //   return response;
+  // }
 
   const url = typeof input === "string" ? input : input.toString();
 

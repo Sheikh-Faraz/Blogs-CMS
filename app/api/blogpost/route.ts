@@ -8,10 +8,15 @@ import Blog from "@/models/Blog";
 import Category from "@/models/Category";
 import Tag from "@/models/Tags";
 import Membership from "@/models/Membership";
-// import { requirePermission, type Permission } from "@/lib/permissions";
-import { WorkspaceAccessError } from "@/lib/workspace-access";
+
+// import { WorkspaceAccessError } from "@/lib/workspace-access";
+import { 
+  switchToDefaultWorkspace, 
+  // checkWorkspaceAccess ,
+} from "@/lib/workspace-access";
 
 import {
+  requireMembership,
   requirePermission,
   hasPermission,
   type Permission,
@@ -32,19 +37,19 @@ const getPermissionResponse = (permission: Permission) =>
     { status: 403 }
   );
 
-const getWorkspaceAccessResponse = (error: unknown) => {
-  if (!(error instanceof WorkspaceAccessError)) return null;
+// const getWorkspaceAccessResponse = (error: unknown) => {
+//   if (!(error instanceof WorkspaceAccessError)) return null;
 
-  return NextResponse.json(
-    {
-      error: error.message,
-      code: error.code,
-      workspaceId: error.workspaceId,
-      defaultWorkspaceId: error.defaultWorkspaceId,
-    },
-    { status: error.status }
-  );
-};
+//   return NextResponse.json(
+//     {
+//       error: error.message,
+//       code: error.code,
+//       workspaceId: error.workspaceId,
+//       defaultWorkspaceId: error.defaultWorkspaceId,
+//     },
+//     { status: error.status }
+//   );
+// };
 
 export async function GET(req: NextRequest) {
   try {
@@ -55,21 +60,53 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // const workspace = await getActiveWorkspace(user._id.toString());
+
+    
+    // const membership = await Membership.findOne({
+    //   user: user._id,
+    //   workspace: workspace._id,
+    // });
+
+    // if (!membership) {
+    //   return NextResponse.json({ error: "Not a member of this workspace" }, { status: 403 });
+    // }
+
     const workspace = await getActiveWorkspace(user._id.toString());
+    
     await requirePermission(
       user._id.toString(),
       workspace._id.toString(),
       "VIEW_BLOGS"
     );
-    
-    const membership = await Membership.findOne({
-      user: user._id,
-      workspace: workspace._id,
-    });
 
-    if (!membership) {
-      return NextResponse.json({ error: "Not a member of this workspace" }, { status: 403 });
+    // const access = await checkWorkspaceAccess(
+    //   user._id.toString(),
+    //   workspace._id.toString()
+    // );
+
+
+    const access = await requireMembership(
+      user._id.toString(),
+      workspace._id.toString()
+    );
+
+    if (!access.allowed) {
+      if (access.defaultWorkspaceId) {
+        await switchToDefaultWorkspace(access.defaultWorkspaceId);
+      }
+
+      return NextResponse.json(
+        {
+          accessDenied: true,
+          kicked: access.kicked,
+          message: access.message,
+        },
+        { status: 403 }
+      );
     }
+
+    const membership = access.membership;
 
     if (!hasPermission(membership.role, "VIEW_BLOGS")) {
       return getPermissionResponse("VIEW_BLOGS");
@@ -96,8 +133,8 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(enrichedBlogs);
   } catch (error) {
-    const accessResponse = getWorkspaceAccessResponse(error);
-    if (accessResponse) return accessResponse;
+    // const accessResponse = getWorkspaceAccessResponse(error);
+    // if (accessResponse) return accessResponse;
 
     console.error("Error fetching blogs:", error);
     return NextResponse.json({ error: "Failed to fetch blogs" }, { status: 500 });
@@ -216,8 +253,8 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(populatedBlog, { status: 201 });
   } catch (error) {
-    const accessResponse = getWorkspaceAccessResponse(error);
-    if (accessResponse) return accessResponse;
+    // const accessResponse = getWorkspaceAccessResponse(error);
+    // if (accessResponse) return accessResponse;
 
     console.error("Error creating blog:", error);
     return NextResponse.json(
