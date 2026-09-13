@@ -16,7 +16,7 @@ import { motion } from "framer-motion";
 
 
 // Images
-import EmptyStateImage from "@/public/No-img-placeholder.png";
+// import EmptyStateImage from "@/public/No-img-placeholder.png";
 import UserImagePlaceholder from "@/public/UserImagePlaceholder.png"
 
 
@@ -33,13 +33,18 @@ import ImagePreview from "@/app/blocks/Animate-Components/Image-preview";
 
 
 // Components
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group"
+
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import {
   Tooltip,
   TooltipContent,
@@ -55,10 +60,12 @@ import {
 } from "@/components/ui/select";
 
 
-
+// For notifications
 import toast from "react-hot-toast";
 
+// Custom blocks
 import LoaderIcon from "@/app/blocks/loading/Loader";
+import CopyButton from "@/app/blocks/Copy-Button";
 
 
 // Countries/Locations
@@ -68,11 +75,11 @@ import  DropdownMenuCheckboxes  from "@/app/blocks/CountrySelector";
 
 // Icons
 import { 
+  // User,
   MapPin as Location, 
   Check,
   AtSign,
   PencilLine as Pen,
-  User,
   CircleSmall,
   Mars, 
   Venus,
@@ -604,12 +611,24 @@ export default function ProfilePage() {
                       <AtSign className="size-4 text-orange-500" />
                       Email Address (Read-only)
                     </Label>
-                    <Input
-                      disabled
-                      className="rounded-none my-2"
-                      value={authUser?.email}
-                      placeholder="something@gmail.com"
-                    />
+
+
+                    <InputGroup className="my-2 rounded-none">
+                      <InputGroupInput 
+                        value={authUser?.email}
+                        // disabled
+                        readOnly 
+                        placeholder="something@gmail.com"
+                      />
+                      
+                      <InputGroupAddon align="inline-end">
+                        <CopyButton
+                          label="Copy email"
+                          value={authUser?.email || ""}
+                        />
+                      </InputGroupAddon>
+                    </InputGroup>
+
                   </div>
 
                   <div className="flex gap-6">
@@ -619,14 +638,26 @@ export default function ProfilePage() {
                         <Pen className="size-4 text-orange-500" />
                         Name
                       </Label>
-                      <Input 
+
+                      
+                      <InputGroup className="my-2 rounded-none">
+                        <InputGroupInput 
                           value={fullName}
                           onChange={(e) => {
-                            setFullName(e.target.value);
-                          }}
+                              setFullName(e.target.value);
+                            }}
                           placeholder="Your name here..."
-                          className="rounded-none my-2 w-full"
-                      />
+                          className="w-full"
+                        />
+                        
+                        <InputGroupAddon align="inline-end">
+                          <CopyButton
+                            label="Copy name"
+                            value={authUser?.fullName || ""}
+                          />
+                        </InputGroupAddon>
+                      </InputGroup>
+
                     </div>
 
 
@@ -679,14 +710,24 @@ export default function ProfilePage() {
                       <Info className="size-4 text-orange-500" />
                       Bio
                     </Label>
-                    <Input 
-                        value={about}
-                        onChange={(e) => {
-                          setAbout(e.target.value);
-                        }}
-                        placeholder="About you..." 
-                        className="rounded-none my-2"
-                    />
+
+                    <InputGroup className="my-2 rounded-none">
+                        <InputGroupInput 
+                          value={about}
+                          onChange={(e) => {
+                            setAbout(e.target.value);
+                          }}
+                          placeholder="About you..." 
+                        />
+                        
+                        <InputGroupAddon align="inline-end">
+                          <CopyButton
+                            label="Copy about"
+                            value={authUser?.about || ""}
+                          />
+                        </InputGroupAddon>
+                      </InputGroup>
+
                   </div>
 
 
@@ -768,7 +809,7 @@ export default function ProfilePage() {
             </div>
 
 
-            <Input
+            {/* <Input
               className="mt-5"
               placeholder={`https://${href}.com/username`}
               value={url}
@@ -781,7 +822,30 @@ export default function ProfilePage() {
                   },
                 }))
               }
-            />
+            /> */}
+
+                      <InputGroup className="mt-5">
+                        <InputGroupInput 
+                          value={url}
+                          placeholder={`https://${href}.com/username`}
+                          onChange={(e) =>
+                            setSocialLinks((prev) => ({
+                              ...prev,
+                              [href]: {
+                                ...prev[href as keyof typeof prev],
+                                url: e.target.value,
+                              },
+                            }))
+                          }
+                        />
+                        
+                        <InputGroupAddon align="inline-end">
+                          <CopyButton
+                            label="Copy url"
+                            value={url || ""}
+                          />
+                        </InputGroupAddon>
+                      </InputGroup>
 
 
             <div className="mt-5 flex items-center justify-between rounded-lg border bg-muted/40 p-3">

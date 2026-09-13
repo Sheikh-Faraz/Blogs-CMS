@@ -83,7 +83,7 @@ export function LoginForm({
     )}
 
 
-      <div>
+      <div className="bg-card text-card-foreground p-8 rounded-xl">
       {/* <div className="flex flex-col items-center gap-2 text-center max-[425px]:m-4 m-2"> */}
       <div className="flex flex-col items-center gap-2 text-center m-4 m-2">
   
@@ -201,7 +201,7 @@ export function LoginForm({
 
         <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
           <span className="bg-background text-muted-foreground relative z-10 px-2">
-            Or continue with
+            Or
           </span>
         </div>
 

@@ -1,8 +1,12 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
+
+// Contexts
 import { useUser } from "@/context/User.context";
+import { useGlobalLoading } from "@/context/Loading.context";
+
 
 function InvitationsSkeleton() {
   return (
@@ -25,8 +29,11 @@ function InvitationsSkeleton() {
 }
 
 export default function InvitationsPage() {
-  const router = useRouter();
+  // const router = useRouter();
+
+  // Contexts
   const { receivedInvitations, receivedInvitationsLoading, fetchReceivedInvitations } = useUser();
+  const { startTransition } = useGlobalLoading();
 
   useEffect(() => {
     fetchReceivedInvitations();
@@ -75,7 +82,8 @@ export default function InvitationsPage() {
                 </div>
               </div>
               <button 
-                onClick={() => router.push(`/invitations/${invitation._id}`)} 
+                // onClick={() => router.push(`/invitations/${invitation._id}`)} 
+                onClick={() => startTransition(`/invitations/${invitation._id}`)} 
                 className="bg-card text-card-foreground rounded-md px-4 py-2 text-sm hover:bg-muted border"
               >
                 View invitation

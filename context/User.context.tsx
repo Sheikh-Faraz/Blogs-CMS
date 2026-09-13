@@ -6,10 +6,11 @@ import { createContext, useContext, useState } from "react";
 
 // Importing user context to refresh/get blogs when workspace is switched
 import { useBlog } from "@/context/Blog.context";
+import { useGlobalLoading } from "@/context/Loading.context";
 
 
 import toast from "react-hot-toast";
-import Cookies from "js-cookie";
+// import Cookies from "js-cookie";
 
 // APIs
 import { 
@@ -208,8 +209,9 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
-    // Context
-    const { getAllBlogs } = useBlog();
+  // Contexts
+  const { getAllBlogs } = useBlog();
+  const { startTransition } = useGlobalLoading();
 
   const router = useRouter();
 
@@ -249,7 +251,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 // --------------------------- AUTHENTICATION LOGIC ---------------------------
 
   // For logging in
-  // const login = async (formData: unknown) => {
   const login = async ( formData: unknown, redirectTo?: string ) => {
     try {
       setIsLoggingIn(true);                               // Setting loading state for login process on Frontend UI
@@ -257,9 +258,11 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       const res = await loginApi(formData as { email: string; password: string });  // Calling the login API with the form data (email and password) to authenticate the user
 
       setAuthUser(res.user);                              // Setting the authenticated user state with the user data received from the API response
-
       toast.success("Logged in successfully");            // Displaying success message/notificaton to the user
-      router.push( redirectTo || "/create-blog" );        // Redirecting the user to the create blog page after successful login
+      
+      startTransition(redirectTo || "/create-blog");      // Redirecting the user to the create blog page after successful login
+
+      // router.push( redirectTo || "/create-blog" );     // Redirecting the user to the create blog page after successful login
 
     } catch (err) {
       toast.error(getErrorMessage(err, "Login failed"));  // Displaying error message/notification to the user if login fails
@@ -281,7 +284,9 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     setAuthUser(res.user);                                  // Setting authenticated user's data
 
     toast.success("Account created successfully");          // Displaying success message/notification
-    router.push( redirectTo || "/create-blog");             // Redirecting to create blog page 
+    startTransition(redirectTo || "/create-blog");          // Redirecting to create blog page 
+    
+    // router.push( redirectTo || "/create-blog");          // Redirecting to create blog page 
 
   } catch (err: unknown) {
       toast.error(getErrorMessage(err, "Signup failed"));   // Displaying signup failure message/notification
@@ -299,13 +304,14 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (!res.ok) {
         throw new Error("Failed to logout");
-      }
+      };
 
       setAuthUser(null);
-
       toast.success("Logged out successfully");
 
-      router.push(redirectTo || "/login");
+      startTransition(redirectTo || "/login");
+      // router.push(redirectTo || "/login");
+
     } catch (err) {
       toast.error(getErrorMessage(err, "Failed to logout"));
     }
@@ -323,6 +329,8 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         await fetchWorkspaceMembers(data.defaultWorkspace._id); // Fetch members of the default workspace
 
         setAuthUser(data);
+
+        fetchWorkspaces();
 
       } catch (err) {
         toast.error(getErrorMessage(err, "Failed to fetch user info"));
@@ -342,6 +350,9 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       setAuthUser(res.data);
 
       toast.success("Profile updated successfully");
+
+      fetchUser();
+      fetchWorkspaces();
 
     }
     catch (err) {
@@ -384,6 +395,8 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       setWorkspace(data.workspace);
       await fetchWorkspaceMembers(data.workspace._id);
 
+      fetchWorkspaces();
+
     }
     catch (err) {
         toast.error(getErrorMessage(err, "Failed to fetch current workspace"));
@@ -406,6 +419,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       fetchWorkspaces();
 
       toast.success("Workspace updated successfully");
+
     }
     catch (err) {
         toast.error(getErrorMessage(err, "Failed to update workspace details"));
@@ -429,7 +443,9 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       await fetchAnalytics();
 
       toast.success("Workspace deleted successfully");
-      router.refresh();
+
+      startTransition("/blogs");
+      // router.push("/blogs");
 
       return true;
     } catch (err) {
@@ -464,8 +480,8 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
       
       await fetchAnalytics();
       await getAllBlogs();
-
-      // router.refresh();
+      
+      await fetchWorkspaces();
 
     } catch (err) {
       toast.error(getErrorMessage(err, "Failed to switch workspace"));
@@ -473,20 +489,24 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
 
-  // TO create new workspace
+  // To create new workspace
   const createWorkspace = async (name: string) => {
     try {
       setCreateWorkspaceLoading(true);
       const data = await createWorkspaceApi(name);
 
       setWorkspace(data.workspace);
+      
       await fetchWorkspaces();
       await fetchAnalytics();
       await fetchReceivedInvitations();
+      
+      startTransition("/blogs");
+      // router.push("/blogs");
 
       toast.success("Workspace created successfully");
-      router.refresh();
       return true;
+
     } catch (err) {
       toast.error(getErrorMessage(err, "Failed to create workspace"));
       return false;

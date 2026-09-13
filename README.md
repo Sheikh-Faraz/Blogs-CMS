@@ -2,12 +2,17 @@
 <!-- -- Fix/Add the one stat in the blog page                                                       -- DONE -->
 <!-- -- Add the ability to delete the category for user and do not implement edit for it            -- DONE -->
 <!-- -- Fix the ai feature where if the content contains image it ignores it and it stays there     -- DONE -->
+<!-- -- Add the copy feature to inputs on all across pages and the right input fields               -- DONE -->
+<!-- -- Also add the animation between pages for login and singup and some others too               -- DONE -->
+<!-- -- Also maybe work a little on the user/setting showing in the sidebar at the bottom           -- DONE -->
+<!-- -- Add the functionality that if a user's role is not premitted and he can't perform           -- DONE -->
+<!-- -- certain actions --> 
 
--- Add the functionality that if a user's role is not premitted and he can't perform certain actions
--- Also maybe work on the side user showing
+<!-- -- Improve the UI of the login and signup pages also add the light and dark                    -- DONE Almost -->
+<!-- mode switching there, just need to add demo video besides them after everytign  --> 
 
--- Improve the UI of the login and signup pages also add the light and dark mode switching there 
--- Add the copy feature to inputs on all across pages and the right input fields
+
+-- Also work on the invitaion showing on login and signup pages
 -- Fix the scroll showing the loading animation slides appear and nothing to be abled to used while it is going on
 
 
@@ -71,9 +76,7 @@ POSTPONDED FOR NOW
 ------------------------------------------------ ( TEAM PAGE ) ------------------------------------------------
 <!-- -- Add and develope the teams page if needed                                                   -- DONE -->
 <!-- -- Add functionality to update team member's role                                              -- DONE -->
-<!-- -- The image of the owner of workspace where I am added is not showing    -- Showing now checked again -->
-
--- Add functionality to delete/kick team member from org/workspace
+<!-- -- Add functionality to delete/kick team member from org/workspace                             -- DONE -->
 
 
 
@@ -85,6 +88,7 @@ POSTPONDED FOR NOW
 <!-- --  Add the loading spinner of accept and reject                                               -- DONE -->
 
 
+POSTPONDED FOR NOW 
 -- If the user rejects the invitation then there should be a way the sender knows that invitation was rejected
 
 

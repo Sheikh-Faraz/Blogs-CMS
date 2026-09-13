@@ -96,6 +96,7 @@ import {
   Trash2,
   InfoIcon, 
   CircleArrowLeft,
+  Copy,
 } from "lucide-react";
 
 
@@ -463,6 +464,23 @@ export default function EditBlogPage() {
             console.error("something went wrong: ", error);
         }
     };
+
+      // For copying content to clipboard
+      const handleCopyContent = async () => {
+        try {
+          const markdown = editorInstance.blocksToMarkdownLossy(
+            editorInstance.document
+          );
+    
+          await navigator.clipboard.writeText(markdown);
+    
+          toast.success("Text copied to clipboard");
+        } catch (error) {
+          console.error("Failed to copy content:", error);
+          toast.error("Failed to copy text");
+        }
+      };
+    
 
 
     // WHILE LOADING/FETCHING DATA SHOW THIS 
@@ -1048,6 +1066,9 @@ export default function EditBlogPage() {
 
                   <Separator className="border mt-2 mb-4" />
 
+
+                <div className="flex justify-between">
+                
                   <div className="flex flex-wrap gap-2">
                     {aiActions.map((item) => {
                       const Icon = item.icon;
@@ -1109,8 +1130,9 @@ export default function EditBlogPage() {
                         </Tooltip>
                       );
                     })}
+                  </div>
 
-
+                <div>
                   <AlertDialog>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -1165,7 +1187,33 @@ export default function EditBlogPage() {
                     </AlertDialogContent>
                   </AlertDialog>
 
+
+
+                                    {/* For copying whole content of editor */}
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <Button
+                                          variant="outline"
+                                          size="icon"
+                                          className="
+                                            rounded-none
+                                            transition-all
+                                            hover:text-[#E85129]
+                                            ml-2
+                                          "
+                                          onClick={handleCopyContent}
+                                        >
+                                          <Copy className="size-4" />
+                                        </Button>
+                                      </TooltipTrigger>
+                  
+                                      <TooltipContent>
+                                        Copy editor content
+                                      </TooltipContent>
+                                    </Tooltip>
+
                   </div>
+                          </div>
 
                 </CardContent>
               </Card>

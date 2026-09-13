@@ -3,8 +3,16 @@
 import * as React from "react"
 import { useEffect } from "react";
 
+// Blocks
+import { WorkspaceSwitcher } from "@/app/blocks/Navbar/Workspace-Switcher";
+
+// Context
+import { useUser } from "@/context/User.context";
+
+
+// UI Blocks
+// import { NavSecondary } from "@/components/nav-secondary"
 import { NavMain } from "@/components/nav-main"
-import { NavSecondary } from "@/components/nav-secondary"
 import { NavUser } from "@/components/nav-user"
 import {
   Sidebar,
@@ -16,20 +24,20 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
+
+// Icons
 import {
   FileTextIcon,
-  Settings2Icon,
   User,
   Users,
   MailPlus, 
+  // Settings2Icon,
 } from "lucide-react"
 import { CgOrganisation as Organization } from "react-icons/cg";
 import { LayoutDashboard } from 'lucide-react';
 import { RiPenNibLine as Penlogo } from "react-icons/ri";
 // import { FcInvite as InviteLogo } from "react-icons/fc";
 
-import { WorkspaceSwitcher } from "@/app/blocks/Navbar/Workspace-Switcher";
-import { useUser } from "@/context/User.context";
 
 const data = {
   navMain: [
@@ -65,25 +73,28 @@ const data = {
     },
   ],
 
-  navSecondary: [
-    {
-      title: "Settings",
-      url: "#",
-      icon: (<Settings2Icon />),
-    },
-  ],
+  // navSecondary: [
+  //   {
+  //     title: "Settings",
+  //     url: "#",
+  //     icon: (<Settings2Icon />),
+  //   },
+  // ],
   documents: [],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  
+  // Context
   const {
     authUser,
     workspace,
     workspaces,
     selectWorkspace,
     fetchUser,
-    fetchWorkspaces,
     CurrentActiveWorkspace,
+
+    fetchWorkspaces,
   } = useUser();
 
   useEffect(() => {
@@ -119,7 +130,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
       <SidebarContent>
         <NavMain items={data.navMain}/>
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
 
       <SidebarFooter>

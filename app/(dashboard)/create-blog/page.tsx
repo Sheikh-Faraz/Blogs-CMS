@@ -77,6 +77,7 @@ import {
   Trash2,
   InfoIcon, 
   CircleArrowLeft,
+  Copy,
 } from "lucide-react";
 
 
@@ -424,6 +425,22 @@ const handleSubmit = async () => {
 
     await createCategory(newCategory);
     setNewCategory("");
+  };
+
+
+  // For copying content to clipboard
+  const handleCopyContent = async () => {
+    try {
+      const markdown = editorInstance.blocksToMarkdownLossy(
+        editorInstance.document
+      );
+
+      await navigator.clipboard.writeText(markdown);
+
+      toast.success("Text copied to clipboard");
+    } catch (error) {
+      toast.error(error, "Failed to copy text");
+    }
   };
 
 
@@ -1018,6 +1035,8 @@ const handleSubmit = async () => {
 
                   <Separator className="border mt-2 mb-4" />
 
+                <div className="flex justify-between">
+                  
                   <div className="flex flex-wrap gap-2">
                     {aiActions.map((item) => {
                       const Icon = item.icon;
@@ -1079,8 +1098,10 @@ const handleSubmit = async () => {
                         </Tooltip>
                       );
                     })}
+                </div>
 
-
+                
+                <div>
                   <AlertDialog>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -1136,6 +1157,32 @@ const handleSubmit = async () => {
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
+
+
+                  {/* For copying whole content of editor */}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="
+                          rounded-none
+                          transition-all
+                          hover:text-[#E85129]
+                          ml-2
+                        "
+                        onClick={handleCopyContent}
+                      >
+                        <Copy className="size-4" />
+                      </Button>
+                    </TooltipTrigger>
+
+                    <TooltipContent>
+                      Copy editor content
+                    </TooltipContent>
+                  </Tooltip>
+            
+            </div>
 
                   </div>
 

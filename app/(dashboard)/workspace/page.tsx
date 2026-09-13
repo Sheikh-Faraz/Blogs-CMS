@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { 
+  // useRouter, 
+  useSearchParams } from "next/navigation";
 
 // Context 
 import { useUser } from "@/context/User.context";
@@ -64,14 +66,14 @@ import { FaDoorOpen as LeaveIcon } from "react-icons/fa6";
 
 export default function WorkspacePage() {
 
-    const router = useRouter();
+    // const router = useRouter();
     const searchParams = useSearchParams();
     const [createWorkspaceOpen, setCreateWorkspaceOpen] = useState(false);
     const createWorkspaceRequested = searchParams.get("create") === "1";
     // const [inviteMemberOpen, setInviteMemberOpen] = useState(false);
 
     // User Context
-    const { 
+    const {
       workspaceAnalyticsLoading,
       fetchAnalytics,
       analytics,
@@ -111,9 +113,9 @@ export default function WorkspacePage() {
     const handleCreateWorkspaceOpenChange = (open: boolean) => {
       setCreateWorkspaceOpen(open);
 
-      if (!open && createWorkspaceRequested) {
-        router.replace("/workspace");
-      }
+      // if (!open && createWorkspaceRequested) {
+      //   router.replace("/workspace");
+      // }
     };
 
     
@@ -216,15 +218,18 @@ export default function WorkspacePage() {
       <p className="text-3xl font-bold">Current Workspace</p>
 
       <div className="flex items-center gap-3">
-
+        
+        {can("LEAVE_WORKSPACE") && (
           <button
-            disabled={leaveWorkspaceLoading}
-            onClick = {()=> setOpenLeaveDialog(true)}
-            className="border py-2 px-3 bg-card text-card-foreground rounded-md flex gap-2 items-center hover:bg-muted"
+          // disabled={leaveWorkspaceLoading || can("LEAVE_WORKSPACE")}
+          disabled={leaveWorkspaceLoading}
+          onClick = {()=> setOpenLeaveDialog(true)}
+          className="border py-2 px-3 bg-card text-card-foreground rounded-md flex gap-2 items-center hover:bg-muted"
           >
             <LeaveIcon className="mr-2 text-[#E85129]" />
             Leave current workspace
           </button>
+        )}
       
 
       {/* Create new workspace */}

@@ -12,6 +12,7 @@ export function ThemeToggle() {
     <div className="flex gap-2">
 
       <Button 
+        className="bg-card"
         variant="outline" 
         onClick={() => setTheme("light")}
       >

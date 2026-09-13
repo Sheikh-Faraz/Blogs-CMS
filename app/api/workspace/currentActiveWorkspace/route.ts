@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
+// import { cookies } from "next/headers";
 
 import { getCurrentUser } from "@/lib/getCurrentUser";
 import connectDB from "@/lib/db";
 
 import Workspace from "@/models/Workspace";
 import Membership from "@/models/Membership";
+
+
+import { getActiveWorkspace } from "@/lib/workspace";
 
 export async function GET(req: NextRequest) {
   try {
@@ -20,8 +23,13 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const cookieStore = await cookies();
-    const activeWorkspaceId = cookieStore.get("activeWorkspaceId")?.value;
+    // const cookieStore = await cookies();
+    // const activeWorkspaceId = cookieStore.get("activeWorkspaceId")?.value;
+
+    // -----------------------------------------------------------------------------
+
+    // This active get workspace reverts to default one if there is no active other workspace
+    const activeWorkspaceId = await getActiveWorkspace(user._id.toString());
 
     if (!activeWorkspaceId) {
       return NextResponse.json(

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+// Context
 import { useGlobalLoading } from "@/context/Loading.context";
 
 import {
@@ -38,7 +39,6 @@ export function NavMain({
                 href={item.url}
                 key={item.title}
 
-
                 onClick={(e) => {
                   if (isActive) {
                     e.preventDefault();
@@ -46,7 +46,6 @@ export function NavMain({
                   }
                   
                   e.preventDefault();
-                  
                    startTransition(item.url);
                 }}
 

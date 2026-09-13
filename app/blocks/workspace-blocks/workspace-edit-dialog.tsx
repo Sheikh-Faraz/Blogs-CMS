@@ -3,32 +3,43 @@
 import { useEffect, useRef, useState } from "react";
 import type { ElementType } from "react";
 
+// Context 
+import { useUser } from "@/context/User.context";
+
 // Permission to show buttons bases on role
 import { useWorkspacePermissions } from "@/hooks/use-workspace-permissions";
 
 // Loading spinning icon
 import LoaderIcon from "@/app/blocks/loading/Loader";
-
-// Context 
-import { useUser } from "@/context/User.context";
+import CopyButton from "@/app/blocks/Copy-Button";
 
 // Countries/Locations
 import  DropdownMenuCheckboxes  from "@/app/blocks/CountrySelector";
 
-
+// UI Blocks
+import {
+  Field,
+  FieldGroup,
+  // FieldDescription,
+  // FieldLabel,
+} from "@/components/ui/field"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+  InputGroupTextarea,
+} from "@/components/ui/input-group";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
@@ -37,13 +48,13 @@ import {
 } from "@/components/ui/popover";
 
 import { format } from "date-fns";
-import { CalendarDays } from "lucide-react";
 
-import {
-  Camera,
+// Icons
+import {  
   Image as ImageIcon,
+  CalendarDays, 
+  Camera,
   X, 
-  // MapPin,
 } from "lucide-react";
 
 
@@ -814,14 +825,33 @@ export default function EditWorkspaceDialog({
             <div className="space-y-2">
               <Label>Workspace name</Label>
 
-              <Input
+                                  <InputGroup>
+                                    <InputGroupInput 
+                                      disabled={!can("UPDATE_WORKSPACE")}
+                                      value={name}
+                                      onChange={(event) =>
+                                        setName(event.target.value)
+                                      }
+                                      placeholder="Enter workspace name"
+                                    />
+                                    
+                                    <InputGroupAddon align="inline-end">
+                                      <CopyButton
+                                        label="Copy workspace name"
+                                        value={name || ""}
+                                      />
+                                    </InputGroupAddon>
+                                  </InputGroup>
+
+              {/* <Input
                 disabled={!can("UPDATE_WORKSPACE")}
                 value={name}
                 onChange={(event) =>
                   setName(event.target.value)
                 }
                 placeholder="Enter workspace name"
-              />
+              /> */}
+
             </div>
 
             {/* Location */}
@@ -907,23 +937,51 @@ export default function EditWorkspaceDialog({
                   {about.length}
                 </span>
               </div>
+                              <FieldGroup>
+                                <Field>
 
-              <Textarea
-                disabled={!can("UPDATE_WORKSPACE")}
+                                  <InputGroup>
+                                    <InputGroupTextarea
+                                      id="block-start-textarea"
+                                      value={about}
+                                      disabled={!can("UPDATE_WORKSPACE")}
+                                      placeholder="Tell people about your workspace..."
+                                      className="
+                                        min-h-28
+                                        resize-none
+                                      "
+                                      onChange={(event) => {
+                                        setAbout(event.target.value);
+                                      }}
+                                    />
+                                    
+                                    <InputGroupAddon align="block-start" className="ml-auto">
+                                      <CopyButton
+                                        label="Copy workspace about"
+                                        value={about || ""}
+                                      />
+                                    </InputGroupAddon>
+                                  </InputGroup>
+
+                                        </Field>
+                                      </FieldGroup>
+
+              {/* <Textarea
+                // disabled={!can("UPDATE_WORKSPACE")}
                 value={about}
                 onChange={(event) => {
-                  if (
-                    event.target.value.length <= 500
-                  ) {
-                    setAbout(event.target.value);
-                  }
+                  setAbout(event.target.value);
+                  // if (
+                  //   event.target.value.length <= 500
+                  // ) {
+                  // }
                 }}
                 placeholder="Tell people about your workspace..."
                 className="
                   min-h-28
                   resize-none
                 "
-              />
+              /> */}
             </div>
 
             {/* =================================================
@@ -988,18 +1046,41 @@ export default function EditWorkspaceDialog({
                           </Label>
 
                           {social.visible && (
-                            <Input
-                              disabled={!can("UPDATE_WORKSPACE")}
-                              value={social.url}
-                              onChange={(event) =>
-                                updateSocialUrl(
-                                  key,
-                                  event.target.value
-                                )
-                              }
-                              placeholder="https://..."
-                              className="mt-2 h-9"
-                            />
+
+                                  <InputGroup>
+                                    <InputGroupInput
+                                      disabled={!can("UPDATE_WORKSPACE")}
+                                      value={social.url}
+                                      onChange={(event) =>
+                                        updateSocialUrl(
+                                          key,
+                                          event.target.value
+                                        )
+                                      }
+                                      placeholder="https://..."
+                                      className="mt-2 h-9"
+                                    />
+                                    
+                                    <InputGroupAddon align="inline-end">
+                                      <CopyButton
+                                        label="Copy url"
+                                        value={about || ""}
+                                      />
+                                    </InputGroupAddon>
+                                  </InputGroup>
+
+                            // <Input
+                            //   disabled={!can("UPDATE_WORKSPACE")}
+                            //   value={social.url}
+                            //   onChange={(event) =>
+                            //     updateSocialUrl(
+                            //       key,
+                            //       event.target.value
+                            //     )
+                            //   }
+                            //   placeholder="https://..."
+                            //   className="mt-2 h-9"
+                            // />
                           )}
                         </div>
 

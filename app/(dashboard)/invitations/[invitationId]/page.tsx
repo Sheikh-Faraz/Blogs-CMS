@@ -4,20 +4,25 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 
+// Contexts
 import { useUser } from "@/context/User.context";
+import { useGlobalLoading } from "@/context/Loading.context";
 
+// Custom Blocks
+import LoaderIcon from "@/app/blocks/loading/Loader";
+
+// Services
 import {
   fetchReceivedInvitationApi,
   acceptInvitationByIdApi,
   declineInvitationByIdApi,
 } from "@/services/auth.services";
 
-
+// Notifications
 import toast from "react-hot-toast";
 
+// Icons
 import { CircleArrowLeft } from 'lucide-react';
-
-import LoaderIcon from "@/app/blocks/loading/Loader";
 
 
 interface InvitationDetails {
@@ -90,13 +95,12 @@ export default function InvitationDetailsPage() {
 
   const invitationId = params.invitationId as string;
 
-
+  // Context
   const {
     fetchWorkspaces,
     fetchReceivedInvitations,
-
-    // selectWorkspace,
   } = useUser();
+  const { startTransition } = useGlobalLoading();
 
   const [invitation, setInvitation] = useState<InvitationDetails | null>(null);
 
@@ -190,8 +194,8 @@ export default function InvitationDetailsPage() {
       // Remove it from received invitations.
       await fetchReceivedInvitations();
 
-      router.replace("/invitations");
-      // router.replace("/blogs");
+      startTransition("/invitations");
+      // router.replace("/invitations");
 
     } catch (error) {
       console.error("Accept invitation error:", error);
@@ -226,7 +230,8 @@ export default function InvitationDetailsPage() {
       // the received invitations list.
       await fetchReceivedInvitations();
 
-      router.replace("/invitations");
+      startTransition("/invitations");
+      // router.replace("/invitations");
 
     } catch (error) {
       console.error(

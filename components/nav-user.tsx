@@ -1,5 +1,9 @@
 "use client"
 
+// Context
+import { useUser } from "@/context/User.context";
+import { useGlobalLoading } from "@/context/Loading.context";
+
 import {
   Avatar,
   AvatarFallback,
@@ -20,7 +24,13 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { EllipsisVerticalIcon, CircleUserRoundIcon, CreditCardIcon, BellIcon, LogOutIcon } from "lucide-react"
+import { 
+  EllipsisVerticalIcon, 
+  CircleUserRoundIcon, 
+  LogOutIcon, 
+  // CreditCardIcon, 
+  // BellIcon, 
+} from "lucide-react"
 
 export function NavUser({
   user,
@@ -31,7 +41,12 @@ export function NavUser({
     avatar: string
   }
 }) {
-  const { isMobile } = useSidebar()
+
+  const { isMobile } = useSidebar();
+
+  // Context
+  const { logout } = useUser();
+  const { startTransition } = useGlobalLoading();
 
   return (
     <SidebarMenu>
@@ -77,10 +92,11 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+
+              <DropdownMenuItem onClick={()=>{startTransition("/profile")}}>
                 <CircleUserRoundIcon
                 />
-                Account
+                Profile
               </DropdownMenuItem>
               {/* <DropdownMenuItem>
                 <CreditCardIcon
@@ -94,7 +110,7 @@ export function NavUser({
               </DropdownMenuItem> */}
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={()=>{logout()}}>
               <LogOutIcon
               />
               Log out

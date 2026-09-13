@@ -47,7 +47,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
+  // AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import {
   Tooltip,
@@ -90,6 +90,9 @@ export default function BlogsTable({ blogsData, loadingData }: BlogsTableProps) 
   const endIndex = startIndex + itemsPerPage;
 
   const paginatedBlogs = filteredBlogs.slice(startIndex, endIndex);
+
+  // For opening delete dialog blog
+  const [deleteBlogId, setDeleteBlogId] = useState<string | null>(null);
 
 
   const goNext = () => {
@@ -202,7 +205,7 @@ export default function BlogsTable({ blogsData, loadingData }: BlogsTableProps) 
                   <AuthorHoverCard
                     author={{
                       fullName: blog.author?.fullName,
-                      banner: blog.author?.banner || "",
+                      banner: blog.author?.banner || NoImagePic.src,
                       profilePic: blog.author?.profilePic || UserImagePlaceholder.src,
 
                       role: blog.authorRole,
@@ -263,35 +266,37 @@ export default function BlogsTable({ blogsData, loadingData }: BlogsTableProps) 
 
 
                         {/* DELETE (opens modal) */}
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
+                        {/* <AlertDialog> */}
+                          {/* <AlertDialogTrigger asChild> */}
 
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <span>
-                                <DropdownMenuItem
-                                  onSelect={(e) => e.preventDefault()}
-                                  disabled={!can("DELETE_BLOG")}
-                                  className="flex items-center gap-2 text-red-500 cursor-pointer"
-                                >
-                                  <FiTrash2 size={14} />
-                                  Delete Blog
-                                </DropdownMenuItem>
+                          {/* DELETE */}
+<Tooltip>
+  <TooltipTrigger asChild>
+    <span>
+      <DropdownMenuItem
+        disabled={!can("DELETE_BLOG")}
+        onSelect={(e) => {
+          e.preventDefault();
+          setDeleteBlogId(blog._id);
+        }}
+        className="flex items-center gap-2 text-red-500 cursor-pointer"
+      >
+        <FiTrash2 size={14} />
+        Delete Blog
+      </DropdownMenuItem>
+    </span>
+  </TooltipTrigger>
 
-                              </span>
-                            </TooltipTrigger>
-
-                            {!can("DELETE_BLOG") && (
-                              <TooltipContent>
-                                You don&apos;t have permission to delete blogs.
-                              </TooltipContent>
-                            )}
-
-                          </Tooltip>
+  {!can("DELETE_BLOG") && (
+    <TooltipContent>
+      You don&apos;t have permission to delete blogs.
+    </TooltipContent>
+  )}
+</Tooltip>
                           
-                          </AlertDialogTrigger>
+                          {/* </AlertDialogTrigger> */}
 
-                          <AlertDialogContent>
+                          {/* <AlertDialogContent>
                             <AlertDialogHeader>
                               <AlertDialogTitle>Delete this blog?</AlertDialogTitle>
                               <AlertDialogDescription>
@@ -311,10 +316,49 @@ export default function BlogsTable({ blogsData, loadingData }: BlogsTableProps) 
                               </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
-                        </AlertDialog>
+                        </AlertDialog> */}
 
                       </DropdownMenuContent>
                     </DropdownMenu>
+
+
+                    <AlertDialog
+  open={deleteBlogId === blog._id}
+  onOpenChange={(open) => {
+    if (!open) {
+      setDeleteBlogId(null);
+    }
+  }}
+>
+  <AlertDialogContent>
+    <AlertDialogHeader>
+      <AlertDialogTitle>
+        Delete this blog?
+      </AlertDialogTitle>
+
+      <AlertDialogDescription>
+        This action cannot be undone. The blog will be permanently removed.
+      </AlertDialogDescription>
+    </AlertDialogHeader>
+
+    <AlertDialogFooter>
+      <AlertDialogCancel>
+        Cancel
+      </AlertDialogCancel>
+
+      <AlertDialogAction
+        onClick={() => {
+          deleteBlog(blog._id);
+          setDeleteBlogId(null);
+        }}
+        className="bg-red-600 hover:bg-red-700 text-white"
+        disabled={loadingData || !can("DELETE_BLOG")}
+      >
+        Delete
+      </AlertDialogAction>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>
 
                   </div>
                 </td>

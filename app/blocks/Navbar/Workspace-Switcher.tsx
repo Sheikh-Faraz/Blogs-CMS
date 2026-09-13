@@ -1,7 +1,12 @@
 "use client"
 
-import { Building2, ChevronsUpDown, Plus } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { Building2, ChevronsUpDown, Plus } from "lucide-react"
+
+// Context
+import { useUser } from "@/context/User.context";
+// import { useEffect } from "react";
+
 import type { Workspace } from "@/app/Types/workspace.type"
 
 import {
@@ -29,6 +34,17 @@ export function WorkspaceSwitcher({
   activeWorkspaceId?: string
   onWorkspaceSelect: (workspaceId: string) => void
 }) {
+
+
+    const {
+      fetchWorkspaces,
+    } = useUser();
+  
+    // useEffect(() => {
+    //   fetchWorkspaces();
+    // }, [])
+
+
   const { isMobile } = useSidebar()
   const router = useRouter()
 
@@ -43,7 +59,13 @@ export function WorkspaceSwitcher({
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <DropdownMenu>
+        <DropdownMenu
+          onOpenChange={(open) => {
+            if (open) {
+              fetchWorkspaces()
+            }
+          }}
+        >
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"

@@ -25,8 +25,13 @@ export async function GET(req: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-
+    
+    // console.log("This is the active workspace in the blogs getting route: ", workspace);
+    
+    // This active get workspace reverts to default one if there is no active other workspace
     const workspace = await getActiveWorkspace(user._id.toString());
+
+
     const membership = await Membership.findOne({
       user: user._id,
       workspace: workspace._id,

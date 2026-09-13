@@ -17,8 +17,9 @@ import {
   updateWorkspaceMemberRoleApi 
 } from "@/services/team.services";
 
-// Skeleton
+// Blocks
 import TeamSkeleton from "@/app/blocks/workspace-blocks/team-skeleton";
+import CopyButton from "@/app/blocks/Copy-Button";
 
 // Notificatoin
 import toast from "react-hot-toast";
@@ -167,7 +168,39 @@ export default function TeamCard() {
               <button type="button" onClick={() => openProfile(member)} className="flex min-w-0 flex-1 items-center gap-3 text-left"><Avatar className="h-10 w-10 shrink-0"><AvatarImage src={member.user.profilePic || undefined} /><AvatarFallback>{initials(member.user.fullName)}</AvatarFallback></Avatar><span className="min-w-0"><span className="block truncate text-sm font-semibold">{member.user.fullName}</span><span className="block truncate text-xs text-muted-foreground">{member.user.email}</span></span></button>
               <div className="hidden items-center gap-2 sm:flex">{!editable ? <span className="mr-10 text-sm font-medium">{roleLabel[member.role]}</span> : <div className="flex items-center gap-2"><Select value={member.role} onValueChange={(value) => requestRoleChange(member, value as EditableRole)} disabled={!editable || isUpdating}><SelectTrigger className="w-32.5"><SelectValue /></SelectTrigger><SelectContent>{currentMember?.role === "OWNER" && <SelectItem value="ADMIN">Admin</SelectItem>}<SelectItem value="EDITOR">Editor</SelectItem><SelectItem value="VIEWER">Viewer</SelectItem></SelectContent></Select>{isUpdating && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}</div>}</div>
               <div className="sm:hidden"><Badge variant="outline">{roleLabel[member.role]}</Badge></div>
-              <DropdownMenu><DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="h-9 w-9 shrink-0" aria-label={`Actions for ${member.user.fullName}`}><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger><DropdownMenuContent align="end"><DropdownMenuItem onClick={() => openProfile(member)}>View Profile</DropdownMenuItem>{kickable && <DropdownMenuItem onClick={() => openKickDialog(member)}>Kick Member</DropdownMenuItem>}<DropdownMenuItem onClick={() => setRoleInfoOpen(true)}>View Role Permissions</DropdownMenuItem></DropdownMenuContent></DropdownMenu>
+              
+              <DropdownMenu>
+              
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0" aria-label={`Actions for ${member.user.fullName}`}>
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                  </DropdownMenuTrigger>
+
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem 
+                    className="my-1 border-b" 
+                    onClick={() => openProfile(member)}
+                  >
+                    View Profile
+                  </DropdownMenuItem>
+                  {kickable && 
+                    <DropdownMenuItem 
+                      className="my-2 border-b" 
+                      onClick={() => openKickDialog(member)}
+                    >
+                      Kick Member
+                    </DropdownMenuItem>
+                  }
+                  <DropdownMenuItem 
+                    className="my-1 border-b" 
+                    onClick={() => setRoleInfoOpen(true)}
+                  >
+                    View Role Permissions
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+                  
+                </DropdownMenu>
             </div>;
           })}
         </div>
@@ -183,7 +216,53 @@ export default function TeamCard() {
 
       <Dialog open={roleInfoOpen} onOpenChange={setRoleInfoOpen}><DialogContent className="w-[calc(100%-20rem)]! max-w-none!"><DialogHeader><DialogTitle>Workspace role permissions</DialogTitle><DialogDescription>Each role controls what a member can access and manage in the workspace.</DialogDescription></DialogHeader><div className="grid gap-3 sm:grid-cols-2">{(Object.keys(rolePermissions) as Role[]).map((role) => <div key={role} className="rounded-lg border p-4"><div className="mb-3 flex items-center justify-between gap-3"><div><p className="text-sm font-semibold">{roleLabel[role]}</p><p className="mt-1 text-xs text-muted-foreground">{rolePermissions[role].description}</p></div><Badge variant="outline">{roleLabel[role]}</Badge></div><div className="space-y-2">{rolePermissions[role].can.map((item) => <div key={item} className="flex items-start gap-2 text-xs"><Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-500" /><span>{item}</span></div>)}{rolePermissions[role].cannot.map((item) => <div key={item} className="flex items-start gap-2 text-xs text-muted-foreground"><X className="mt-0.5 h-3.5 w-3.5 shrink-0" /><span>{item}</span></div>)}</div></div>)}</div></DialogContent></Dialog>
 
-      <Dialog open={profileOpen} onOpenChange={setProfileOpen}><DialogContent className="max-w-lg">{selectedMember && <><DialogHeader><div className="flex items-center gap-4"><Avatar className="h-16 w-16"><AvatarImage src={selectedMember.user.profilePic || undefined} /><AvatarFallback className="turncate">{initials(selectedMember.user.fullName)}</AvatarFallback></Avatar><div className="min-w-0"><DialogTitle className="max-w-60 truncate text-xl">{selectedMember.user.fullName}</DialogTitle><div className="mt-1 flex items-center gap-2"><Badge variant="secondary">{roleLabel[selectedMember.role]}</Badge><span className="text-xs text-muted-foreground">Workspace member</span></div></div></div></DialogHeader><div className="grid gap-3 pt-2"><div className="rounded-lg border p-3"><div className="flex items-center gap-2 text-xs text-muted-foreground"><Mail className="h-3.5 w-3.5" />Email</div><p className="mt-1 break-all text-sm">{selectedMember.user.email}</p></div><div className="rounded-lg border p-3"><div className="flex items-center gap-2 text-xs text-muted-foreground"><MapPin className="h-3.5 w-3.5" />Location</div><p className="mt-1 text-sm">{selectedMember.user.location || "Location not specified"}</p></div><div className="rounded-lg border p-3"><div className="flex items-center gap-2 text-xs text-muted-foreground"><CalendarDays className="h-3.5 w-3.5" />Joined</div><p className="mt-1 text-sm">{(() => { const joinedAt = (selectedMember as WorkspaceMember & { createdAt?: string }).createdAt; return joinedAt ? new Date(joinedAt).toLocaleDateString() : "Not available"; })()}</p></div><div className="rounded-lg border p-3"><div className="flex items-center gap-2 text-xs text-muted-foreground"><ShieldCheck className="h-3.5 w-3.5" />About</div><p className="mt-1 whitespace-pre-wrap text-sm leading-6">{selectedMember.user.about || "No information provided."}</p></div></div></>}</DialogContent></Dialog>
+      <Dialog open={profileOpen} onOpenChange={setProfileOpen}>
+        <DialogContent className="max-w-lg">
+          {selectedMember && 
+            <>
+              <DialogHeader>
+                <div className="flex items-center gap-4">
+                  <Avatar className="h-16 w-16">
+                    <AvatarImage src={selectedMember.user.profilePic || undefined} />
+                    <AvatarFallback className="turncate">{initials(selectedMember.user.fullName)}</AvatarFallback>
+                  </Avatar>
+                  
+                  <div className="min-w-0">
+                    <DialogTitle className="max-w-60 truncate text-xl">{selectedMember.user.fullName}</DialogTitle>
+                      <div className="mt-1 flex items-center gap-2">
+                        <Badge variant="secondary">{roleLabel[selectedMember.role]}</Badge>
+                        <span className="text-xs text-muted-foreground">Workspace member</span>
+                        </div>
+                        </div>
+                        </div>
+                        </DialogHeader>
+                        
+                        <div className="grid gap-3 pt-2">
+                          <div className="rounded-lg border p-3">
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                              <Mail className="h-3.5 w-3.5" />Email
+                            </div>
+
+                            <div className="flex justify-between">
+                              <p className="mt-1 break-all text-sm">
+                                {selectedMember.user.email}
+                              </p>
+                                <CopyButton
+                                  label="Copy email"
+                                  value={selectedMember.user.email || ""}
+                                />
+                            </div>
+
+                          </div>
+
+                            <div className="rounded-lg border p-3">
+                              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                <MapPin className="h-3.5 w-3.5" />Location
+                              </div>
+                              <p className="mt-1 text-sm">{selectedMember.user.location || "Location not specified"}</p>
+                              </div>
+                              <div className="rounded-lg border p-3">
+                                <div className="flex items-center gap-2 text-xs text-muted-foreground"><CalendarDays className="h-3.5 w-3.5" />Joined</div><p className="mt-1 text-sm">{(() => { const joinedAt = (selectedMember as WorkspaceMember & { createdAt?: string }).createdAt; return joinedAt ? new Date(joinedAt).toLocaleDateString() : "Not available"; })()}</p></div><div className="rounded-lg border p-3"><div className="flex items-center gap-2 text-xs text-muted-foreground"><ShieldCheck className="h-3.5 w-3.5" />About</div><p className="mt-1 whitespace-pre-wrap text-sm leading-6">{selectedMember.user.about || "No information provided."}</p></div></div></>}</DialogContent></Dialog>
     </div>
   );
 }

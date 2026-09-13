@@ -13,7 +13,8 @@ export type Permission =
   | "VIEW_MEMBER_DETAILS"
   | "INVITE_MEMBERS"
   | "MANAGE_MEMBER_ROLES"
-  | "MANAGE_INVITATIONS";
+  | "MANAGE_INVITATIONS"
+  | "LEAVE_WORKSPACE";
 
 export const permissionsByRole: Record<WorkspaceRole, readonly Permission[]> = {
   OWNER: [
@@ -44,6 +45,7 @@ export const permissionsByRole: Record<WorkspaceRole, readonly Permission[]> = {
     "INVITE_MEMBERS",
     "MANAGE_MEMBER_ROLES",
     "MANAGE_INVITATIONS",
+    "LEAVE_WORKSPACE",
   ],
   EDITOR: [
     "VIEW_WORKSPACE",
@@ -51,8 +53,9 @@ export const permissionsByRole: Record<WorkspaceRole, readonly Permission[]> = {
     "CREATE_BLOG",
     "UPDATE_BLOG",
     "VIEW_TEAM",
+    "LEAVE_WORKSPACE",
   ],
-  VIEWER: ["VIEW_WORKSPACE", "VIEW_BLOGS", "VIEW_TEAM"],
+  VIEWER: ["VIEW_WORKSPACE", "VIEW_BLOGS", "VIEW_TEAM", "LEAVE_WORKSPACE"],
 };
 
 export const getPermissionsForRole = (role: WorkspaceRole) =>
