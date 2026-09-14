@@ -69,7 +69,8 @@ export default function BlogSkeleton() {
         </div>
 
         {/* 🔥 RIGHT SIDEBAR */}
-        <div className="bg-[#0A0A0A] overflow-hidden h-full border">
+        {/* <div className="bg-[#0A0A0A] overflow-hidden h-full border"> */}
+        <div className="overflow-hidden h-full border">
           
           <div className="m-4">
             <Skeleton className="h-7 w-52 rounded-none" />

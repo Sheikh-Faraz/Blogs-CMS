@@ -22,13 +22,14 @@ export default function SignUpPage() {
         <div className="flex justify-center gap-2 md:justify-start">
           <a className="flex items-center gap-2 font-medium">
             <div className="text-primary-foreground flex items-center justify-center rounded-md">
-              <RiPenNibLine className="size-5! text-green-600" />
+              <RiPenNibLine className="size-5! text-[#E85129]" />
             </div>
               Inkwell.
           </a>
         </div>
         
-          <div className="w-full max-w-xs">
+          {/* <div className="w-full max-w-xs"> */}
+          <div className="w-full">
             <SignUpForm />
           </div>
       

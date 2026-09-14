@@ -1,25 +1,28 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { FormEvent } from "react";
-import { cn } from "@/lib/utils"
-
 import { useSearchParams } from "next/navigation";
+import { FormEvent } from "react";
 
 
+// Context
+import { useUser } from "@/context/User.context";
+
+// Notifications
+import { toast } from "react-hot-toast";
+
+// UI Blocks
+import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupButton } from "@/components/ui/input-group";
 import { Tooltip, TooltipContent, TooltipTrigger, } from "@/components/ui/tooltip"
 import { Spinner } from "@/components/ui/spinner"
 
+// Icons
+import { Eye, EyeOff, UserRound, Mail, Lock, MailPlus} from "lucide-react"
 
-import { Eye, EyeOff, UserRound, Mail, Lock} from "lucide-react"
 
-import { toast } from "react-hot-toast";
-
-// Context
-import { useUser } from "@/context/User.context";
 
 // import { GoogleLogin } from "@react-oauth/google";
 
@@ -89,13 +92,11 @@ export function SignUpForm({
 
   return (
     <form className={cn("flex flex-col gap-6", className)} {...props} onSubmit={handleSubmit}>
-
-    <div className="bg-card text-card-foreground p-8 rounded-xl">
-
-      <div className="flex flex-col items-center gap-2 text-center max-[425px]:m-4 m-2">
-
-        {isInvitationFlow && (
-            <div className="rounded-xl border bg-muted/50 p-4 text-sm">
+    
+    <div className="flex flex-row-reverse w-fit mx-auto gap-5">
+      {/* <div> */}
+        {/* {isInvitationFlow && (
+          <div className="rounded-xl border bg-muted/50 p-4 text-sm">
               <p className="font-medium">
                 Workspace invitation
               </p>
@@ -111,12 +112,56 @@ export function SignUpForm({
                 </p>
               )}
             </div>
-          )}
+          )} */}
+
+          {isInvitationFlow && (
+                <div className="rounded-xl bg-card text-card-foreground flex items-center justify-center text-center">
+                    <div className="p-4 text-sm text-center">
+                     
+                      <MailPlus className="mx-auto size-12 text-[#E85129] my-4"/>  
+          
+                      <p className="font-medium">
+                        Workspace invitation
+                      </p>
+          
+                      <p className="mt-1 text-muted-foreground">
+                        Log in to continue with your
+                        invitation.
+                      </p>
+          
+                      {invitedEmail && (
+                        <p className="mt-2 text-xs text-muted-foreground">
+                          Invitation for:  <span className="text-[#E85129] ml-1">{invitedEmail}</span> 
+                        </p>
+                      )}
+          
+          
+                      {isInvitationFlow && (
+                        <div className="text-center text-sm mt-4">
+                          <a
+                            href="/signup"
+                            className="text-muted-foreground underline underline-offset-4 hover:text-[#E85129]"
+                          >
+                            Cancel invitation
+                          </a>
+                        </div>
+                      )}
+          
+                    </div>
+                </div>
+              )}
+        {/* </div> */}
+
+
+    <div className="bg-card text-card-foreground p-8 rounded-xl">
+      {/* <div className="flex flex-col items-center gap-2 text-center max-[425px]:m-4 m-2"> */}
+      <div className="flex flex-col items-center gap-2 text-center m-2">
 
         <h1 className="text-2xl font-bold">Create an account</h1>
       </div>
 
-      <div className="grid gap-6 max-[425px]:gap-8">
+      {/* <div className="grid gap-6 max-[425px]:gap-8"> */}
+      <div className="grid gap-6">
         
         {/* Name */}
         <div className="grid gap-3">
@@ -204,7 +249,7 @@ export function SignUpForm({
           </div>
 
 
-        <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-white" disabled={isSigningUp}>
+        <Button type="submit" className="w-full bg-[#E85129] hover:bg-[#F06A48] text-white" disabled={isSigningUp}>
           {isSigningUp ? (
             <Spinner className="mx-auto" />
             ): (
@@ -247,28 +292,18 @@ export function SignUpForm({
                 )}`
               : "/login"
           }
-          className="underline underline-offset-4 hover:text-green-600"
+          className="underline underline-offset-4 hover:text-[#E85129]"
         >
           Login
         </a>
 
 
-        {isInvitationFlow && (
-          <div className="text-center text-sm">
-            <a
-              href="/signup"
-              className="text-muted-foreground underline underline-offset-4 hover:text-foreground"
-            >
-              Cancel invitation
-            </a>
-          </div>
-        )}
-
 
       </div>
   
-  </div>
+    </div>
 
+    </div>
     </form>
   )
 }

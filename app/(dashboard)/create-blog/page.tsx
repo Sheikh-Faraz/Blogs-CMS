@@ -439,7 +439,7 @@ const handleSubmit = async () => {
 
       toast.success("Text copied to clipboard");
     } catch (error) {
-      toast.error(error, "Failed to copy text");
+      toast.error("Failed to copy text");
     }
   };
 
@@ -482,7 +482,8 @@ const handleSubmit = async () => {
     <div className="w-full">
 
       {/* 🔥 HEADER */}
-      <div className="flex items-center justify-between px-6 py-4 border-b">
+      {/* <div className="flex items-center justify-between px-6 py-4 border-b bg-card text-card-foreground"> */}
+      <div className="flex items-center justify-between px-6 py-4 mx-5 border-b bg-card text-card-foreground">
         <div>
           <h1 className="text-2xl font-semibold truncate max-w-190">
             {title || "Untitled"}

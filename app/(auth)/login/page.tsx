@@ -24,7 +24,7 @@ export default function LogInPage() {
         <div className="flex justify-center gap-2 md:justify-start">
           <a href="#" className="flex items-center gap-2 font-medium">
             <div className="text-primary-foreground flex items-center justify-center rounded-md">
-              <RiPenNibLine className="size-5! text-green-600" />
+              <RiPenNibLine className="size-5! text-[#E85129]" />
             </div>
               Inkwell.
           </a>

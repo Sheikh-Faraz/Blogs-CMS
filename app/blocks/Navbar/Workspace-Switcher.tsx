@@ -76,7 +76,7 @@ export function WorkspaceSwitcher({
                 {activeWorkspace.logo ? (
                   <img src={activeWorkspace.logo} alt="" className="h-full w-full" />
                 ) : (
-                  <Building2 className="size-4" />
+                  <Building2 className="size-4 text-[#E85129]" />
                 )}
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
@@ -104,7 +104,7 @@ export function WorkspaceSwitcher({
                   {workspace.logo ? (
                     <img src={workspace.logo} alt="" className="h-full w-full" />
                   ) : (
-                    <Building2 className="size-3.5" />
+                    <Building2 className="size-3.5 text-[#E85129]" />
                   )}
                 </div>
                 <span className="truncate">{workspace.name}</span>

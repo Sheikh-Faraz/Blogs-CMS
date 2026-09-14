@@ -2,15 +2,30 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import Link from "next/link";
 
 // Context
 import { useUser } from "@/context/User.context";
 
+// Dark & Light mode theme switcher
+import { ThemeToggle } from "@/app/blocks/theme-toggle";
+
+// Custom Blocks
+import LoaderIcon from "@/app/blocks/loading/Loader";
+
+// Services
 import {
   validateInvitationApi,
   acceptInvitationApi,
   declineInvitationApi,
 } from "@/services/auth.services";
+
+
+// UI Blocks
+import { Skeleton } from "@/components/ui/skeleton";
+
+// Icons
+import { CircleArrowLeft, } from "lucide-react";
 
 
 type InvitationData = {
@@ -271,7 +286,7 @@ const handleDeclineInvitation = async () => {
 
     // Invitation flow is finished.
     // Go back to the user's normal app experience.
-    router.replace("/");
+    router.replace("/blogs");
 
   } catch (error) {
     console.error("Decline invitation error:", error);
@@ -340,30 +355,84 @@ const handleSwitchAccount = async () => {
 };
 
 
+  // if (loading) {
+  //   return (
+  //     <main className="flex min-h-screen items-center justify-center">
+  //       <p className="flex border border-red-600 w-fit">
+  //         <div>Checking invitation</div>
+  //         <LoaderIcon />
+  //       </p>
+  //     </main>
+  //   );
+  // }
+
   if (loading) {
     return (
-      <main className="flex min-h-screen items-center justify-center">
-        <p>Checking invitation...</p>
+      <main className="flex min-h-screen items-center justify-center p-6">
+        <div className="w-full max-w-md rounded-xl border p-6 bg-gray-200">
+          <Skeleton className="h-7 w-40" />
+
+          <Skeleton className="mt-3 h-4 w-64" />
+
+          <div className="mt-6 space-y-5">
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-5 w-40" />
+            </div>
+
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-16" />
+              <Skeleton className="h-5 w-56" />
+            </div>
+
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-12" />
+              <Skeleton className="h-5 w-24" />
+            </div>
+          </div>
+
+          <Skeleton className="mt-6 h-4 w-48" />
+
+          <div className="mt-6 space-y-3">
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+        </div>
       </main>
-    );
-  }
+      );
+    }
+
+
+  // if (switchingAccount) {
+  //   return (
+  //     <main className="flex min-h-screen items-center justify-center p-6">
+  //       <div className="text-center">
+  //         <p className="text-sm text-muted-foreground">
+  //           Signing you out...
+  //         </p>
+  //       </div>
+  //     </main>
+  //   );
+  // }
 
   if (switchingAccount) {
     return (
       <main className="flex min-h-screen items-center justify-center p-6">
-        <div className="text-center">
-          <p className="text-sm text-muted-foreground">
-            Signing you out...
-          </p>
+        <div className="flex items-center gap-2 text-md text-card-foreground justify-center">
+          <div className="mr">
+            <LoaderIcon />
+          </div>
+          <span>Signing you out</span>
         </div>
       </main>
-    );
-  }
+      );
+    }
 
+  // if (error || !invitation || !workspace) {
   if (error || !invitation || !workspace) {
     return (
       <main className="flex min-h-screen items-center justify-center p-6">
-        <div className="w-full max-w-md rounded-xl border p-6">
+        <div className="w-full max-w-md rounded-xl border p-6 bg-card text-center">
           <h1 className="text-xl font-semibold">
             Invitation unavailable
           </h1>
@@ -371,6 +440,14 @@ const handleSwitchAccount = async () => {
           <p className="mt-2 text-sm text-muted-foreground">
             {error || "This invitation could not be loaded."}
           </p>
+
+          <Link 
+            href="/login" 
+            className="mt-6 border py-2 px-3 bg-[#E85129] rounded-md flex gap-2 items-center hover:bg-muted justify-center w-fit mx-auto"
+          >
+            <CircleArrowLeft />
+              Go to login page
+          </Link>
         </div>
       </main>
     );
@@ -381,7 +458,7 @@ const handleSwitchAccount = async () => {
     if (wrongAccount && authUser) {
     return (
       <main className="flex min-h-screen items-center justify-center p-6">
-        <div className="w-full max-w-md rounded-xl border p-6">
+        <div className="w-full max-w-md rounded-xl border p-6 bg-card text-card-foreground">
           <h1 className="text-2xl font-semibold">
             This invitation is for another account
           </h1>
@@ -409,17 +486,21 @@ const handleSwitchAccount = async () => {
 
           <div className="mt-6 flex flex-col gap-3">
             <button
-              className="w-full rounded-lg bg-black px-4 py-2 text-white disabled:opacity-50"
+              className="w-full rounded-lg bg-[#E85129] px-4 py-2 text-card-foreground disabled:opacity-50 hover:bg-muted"
               onClick={handleSwitchAccount}
               disabled={switchingAccount}
             >
               {switchingAccount
-                ? "Signing out..."
+                ? 
+                  <div className="flex justify-center items-center text-center">
+                    <div className="mr-2"><LoaderIcon /></div>
+                    <div>Signing out</div>
+                  </div>
                 : "Sign out and continue"}
             </button>
 
             <button
-              className="w-full rounded-lg border px-4 py-2"
+              className="w-full rounded-lg border px-4 py-2 hover:bg-muted"
               onClick={() => router.push("/blogs")}
             >
               Cancel
@@ -432,10 +513,16 @@ const handleSwitchAccount = async () => {
 
   return (
     <main className="flex min-h-screen items-center justify-center p-6">
-      <div className="w-full max-w-md rounded-xl border p-6">
-        <h1 className="text-2xl font-semibold">
-          You&apos;re invited!
-        </h1>
+        
+
+      <div className="w-full max-w-md rounded-xl border p-6 bg-card text-card-foreground">
+
+        <div className="flex justify-between">
+          <h1 className="text-2xl font-semibold">
+            You&apos;re invited!
+          </h1>
+          <ThemeToggle />
+        </div>
 
         <p className="mt-2 text-sm text-muted-foreground">
           You have been invited to join a workspace.
@@ -521,7 +608,7 @@ const handleSwitchAccount = async () => {
       {authUser && (
         <div className="mt-6 flex flex-col gap-3">
           <button
-            className="w-full rounded-lg bg-black px-4 py-2 text-white disabled:opacity-50"
+            className="w-full rounded-lg bg-[#E85129] px-4 py-2 text-white disabled:opacity-50 hover:bg-[#F06A48]"
             onClick={handleAcceptInvitation}
             disabled={
               accepting ||
@@ -531,12 +618,16 @@ const handleSwitchAccount = async () => {
             }
           >
             {accepting
-              ? "Joining workspace..."
+              ?
+                <div className="flex justify-center items-center text-center">
+                  <div className="mr-2"><LoaderIcon /></div>
+                  <div>Joining workspace</div>
+                </div> 
               : "Accept Invitation"}
           </button>
 
           <button
-            className="w-full rounded-lg border px-4 py-2 disabled:opacity-50"
+            className="w-full rounded-lg border bg-card px-4 py-2 disabled:opacity-50 hover:bg-muted"
             onClick={handleDeclineInvitation}
             disabled={
               accepting ||
@@ -546,8 +637,14 @@ const handleSwitchAccount = async () => {
             }
           >
             {declining
-              ? "Declining invitation..."
-              : "Decline Invitation"}
+              ?
+                <div className="flex justify-center items-center text-center">
+                  <div className="mr-2"><LoaderIcon /></div>
+                  <div>Declining invitation</div>
+                </div>
+              : 
+                "Decline Invitation"
+            }
           </button>
         </div>
       )}

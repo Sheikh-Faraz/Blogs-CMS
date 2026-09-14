@@ -1,28 +1,30 @@
 "use client"
 
 
-import { useSearchParams } from "next/navigation";
-
-// import { LoginForm } from "@/components/login-form"
-
 import { useState } from "react"
+import { useSearchParams } from "next/navigation";
 import { FormEvent } from "react";
 
+// Context
+import { useUser } from "@/context/User.context";
 // import { GoogleLogin } from "@react-oauth/google";
 
-import { cn } from "@/lib/utils"
 
+// UI Blocks
+import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupButton } from "@/components/ui/input-group";
 import { Tooltip, TooltipContent, TooltipTrigger, } from "@/components/ui/tooltip"
 import { Spinner } from "@/components/ui/spinner"
 
-import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 
+// Icons
+import { Eye, EyeOff, Mail, Lock, MailPlus } from "lucide-react";
+// import { BuildingComplexPlus } from "lucide-react";
+// import { FcInvite as MailIcon } from "react-icons/fc";
+// import { IoIosMailOpen as MailIcon } from "react-icons/io";
 
-// Context
-import { useUser } from "@/context/User.context";
 
 
 export function LoginForm({
@@ -62,8 +64,11 @@ export function LoginForm({
     <div className="flex flex-row-reverse w-fit mx-auto gap-5">
 
     {isInvitationFlow && (
-      <div className="rounded-xl border bg-muted/50 flex items-center">
-          <div className="p-4 text-sm">
+      <div className="rounded-xl bg-card text-card-foreground flex items-center justify-center text-center">
+          <div className="p-4 text-sm text-center">
+           
+            <MailPlus className="mx-auto size-12 text-[#E85129] my-4"/>  
+
             <p className="font-medium">
               Workspace invitation
             </p>
@@ -75,9 +80,22 @@ export function LoginForm({
 
             {invitationEmail && (
               <p className="mt-2 text-xs text-muted-foreground">
-                Invitation for: {invitationEmail}
+                Invitation for:  <span className="text-[#E85129] ml-1">{invitationEmail}</span> 
               </p>
             )}
+
+
+            {isInvitationFlow && (
+              <div className="text-center text-sm mt-4">
+                <a
+                  href="/login"
+                  className="text-muted-foreground underline underline-offset-4 hover:text-[#E85129]"
+                >
+                  Cancel invitation
+                </a>
+              </div>
+            )}
+
           </div>
       </div>
     )}
@@ -189,7 +207,7 @@ export function LoginForm({
         </div>
 
 
-        <Button type="submit" disabled={isLoggingIn} className="w-full bg-green-600 hover:bg-green-700 text-white">
+        <Button type="submit" disabled={isLoggingIn} className="w-full bg-[#E85129] hover:bg-[#F06A48] text-white">
         {isLoggingIn ? (
           <Spinner className="mx-auto" />
         ): (
@@ -232,22 +250,11 @@ export function LoginForm({
                   )}`
                 : "/signup"
             }
-            className="underline underline-offset-4 hover:text-green-600"
+            className="underline underline-offset-4 hover:text-[#E85129]"
           >
             Sign up
           </a>
 
-
-          {isInvitationFlow && (
-            <div className="text-center text-sm">
-              <a
-                href="/login"
-                className="text-muted-foreground underline underline-offset-4 hover:text-foreground"
-              >
-                Cancel invitation
-              </a>
-            </div>
-          )}
 
       </div>
 

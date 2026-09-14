@@ -5,6 +5,7 @@
 <!-- -- Add the copy feature to inputs on all across pages and the right input fields               -- DONE -->
 <!-- -- Also add the animation between pages for login and singup and some others too               -- DONE -->
 <!-- -- Also maybe work a little on the user/setting showing in the sidebar at the bottom           -- DONE -->
+<!-- -- Also work on the invitaion showing on login and signup pages                                -- DONE -->
 <!-- -- Add the functionality that if a user's role is not premitted and he can't perform           -- DONE -->
 <!-- -- certain actions --> 
 
@@ -12,7 +13,6 @@
 <!-- mode switching there, just need to add demo video besides them after everytign  --> 
 
 
--- Also work on the invitaion showing on login and signup pages
 -- Fix the scroll showing the loading animation slides appear and nothing to be abled to used while it is going on
 
 
