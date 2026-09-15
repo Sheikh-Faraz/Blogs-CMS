@@ -519,7 +519,7 @@ export default function EditBlogPage() {
     <div className="w-full">
 
       {/* 🔥 HEADER */}
-      <div className="flex items-center justify-between px-6 py-4 border-b">
+      <div className="flex items-center justify-between px-6 py-4 border-b bg-card text-card-foreground mx-5">
         <div>
           <h1 className="text-2xl font-semibold truncate max-w-190">
             {title || "Untitled"}
@@ -528,10 +528,10 @@ export default function EditBlogPage() {
 
         </div>
 
-        <Button 
+        <button 
           onClick={handleSubmit} 
           disabled={updateBlogLoading || !can("UPDATE_BLOG")} 
-          className="bg-card text-card-foreground rounded-md hover:bg-muted py-2 px-3"
+          className="border py-2 px-3 bg-card text-card-foreground rounded-md flex gap-2 items-center hover:bg-muted"
         >
           {updateBlogLoading ? 
           (
@@ -546,7 +546,7 @@ export default function EditBlogPage() {
               <UploadIcon className="text-[#E85129] size-4"/>
             </p>
           }
-        </Button>
+        </button>
       </div>
 
           <div className="flex flex-wrap gap-8 px-6 py-3 border-b text-sm text-muted-foreground">

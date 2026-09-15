@@ -12,8 +12,10 @@
 <!-- -- Improve the UI of the login and signup pages also add the light and dark                    -- DONE Almost -->
 <!-- mode switching there, just need to add demo video besides them after everytign  --> 
 
+Maybe change all the url in the services to developement 
 
--- Fix the scroll showing the loading animation slides appear and nothing to be abled to used while it is going on
+POSTPONDED FOR NOW
+<!-- -- Fix the scroll showing the loading animation slides appear and nothing to be abled to used while it is going on -->
 
 
 ------------------------------------------------ ( BLOGS PAGE ) ------------------------------------------------
