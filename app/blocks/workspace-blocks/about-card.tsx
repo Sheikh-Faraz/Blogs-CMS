@@ -42,7 +42,7 @@ export default function AboutCard(
     const { 
 
       fetchUser, 
-      authUser,
+      // authUser,
 
       workspace,
 

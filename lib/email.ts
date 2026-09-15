@@ -137,14 +137,9 @@ export const sendInvitationEmail = async ({
     const errorText =
       await response.text();
 
-    console.error(
-      "EmailJS error:",
-      errorText
-    );
+    console.error("EmailJS error:", errorText);
 
-    throw new Error(
-      `Failed to send invitation email: ${errorText}`
-    );
+    throw new Error(`Failed to send invitation email: ${errorText}`);
   }
 
   return true;

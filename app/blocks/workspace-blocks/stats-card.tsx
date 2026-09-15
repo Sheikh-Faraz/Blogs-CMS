@@ -7,7 +7,7 @@ import { useState ,useEffect } from "react";
 // Context 
 import { useUser } from "@/context/User.context";
 
-
+// UI Blocks
 import { Card, CardContent } from "@/components/ui/card";
 import {
   AreaChart,

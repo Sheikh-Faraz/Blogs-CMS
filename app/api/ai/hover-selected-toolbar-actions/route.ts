@@ -41,12 +41,8 @@ export async function POST(req: Request) {
 
     if (!selectedText?.length) {
         return NextResponse.json(
-            {
-            error: "No selection found.",
-            },
-            {
-            status: 400,
-            }
+            { error: "No selection found.", },
+            { status: 400, }
         );
     }
 

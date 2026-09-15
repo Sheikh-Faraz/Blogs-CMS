@@ -322,7 +322,7 @@ export function useColorHighlight(config: UseColorHighlightConfig) {
         const success = editor
           .chain()
           .focus()
-          .toggleHighlight({ color: actualColor })
+          // .toggleHighlight({ color: actualColor })
           .run()
         if (success) {
           onApplied?.({ color: actualColor, label, mode })

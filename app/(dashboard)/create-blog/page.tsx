@@ -438,8 +438,9 @@ const handleSubmit = async () => {
       await navigator.clipboard.writeText(markdown);
 
       toast.success("Text copied to clipboard");
-    } catch (error) {
+    } catch (error: any) {
       toast.error("Failed to copy text");
+      toast.error(error);
     }
   };
 

@@ -1,16 +1,22 @@
 "use client";
 
-import { Copy, Check } from "lucide-react";
 import { useState } from "react";
-import { toast } from "react-hot-toast";
-import { cn } from "@/lib/utils";
 
+// Icon
+import { Copy, Check } from "lucide-react";
+
+// Notifications
+import { toast } from "react-hot-toast";
+
+// UI Blocks
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
 
 interface CopyButtonProps {
   value: string;

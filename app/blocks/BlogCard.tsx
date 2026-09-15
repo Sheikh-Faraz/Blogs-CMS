@@ -6,22 +6,18 @@ import { useEffect ,useState } from "react";
 // Type
 import { Tag } from "@/app/Types/blog.type";
 
-import { FiEdit, FiTrash2 } from "react-icons/fi";
-import { IoMdRefresh } from "react-icons/io";
-import { Search, ListFilter, ChevronDown, CalendarIcon } from 'lucide-react';
-
 // Context
 import { useBlog } from "@/context/Blog.context";
+// import { useGlobalLoading } from "@/context/Loading.context";
 
-// Loading context
-import { useGlobalLoading } from "@/context/Loading.context";
+// Custom Blocks
+import LoaderIcon from "./loading/Loader";
 
+// UI Blocks
 import { Badge } from "@/components/ui/badge";
-
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Input } from "@/components/ui/input";
-
 import {
   Dialog,
   DialogClose,
@@ -32,7 +28,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -41,27 +36,25 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
 import { Calendar } from "@/components/ui/calendar";
-import { Field, 
-  // FieldLabel
- } from "@/components/ui/field";
+import { Field } from "@/components/ui/field";
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group";
-
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-
 import { Label } from "@/components/ui/label";
 
-import LoaderIcon from "./loading/Loader";
+// Icons
+import { FiEdit, FiTrash2 } from "react-icons/fi";
+import { IoMdRefresh } from "react-icons/io";
+import { Search, ListFilter, ChevronDown, CalendarIcon } from 'lucide-react';
 
 
 function formatDate(date: Date | undefined) {
@@ -81,11 +74,11 @@ export default function BlogTable() {
   const { blogs, deleteBlog, loading, categories, getAllBlogs } = useBlog();
 
   // Loading context 
-  const { setIsLoading } = useGlobalLoading();
+  // const { setIsLoading } = useGlobalLoading();
 
   useEffect(()=>{
     getAllBlogs();
-    setIsLoading(false);
+    // setIsLoading(false);
   }, [])
   
   // ----------------------------- FILTERING STATES -----------------------------
@@ -622,7 +615,10 @@ export default function BlogTable() {
                 <td className="p-4">
                   <div className="flex justify-end gap-2">
 
-                    <Link href={`/dashboard/edit/${blog._id}`} onClick={()=>{setIsLoading(true)}}>
+                    <Link 
+                      href={`/dashboard/edit/${blog._id}`} 
+                      // onClick={()=>{setIsLoading(true)}}
+                    >
                       <Button variant="ghost" size="icon">
                         <FiEdit size={16} />
                       </Button>

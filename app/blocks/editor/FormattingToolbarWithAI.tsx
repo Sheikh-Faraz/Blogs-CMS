@@ -6,14 +6,18 @@ import {
   getFormattingToolbarItems,
 } from "@blocknote/react";
 
+// Custom Blocks
+import AIDropdown from "./AIDropdown";
+
+// UI Blocks
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-import AIDropdown from "./AIDropdown";
 
+// Icons
 import { InfoIcon } from "lucide-react";
 
 

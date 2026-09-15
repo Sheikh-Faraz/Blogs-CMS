@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useSearchParams } from "next/navigation";
 import { FormEvent } from "react";
 
@@ -26,7 +26,8 @@ import { Eye, EyeOff, UserRound, Mail, Lock, MailPlus} from "lucide-react"
 
 // import { GoogleLogin } from "@react-oauth/google";
 
-export function SignUpForm({
+// export function SignUpForm({
+function SignUpFormContent({
   className,
   ...props
 }: React.ComponentProps<"form">) {
@@ -306,4 +307,15 @@ export function SignUpForm({
     </div>
     </form>
   )
+}
+
+
+export function SignUpForm(
+  props: React.ComponentProps<"form">
+) {
+  return (
+    <Suspense fallback={null}>
+      <SignUpFormContent {...props} />
+    </Suspense>
+  );
 }

@@ -1,3 +1,5 @@
+import { NextRequest, NextResponse } from "next/server";
+
 import connectDB from "@/lib/db";
 
 import Category from "@/models/Category";
@@ -6,16 +8,19 @@ import { getCurrentUser } from "@/lib/getCurrentUser";
 import { getActiveWorkspace } from "@/lib/workspace";
 import { requireMembership } from "@/lib/premission";
 
-export async function POST(req: Request) {
+// export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     await connectDB();
 
-    const nextReq = req as any;
+    // const nextReq = req as any;
+    // const user = await getCurrentUser(nextReq);
 
-    const user = await getCurrentUser(nextReq);
+    const user = await getCurrentUser(req);
 
     if (!user) {
-      return Response.json(
+      // return Response.json(
+      return NextResponse.json(
         { error: "Unauthorized" },
         { status: 401 }
       );
@@ -31,11 +36,9 @@ export async function POST(req: Request) {
     );
 
     if (membership.role === "VIEWER") {
-      return Response.json(
-        {
-          error:
-            "You do not have permission to create categories",
-        },
+      // return Response.json(
+      return NextResponse.json(
+        { error: "You do not have permission to create categories", },
         { status: 403 }
       );
     }
@@ -46,10 +49,9 @@ export async function POST(req: Request) {
       body.categoryName?.trim().replace(/\s+/g, " ");
 
     if (!categoryName) {
-      return Response.json(
-        {
-          error: "Category name is required",
-        },
+      // return Response.json(
+      return NextResponse.json(
+        { error: "Category name is required", },
         { status: 400 }
       );
     }
@@ -61,11 +63,9 @@ export async function POST(req: Request) {
       });
 
     if (existingCategory) {
-      return Response.json(
-        {
-          error:
-            "Category already exists",
-        },
+      // return Response.json(
+      return NextResponse.json(
+        { error: "Category already exists", },
         { status: 400 }
       );
     }
@@ -76,19 +76,19 @@ export async function POST(req: Request) {
         workspace: workspace._id,
       });
 
-    return Response.json(category, {
-      status: 201,
-    });
-  } catch (err) {
-    console.error(
-      "Error creating category:",
-      err
+    // return Response.json(category, {
+    return NextResponse.json(
+      category, 
+      { status: 201,}
     );
 
-    return Response.json(
-      {
-        error: "Internal Server Error",
-      },
+  } catch (err) {
+
+    console.error("Error creating category:", err);
+
+    // return Response.json(
+    return NextResponse.json(
+      { error: "Internal Server Error", },
       { status: 500 }
     );
   }

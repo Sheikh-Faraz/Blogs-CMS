@@ -8,8 +8,10 @@ import { useUser } from "@/context/User.context";
 // Permission to show buttons bases on role
 import { useWorkspacePermissions } from "@/hooks/use-workspace-permissions";
 
+// Animation
 import { motion } from "framer-motion";
 
+// UI Blocks
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
@@ -26,8 +28,12 @@ import {
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 
+
+// Custom Blocks
 import LoaderIcon from "@/app/blocks/loading/Loader";
 
+
+// Icons
 import { AiOutlineWarning as Warning } from "react-icons/ai";
 
 

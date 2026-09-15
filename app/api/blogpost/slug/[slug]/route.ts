@@ -1,13 +1,18 @@
 import connectDB from "@/lib/db";
 import Blog from "@/models/Blog";
 
-export async function GET(
-  req: Request,
-  { params }: { params: { slug: string } }
+// export async function GET( req: Request, { params }: { params: { slug: string } }) {
+export async function GET( 
+  req: Request, 
+  { params }: { params: Promise<{ slug: string }> }
 ) {
+
   await connectDB();
 
-  const blog = await Blog.findOne({ slug: params.slug });
+  const { slug } = await params;
+
+  // const blog = await Blog.findOne({ slug: params.slug });
+  const blog = await Blog.findOne({ slug });
 
   if (!blog) {
     return new Response(JSON.stringify({ error: "Blog not found" }), {

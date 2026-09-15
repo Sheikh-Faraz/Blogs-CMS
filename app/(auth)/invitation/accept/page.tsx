@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -41,7 +41,8 @@ type WorkspaceData = {
 
 
 // Frontend page the invited person actually sees.
-export default function AcceptInvitationPage() {
+// export default function AcceptInvitationPage() {
+function AcceptInvitationContent() {
 
   const router = useRouter();
 
@@ -652,5 +653,14 @@ const handleSwitchAccount = async () => {
 
       </div>
     </main>
+  );
+}
+
+
+export default function AcceptInvitationPage() {
+  return (
+    <Suspense fallback={null}>
+      <AcceptInvitationContent />
+    </Suspense>
   );
 }

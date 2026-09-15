@@ -11,9 +11,7 @@ export async function requireMembership(
     });
 
   if (!membership) {
-    throw new Error(
-      "You are not a member of this workspace"
-    );
+    throw new Error("You are not a member of this workspace");
   }
 
   return membership;

@@ -16,9 +16,7 @@ export async function requireRole(
     });
 
   if (!membership) {
-    throw new Error(
-      "You are not a member of this workspace"
-    );
+    throw new Error("You are not a member of this workspace");
   }
 
   if (
@@ -26,9 +24,7 @@ export async function requireRole(
       membership.role
     )
   ) {
-    throw new Error(
-      "Insufficient permissions"
-    );
+    throw new Error("Insufficient permissions");
   }
 
   return membership;

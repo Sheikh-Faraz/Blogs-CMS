@@ -275,11 +275,8 @@ export default function EditBlogPage() {
 
     // Updating the created status when first created then no changes on others
     useEffect(() => {
-        if (
-        !createdAt &&
-        (title.trim() || content.length > 0)
-        ) {
-        setCreatedAt(new Date());
+        if (!createdAt && (title.trim() || content.length > 0)) {
+          setCreatedAt(new Date());
         }
     }, [title, content, createdAt]);
 

@@ -35,7 +35,7 @@ import { Button } from "@/components/ui/button";
 // import CountriesAnalytics from "@/app/blocks/Analytics/CountriesAnalytics";
 
 // Loading context
-import { useGlobalLoading } from "@/context/Loading.context";
+// import { useGlobalLoading } from "@/context/Loading.context";
 
 type CountryData = {
   x: string;
@@ -240,7 +240,8 @@ function ChartTooltip({
   active,
   payload,
   label,
-}: any) {
+}: any
+) {
   if (!active || !payload?.length) return null;
 
   return (

@@ -21,8 +21,12 @@ import {
   requireInvitationPermission,
   canInviteRole,
   type InvitationRole,
-  type WorkspaceRole,
+  // type WorkspaceRole,
 } from "@/lib/invitationPermissions";
+
+import {
+  type WorkspaceRole,
+} from "@/lib/permission-config";
 
 
 export async function POST(req: NextRequest) {

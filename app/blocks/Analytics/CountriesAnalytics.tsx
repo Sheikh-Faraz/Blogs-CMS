@@ -115,10 +115,10 @@ const countryMap = useMemo(() => {
   /*
     🎨 Heat colors
   */
-  const maxValue = Math.max(
-    ...data.map((d) => d.y),
-    1
-  );
+  // const maxValue = Math.max(
+  //   ...data.map((d) => d.y),
+  //   1
+  // );
 
   // const colorScale = scaleLinear<string>()
   //   .domain([0, maxValue])
@@ -241,7 +241,7 @@ const countryMap = useMemo(() => {
                             ? countryMap[countryCode] ?? 0
                             : 0;
 
-                        const isActive = value > 0;
+                        // const isActive = value > 0;
 
                         return (
                           <Geography

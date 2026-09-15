@@ -5,11 +5,11 @@ import { useEffect } from "react";
 // Context 
 import { useUser } from "@/context/User.context";
 
+// UI Blocks
 import { Card, CardContent } from "@/components/ui/card";
 
-
+// Chart Blocks
 import { DonutChart } from "@/app/blocks/workspace-blocks/Donut-Chart";
-
 import { HorizontalBarChart } from "@/app/blocks/workspace-blocks/Horizontal-Bar-Chart";
 
 

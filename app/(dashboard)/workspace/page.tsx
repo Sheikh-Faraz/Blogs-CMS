@@ -1,10 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
-import { 
-  // useRouter, 
-  useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 // Context 
 import { useUser } from "@/context/User.context";
@@ -29,11 +27,6 @@ import AboutCard from "@/app/blocks/workspace-blocks/about-card";
 // Stats
 import WorkspaceAnalytics from "@/app/blocks/workspace-blocks/workspaceAnalytics";
 
-// import StatsCard from "@/app/blocks/workspace-blocks/stats-card";
-
-// Team Members 
-// import TeamCard from "@/app/blocks/workspace-blocks/team-card";
-
 // Right Side info card 
 import RightCard from "@/app/blocks/workspace-blocks/Right-Card";
 // Delete card 
@@ -54,9 +47,6 @@ import {
 // Loading icons spinner
 import LoaderIcon from "@/app/blocks/loading/Loader";
 
-// Invite user/member dialog
-// import InviteMemberDialog from "@/app/blocks/workspace-blocks/invite-member-dialog";
-
 
 import { FiPlusCircle as Plus, } from "react-icons/fi";
 import { FaDoorOpen as LeaveIcon } from "react-icons/fa6";
@@ -64,13 +54,12 @@ import { FaDoorOpen as LeaveIcon } from "react-icons/fa6";
 
 
 
-export default function WorkspacePage() {
+// export default function WorkspacePage() {
+function WorkspacePageContent() {
 
-    // const router = useRouter();
     const searchParams = useSearchParams();
     const [createWorkspaceOpen, setCreateWorkspaceOpen] = useState(false);
     const createWorkspaceRequested = searchParams.get("create") === "1";
-    // const [inviteMemberOpen, setInviteMemberOpen] = useState(false);
 
     // User Context
     const {
@@ -100,8 +89,9 @@ export default function WorkspacePage() {
           await fetchPendingInvitations();
           await fetchAnalytics();
 
-        } catch (error) {
-          console.error( "Failed to load workspace data:", error );
+        } catch (error: any) {
+          toast.error("Failed to load workspace data");
+          toast.error(error);
         }
       };
 
@@ -148,9 +138,10 @@ export default function WorkspacePage() {
         toast.success("You left the workspace");
 
         // Refresh workspace/user context here
-      } catch (error) {
-        console.error("Failed to leave workspace:", error);
+      } catch (error: any) {
+        // console.error("Failed to leave workspace:", error);
         toast.error("Failed to leave workspace");
+        toast.error(error);
       } finally {
         setLeaveWorkspaceLoading(false);
       }
@@ -261,8 +252,6 @@ export default function WorkspacePage() {
             authors={analytics?.overview.totalAuthors ?? 0 }
           />
 
-          {/* <StatsCard /> */}
-
 
           <WorkspaceAnalytics
             totalBlogs={analytics?.overview.totalBlogs ?? 0}
@@ -297,5 +286,14 @@ export default function WorkspacePage() {
       </div>
 
     </div>
+  );
+}
+
+
+export default function WorkspacePage() {
+  return (
+    <Suspense fallback={null}>
+      <WorkspacePageContent />
+    </Suspense>
   );
 }

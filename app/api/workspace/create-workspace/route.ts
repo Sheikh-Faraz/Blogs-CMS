@@ -44,32 +44,59 @@ export async function POST(req: NextRequest) {
       suffix += 1;
     }
 
-    const session = await mongoose.startSession();
-    let workspaceId: mongoose.Types.ObjectId | null = null;
+    // const session = await mongoose.startSession();
+    
+    // let workspaceId: mongoose.Types.ObjectId | null = null;
 
     // Basically this session use means the both the workspace and membership are created and not one in case of failure
+    const session = await mongoose.startSession();
+    let workspaceId: mongoose.Types.ObjectId;
+
     try {
-      await session.withTransaction(async () => {     
-        
+      workspaceId = await session.withTransaction(async () => {
         const [workspace] = await Workspace.create(
           [{ name: workspaceName, slug }],
           { session }
         );
 
         await Membership.create(
-          [{
-            user: currentUser._id,
-            workspace: workspace._id,
-            role: "OWNER",
-          }],
+          [
+            {
+              user: currentUser._id,
+              workspace: workspace._id,
+              role: "OWNER",
+            },
+          ],
           { session }
         );
 
-        workspaceId = workspace._id;
+        return workspace._id;
       });
     } finally {
       await session.endSession();
     }
+    // try {
+    //   await session.withTransaction(async () => {     
+        
+    //     const [workspace] = await Workspace.create(
+    //       [{ name: workspaceName, slug }],
+    //       { session }
+    //     );
+
+    //     await Membership.create(
+    //       [{
+    //         user: currentUser._id,
+    //         workspace: workspace._id,
+    //         role: "OWNER",
+    //       }],
+    //       { session }
+    //     );
+
+    //     workspaceId = workspace._id;
+    //   });
+    // } finally {
+    //   await session.endSession();
+    // }
 
     if (!workspaceId) {
       throw new Error("Workspace creation did not return an ID");

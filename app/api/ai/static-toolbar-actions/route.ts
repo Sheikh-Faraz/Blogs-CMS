@@ -27,12 +27,8 @@ export async function POST(req: Request) {
         !plainContent
       ) {
         return NextResponse.json(
-          {
-            error: "No content available.",
-          },
-          {
-            status: 400,
-          }
+          { error: "No content available.", },
+          { status: 400,  }
         );
       }
 

@@ -11,12 +11,8 @@ export async function POST(req: Request) {
 
     if (!title || !title.trim()) {
       return NextResponse.json(
-        {
-          error: "Please enter a blog title first.",
-        },
-        {
-          status: 400,
-        }
+        { error: "Please enter a blog title first.",  },
+        { status: 400,  }
       );
     }
 

@@ -8,12 +8,12 @@ import Image from "next/image";
 import EmptyStatImage from "@/public/blog-empty-state-img.png";
 
 // Loading context
-import { useGlobalLoading } from "@/context/Loading.context";
+// import { useGlobalLoading } from "@/context/Loading.context";
 
 export default function EmptyBlogsState() {
 
     // Loading context 
-    const { setIsLoading } = useGlobalLoading();
+    // const { setIsLoading } = useGlobalLoading();
 
   return (
     <tr>
@@ -89,7 +89,9 @@ export default function EmptyBlogsState() {
             transition={{ delay: 0.3 }}
             className="mt-4"
           >
-            <Link href="/create-blog" onClick={()=>{setIsLoading(true)}}>
+            <Link href="/create-blog" 
+              // onClick={()=>{setIsLoading(true)}}
+            >
               <Button className="bg-[#E85129] text-white hover:text-[#E85129] p-4 hover:bg-muted">
                 Create your first post
               </Button>

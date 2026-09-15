@@ -126,12 +126,8 @@ export async function GET() {
     console.log(error);
 
     return NextResponse.json(
-      {
-        error: "Failed to fetch analytics",
-      },
-      {
-        status: 500,
-      }
+      { error: "Failed to fetch analytics", },
+      { status: 500, }
     );
   }
 }

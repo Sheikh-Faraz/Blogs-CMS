@@ -14,9 +14,10 @@ import {
   resendInvitationApi, 
 } from "@/services/auth.services";
 
+// Notifications
 import toast from "react-hot-toast";
 
-
+// UI Blocks
 import {
   Card,
   CardContent,
@@ -37,6 +38,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 
+// Icons
 import { Mail, Clock, X, RefreshCw } from "lucide-react";
 
 

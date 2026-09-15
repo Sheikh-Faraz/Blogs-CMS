@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 
+// Notificaitons
 import toast from "react-hot-toast";
 
+// Icons
 import {
   Loader2,
   Sparkles,
@@ -14,8 +16,8 @@ import {
   Briefcase,
 } from "lucide-react";
 
+// UI Blocks
 import { Button } from "@/components/ui/button";
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -67,18 +69,18 @@ export default function AIDropdown({
 
     const selection = editor.getSelection();
 
-    console.log("THIS IS THE SELECTION: ", selection);
+    // console.log("THIS IS THE SELECTION: ", selection);
 
     if (!selection) return;
 
     const document = editor.document;
 
     const startIndex = document.findIndex(
-      (b) => b.id === selection.blocks[0].id
+      (b: any) => b.id === selection.blocks[0].id
     );
 
     const endIndex = document.findIndex(
-      (b) => b.id === selection.blocks.at(-1)!.id
+      (b: any) => b.id === selection.blocks.at(-1)!.id
     );
 
     // const selectedBlocks = document.slice(

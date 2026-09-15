@@ -78,6 +78,7 @@ export const deleteCategoryService = async (id: string) => {
   return data;
 };
 
+
 // Fetch all tags
 export const getTags = async () => {
   const res = await apiFetch(`${BASE_URL}/api/blogpost/tag`, {

@@ -1,7 +1,7 @@
 "use client"
 
 
-import { useState } from "react"
+import { useState, Suspense } from "react"
 import { useSearchParams } from "next/navigation";
 import { FormEvent } from "react";
 
@@ -27,7 +27,8 @@ import { Eye, EyeOff, Mail, Lock, MailPlus } from "lucide-react";
 
 
 
-export function LoginForm({
+// export function LoginForm({
+function LoginFormContent({
   className,
   ...props
 }: React.ComponentProps<"form">) {
@@ -264,4 +265,15 @@ export function LoginForm({
 
     </form>
   )
+}
+
+
+export function LoginForm(
+  props: React.ComponentProps<"form">
+) {
+  return (
+    <Suspense fallback={null}>
+      <LoginFormContent {...props} />
+    </Suspense>
+  );
 }

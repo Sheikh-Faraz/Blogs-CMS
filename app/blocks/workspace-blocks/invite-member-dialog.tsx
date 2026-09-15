@@ -8,12 +8,15 @@ import { useUser } from "@/context/User.context";
 // Services
 import { createInvitationApi } from "@/services/auth.services";
 
+// Custom Blocks
 import LoaderIcon from "@/app/blocks/loading/Loader";
 
+// Notifications
 import toast from "react-hot-toast";
 
+// Icons
 import { FiUserPlus } from "react-icons/fi";
-import { Check, Loader2, X } from "lucide-react";
+import { Check, X } from "lucide-react";
 
 
 import {

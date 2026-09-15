@@ -94,7 +94,8 @@ export function WorkspaceSwitcher({
             <DropdownMenuLabel className="text-xs text-muted-foreground">
               Workspaces
             </DropdownMenuLabel>
-            {workspaces.map((workspace, index) => (
+            {/* {workspaces.map((workspace, index) => ( */}
+            {workspaces.map((workspace) => (
               <DropdownMenuItem
                 key={workspace._id}
                 onClick={() => onWorkspaceSelect(workspace._id)}

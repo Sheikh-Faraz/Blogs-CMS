@@ -1,6 +1,15 @@
 "use client";
 
 import { useMemo } from "react";
+
+// Animations
+import { motion } from "framer-motion";
+
+// UI Blocks
+import { Card } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+// For charts components
 import {
   Bar,
   BarChart,
@@ -11,11 +20,10 @@ import {
   YAxis,
   Cell,
 } from "recharts";
-import { motion } from "framer-motion";
+
+// ICons
 import { FileText, Users } from "lucide-react";
 
-import { Card } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type Author = {
   _id: string;

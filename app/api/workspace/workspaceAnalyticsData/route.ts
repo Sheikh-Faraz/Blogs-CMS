@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import { getCurrentUser } from "@/lib/getCurrentUser";
 import { getActiveWorkspace } from "@/lib/workspace";
-import { hasPermission } from "@/lib/permissions";
+// import { hasPermission } from "@/lib/permissions";
 import Blog from "@/models/Blog";
 import Membership from "@/models/Membership";
 
