@@ -4,11 +4,12 @@
 
 import { apiFetch } from "@/lib/api-client";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+// const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 // Fetch all blogs
 export const getBlogs = async () => {
-  const res = await apiFetch(`${BASE_URL}/api/blogpost`, {
+  // const res = await apiFetch(`${BASE_URL}/api/blogpost`, {
+  const res = await apiFetch(`/api/blogpost`, {
     cache: "no-store",
     method: "GET",
     credentials: "include",
@@ -19,7 +20,8 @@ export const getBlogs = async () => {
 
 // Get Blog by id
 export const getBlogById = async (id: string) => {
-  const res = await apiFetch(`${BASE_URL}/api/blogpost/${id}`, {
+  // const res = await apiFetch(`${BASE_URL}/api/blogpost/${id}`, {
+  const res = await apiFetch(`/api/blogpost/${id}`, {
     method: "GET",
     credentials: "include",
   });
@@ -33,7 +35,8 @@ export const getBlogById = async (id: string) => {
 
 // Fetch all categories
 export const getCategories = async () => {
-  const res = await apiFetch(`${BASE_URL}/api/blogpost/category`, {
+  // const res = await apiFetch(`${BASE_URL}/api/blogpost/category`, {
+  const res = await apiFetch(`/api/blogpost/category`, {
     cache: "no-store",
     credentials: "include",
   });
@@ -42,7 +45,8 @@ export const getCategories = async () => {
 
 // Create a new category
 export const createCategory = async (newCategory: string) => {
-  const res = await apiFetch(`${BASE_URL}/api/blogpost/createCategory`, {
+  // const res = await apiFetch(`${BASE_URL}/api/blogpost/createCategory`, {
+  const res = await apiFetch(`/api/blogpost/createCategory`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -64,7 +68,8 @@ export const createCategory = async (newCategory: string) => {
 
 // Delete category
 export const deleteCategoryService = async (id: string) => {
-  const res = await apiFetch(`${BASE_URL}/api/blogpost/deleteCategory/${id}`, {
+  // const res = await apiFetch(`${BASE_URL}/api/blogpost/deleteCategory/${id}`, {
+  const res = await apiFetch(`/api/blogpost/deleteCategory/${id}`, {
     method: "DELETE",
     credentials: "include",
   });
@@ -81,7 +86,8 @@ export const deleteCategoryService = async (id: string) => {
 
 // Fetch all tags
 export const getTags = async () => {
-  const res = await apiFetch(`${BASE_URL}/api/blogpost/tag`, {
+  // const res = await apiFetch(`${BASE_URL}/api/blogpost/tag`, {
+  const res = await apiFetch(`/api/blogpost/tag`, {
     cache: "no-store",
     credentials: "include",
   });
@@ -90,7 +96,8 @@ export const getTags = async () => {
 
 // Create a new blog
 export const createBlog = async (formData: FormData) => {
-  const res = await apiFetch(`${BASE_URL}/api/blogpost`, {
+  // const res = await apiFetch(`${BASE_URL}/api/blogpost`, {
+  const res = await apiFetch(`/api/blogpost`, {
     method: "POST",
     credentials: "include",
     body: formData,
@@ -106,7 +113,8 @@ export const createBlog = async (formData: FormData) => {
 
 // UPDATE BLOG
 export const updateBlog = async (id: string, formData: FormData) => {
-  const res = await apiFetch(`${BASE_URL}/api/blogpost/${id}`, {
+  // const res = await apiFetch(`${BASE_URL}/api/blogpost/${id}`, {
+  const res = await apiFetch(`/api/blogpost/${id}`, {
     method: "PUT",
     credentials: "include",
     body: formData,
@@ -122,7 +130,8 @@ export const updateBlog = async (id: string, formData: FormData) => {
 
 // DELETE BLOG
 export const deleteBlog = async (id: string) => {
-  const res = await apiFetch(`${BASE_URL}/api/blogpost/${id}`, {
+  // const res = await apiFetch(`${BASE_URL}/api/blogpost/${id}`, {
+  const res = await apiFetch(`/api/blogpost/${id}`, {
     method: "DELETE",
     credentials: "include",
   });

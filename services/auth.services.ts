@@ -4,10 +4,11 @@
 
 import { apiFetch } from "@/lib/api-client";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+// const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 export const loginApi = async (data: unknown) => {
-  const res = await apiFetch(`${BASE_URL}/api/auth/login`, {
+  // const res = await apiFetch(`${BASE_URL}/api/auth/login`, {
+  const res = await apiFetch(`/api/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -19,7 +20,8 @@ export const loginApi = async (data: unknown) => {
 };
 
 export const signupApi = async (data: unknown) => {
-  const res = await apiFetch(`${BASE_URL}/api/auth/signup`, {
+  // const res = await apiFetch(`${BASE_URL}/api/auth/signup`, {
+  const res = await apiFetch(`/api/auth/signup`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -31,14 +33,16 @@ export const signupApi = async (data: unknown) => {
 };
 
 export const logoutApi = async () => {
-  return await apiFetch(`${BASE_URL}/api/auth/logout`, {
+  // return await apiFetch(`${BASE_URL}/api/auth/logout`, {
+  return await apiFetch(`/api/auth/logout`, {
     method: "POST",
     credentials: "include",
   });
 };
 
 export const fetchUserInfoApi = async () => {
-  return await apiFetch(`${BASE_URL}/api/user/get-user-info`, {
+  // return await apiFetch(`${BASE_URL}/api/user/get-user-info`, {
+  return await apiFetch(`/api/user/get-user-info`, {
     cache: "no-store",
     method: "GET",
     credentials: "include",
@@ -46,7 +50,8 @@ export const fetchUserInfoApi = async () => {
 };
 
 export const updateUserProfileApi = async (formData: FormData) => {
-  const res = await apiFetch(`${BASE_URL}/api/user/update-profile`, {
+  // const res = await apiFetch(`${BASE_URL}/api/user/update-profile`, {
+  const res = await apiFetch(`/api/user/update-profile`, {
     method: "PUT",
     credentials: "include",
     body: formData,
@@ -57,7 +62,8 @@ export const updateUserProfileApi = async (formData: FormData) => {
 };
 
 export const fetchWorkspaceMembersApi = async (workspaceId: string) => {
-  return await apiFetch(`${BASE_URL}/api/workspace/${workspaceId}/members`, {
+  // return await apiFetch(`${BASE_URL}/api/workspace/${workspaceId}/members`, {
+  return await apiFetch(`/api/workspace/${workspaceId}/members`, {
     cache: "no-store",
     method: "GET",
     credentials: "include",
@@ -65,7 +71,8 @@ export const fetchWorkspaceMembersApi = async (workspaceId: string) => {
 };
 
 export const getWorkspaceApi = async () => {
-  return await apiFetch(`${BASE_URL}/api/workspace/currentActiveWorkspace`, {
+  // return await apiFetch(`${BASE_URL}/api/workspace/currentActiveWorkspace`, {
+  return await apiFetch(`/api/workspace/currentActiveWorkspace`, {
     cache: "no-store",
     method: "GET",
     credentials: "include",
@@ -73,7 +80,8 @@ export const getWorkspaceApi = async () => {
 };
 
 export const updateWorkspaceApi = async (formData: FormData) => {
-  const res = await apiFetch(`${BASE_URL}/api/workspace/update-workspace`, {
+  // const res = await apiFetch(`${BASE_URL}/api/workspace/update-workspace`, {
+  const res = await apiFetch(`/api/workspace/update-workspace`, {
     method: "PUT",
     credentials: "include",
     body: formData,
@@ -85,7 +93,8 @@ export const updateWorkspaceApi = async (formData: FormData) => {
 };
 
 export const fetchAnalyticsApi = async () => {
-  return await apiFetch(`${BASE_URL}/api/workspace/workspaceAnalyticsData`, {
+  // return await apiFetch(`${BASE_URL}/api/workspace/workspaceAnalyticsData`, {
+  return await apiFetch(`/api/workspace/workspaceAnalyticsData`, {
     cache: "no-store",
     method: "GET",
     credentials: "include",
@@ -93,7 +102,8 @@ export const fetchAnalyticsApi = async () => {
 };
 
 export const deleteWorkspaceApi = async () => {
-  const res = await apiFetch(`${BASE_URL}/api/workspace/delete-workspace`, {
+  // const res = await apiFetch(`${BASE_URL}/api/workspace/delete-workspace`, {
+  const res = await apiFetch(`/api/workspace/delete-workspace`, {
     method: "DELETE",
     credentials: "include",
   });
@@ -104,7 +114,8 @@ export const deleteWorkspaceApi = async () => {
 };
 
 export const fetchWorkspacesApi = async () => {
-  const res = await apiFetch(`${BASE_URL}/api/workspace/list`, {
+  // const res = await apiFetch(`${BASE_URL}/api/workspace/list`, {
+  const res = await apiFetch(`/api/workspace/list`, {
     cache: "no-store",
     credentials: "include",
   });
@@ -115,7 +126,8 @@ export const fetchWorkspacesApi = async () => {
 };
 
 export const selectWorkspaceApi = async (workspaceId: string) => {
-  const res = await apiFetch(`${BASE_URL}/api/workspace/select`, {
+  // const res = await apiFetch(`${BASE_URL}/api/workspace/select`, {
+  const res = await apiFetch(`/api/workspace/select`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -127,7 +139,8 @@ export const selectWorkspaceApi = async (workspaceId: string) => {
 };
 
 export const createWorkspaceApi = async (name: string) => {
-  const res = await apiFetch(`${BASE_URL}/api/workspace/create-workspace`, {
+  // const res = await apiFetch(`${BASE_URL}/api/workspace/create-workspace`, {
+  const res = await apiFetch(`/api/workspace/create-workspace`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -140,7 +153,8 @@ export const createWorkspaceApi = async (name: string) => {
 };
 
 export const createInvitationApi = async (email: string, role: string) => {
-  return await apiFetch(`${BASE_URL}/api/workspace/invitation`, {
+  // return await apiFetch(`${BASE_URL}/api/workspace/invitation`, {
+  return await apiFetch(`/api/workspace/invitation`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -149,7 +163,8 @@ export const createInvitationApi = async (email: string, role: string) => {
 };
 
 export const acceptInvitationApi = async (token: string) => {
-  return await apiFetch(`${BASE_URL}/api/workspace/invitation/accept`, {
+  // return await apiFetch(`${BASE_URL}/api/workspace/invitation/accept`, {
+  return await apiFetch(`/api/workspace/invitation/accept`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -159,13 +174,15 @@ export const acceptInvitationApi = async (token: string) => {
 
 export const validateInvitationApi = async (token: string) => {
   return await apiFetch(
-    `${BASE_URL}/api/workspace/invitation/accept?token=${encodeURIComponent(token)}`,
+    // `${BASE_URL}/api/workspace/invitation/accept?token=${encodeURIComponent(token)}`,
+    `/api/workspace/invitation/accept?token=${encodeURIComponent(token)}`,
     { method: "GET", credentials: "include" }
   );
 };
 
 export const fetchPendingInvitationsApi = async () => {
-  return await apiFetch(`${BASE_URL}/api/workspace/invitation/pending`, {
+  // return await apiFetch(`${BASE_URL}/api/workspace/invitation/pending`, {
+  return await apiFetch(`/api/workspace/invitation/pending`, {
     cache: "no-store",
     method: "GET",
     credentials: "include",
@@ -173,7 +190,8 @@ export const fetchPendingInvitationsApi = async () => {
 };
 
 export const revokeInvitationApi = async (invitationId: string) => {
-  return await apiFetch(`${BASE_URL}/api/workspace/invitation/pending`, {
+  // return await apiFetch(`${BASE_URL}/api/workspace/invitation/pending`, {
+  return await apiFetch(`/api/workspace/invitation/pending`, {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -182,7 +200,8 @@ export const revokeInvitationApi = async (invitationId: string) => {
 };
 
 export const resendInvitationApi = async (invitationId: string) => {
-  return await apiFetch(`${BASE_URL}/api/workspace/invitation/pending`, {
+  // return await apiFetch(`${BASE_URL}/api/workspace/invitation/pending`, {
+  return await apiFetch(`/api/workspace/invitation/pending`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -191,7 +210,8 @@ export const resendInvitationApi = async (invitationId: string) => {
 };
 
 export const declineInvitationApi = async (token: string) => {
-  return await apiFetch(`${BASE_URL}/api/workspace/invitation/accept`, {
+  // return await apiFetch(`${BASE_URL}/api/workspace/invitation/accept`, {
+  return await apiFetch(`/api/workspace/invitation/accept`, {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -200,7 +220,8 @@ export const declineInvitationApi = async (token: string) => {
 };
 
 export const fetchUserPendingInvitationsApi = async () => {
-  return await apiFetch(`${BASE_URL}/api/user/pending-invitations`, {
+  // return await apiFetch(`${BASE_URL}/api/user/pending-invitations`, {
+  return await apiFetch(`/api/user/pending-invitations`, {
     cache: "no-store",
     method: "GET",
     credentials: "include",
@@ -208,7 +229,8 @@ export const fetchUserPendingInvitationsApi = async () => {
 };
 
 export const fetchReceivedInvitationApi = async (invitationId: string) => {
-  return await apiFetch(`${BASE_URL}/api/user/pending-invitations/${invitationId}`, {
+  // return await apiFetch(`${BASE_URL}/api/user/pending-invitations/${invitationId}`, {
+  return await apiFetch(`/api/user/pending-invitations/${invitationId}`, {
     cache: "no-store",
     method: "GET",
     credentials: "include",
@@ -216,7 +238,8 @@ export const fetchReceivedInvitationApi = async (invitationId: string) => {
 };
 
 export const acceptInvitationByIdApi = async (invitationId: string) => {
-  return await apiFetch(`${BASE_URL}/api/workspace/invitation/accept`, {
+  // return await apiFetch(`${BASE_URL}/api/workspace/invitation/accept`, {
+  return await apiFetch(`/api/workspace/invitation/accept`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -225,7 +248,8 @@ export const acceptInvitationByIdApi = async (invitationId: string) => {
 };
 
 export const declineInvitationByIdApi = async (invitationId: string) => {
-  return await apiFetch(`${BASE_URL}/api/workspace/invitation/accept`, {
+  // return await apiFetch(`${BASE_URL}/api/workspace/invitation/accept`, {
+  return await apiFetch(`/api/workspace/invitation/accept`, {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },
     credentials: "include",
@@ -235,7 +259,8 @@ export const declineInvitationByIdApi = async (invitationId: string) => {
 
 // Allow the user to leave workspace if he wants
 export const leaveWorkspaceApi = async (workspaceId: string) => {
-  return apiFetch(`${BASE_URL}/api/workspace/leave-workspace`, {
+  // return apiFetch(`${BASE_URL}/api/workspace/leave-workspace`, {
+  return apiFetch(`/api/workspace/leave-workspace`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",

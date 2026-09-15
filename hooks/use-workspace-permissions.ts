@@ -7,7 +7,7 @@ import {
   type WorkspaceRole,
 } from "@/lib/permission-config";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+// const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 type PermissionState = {
   role: WorkspaceRole | null;
@@ -28,7 +28,8 @@ export function useWorkspacePermissions() {
     setState((current) => ({ ...current, loading: true }));
 
     try {
-      const response = await fetch(`${BASE_URL}/api/workspace/permissions`, {
+      // const response = await fetch(`${BASE_URL}/api/workspace/permissions`, {
+      const response = await fetch(`/api/workspace/permissions`, {
         method: "GET",
         credentials: "include",
         cache: "no-store",

@@ -1,6 +1,6 @@
 import { apiFetch } from "@/lib/api-client";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+// const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 export const updateWorkspaceMemberRoleApi = async (
   workspaceId: string,
@@ -8,7 +8,8 @@ export const updateWorkspaceMemberRoleApi = async (
   role: "ADMIN" | "EDITOR" | "VIEWER"
 ) => {
   const res = await apiFetch(
-    `${BASE_URL}/api/workspace/${workspaceId}/members/${membershipId}`,
+    // `${BASE_URL}/api/workspace/${workspaceId}/members/${membershipId}`,
+    `/api/workspace/${workspaceId}/members/${membershipId}`,
     {
       method: "PATCH",
       headers: {
@@ -33,7 +34,8 @@ export const kickWorkspaceMemberApi = async (
   membershipId: string
 ) => {
   const res = await apiFetch(
-    `${BASE_URL}/api/workspace/${workspaceId}/members/${membershipId}`,
+    // `${BASE_URL}/api/workspace/${workspaceId}/members/${membershipId}`,
+    `/api/workspace/${workspaceId}/members/${membershipId}`,
     {
       method: "DELETE",
       credentials: "include",
