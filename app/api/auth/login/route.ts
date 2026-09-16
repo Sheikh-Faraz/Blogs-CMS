@@ -114,7 +114,7 @@ export async function POST(req: NextRequest) {
     });
 
 
-    return response; // Returning the response with the safe user object
+    return response; // Returning the response with the safe user object  
 
 
   } catch (error) {
