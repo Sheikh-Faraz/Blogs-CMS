@@ -155,21 +155,25 @@ export default function FilterComponent({
   return (
 
     //   {/* Header */}   {/* Title and Filters */}
-      <div className="flex justify-between items-center p-4">
+      <div className="flex flex-col justify-between items-start gap-4 p-4 lg:flex-row lg:items-center lg:gap-0">
 
         {/* Text */}
         <div>
-          <h1 className="text-3xl font-semibold">Posts / Blogs Management</h1>
-          <p className="text-sm text-muted-foreground my-2">
+          <h1 className="text-xl font-semibold md:text-3xl ">
+            Posts / Blogs Management
+          </h1>
+          <p className="text-xs text-muted-foreground my-2 md:text-sm">
             Manage your blog content and publications.
           </p>
         </div>
 
         {/* Buttons */}
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-4 w-full lg:w-fit lg:flex-row md:gap-2">
 
           {/* Search box */}
-          <ButtonGroup>
+          <ButtonGroup
+            className="w-full lg:w-fit"
+          >
             <Input 
               className="bg-card"
               placeholder="Search..."
@@ -190,7 +194,7 @@ export default function FilterComponent({
 
 <Dialog>
   <DialogTrigger asChild>
-    <Button variant="outline" className="rounded-md bg-card">
+    <Button variant="outline" className="rounded-md bg-card w-full lg:w-fit">
       <ListFilter className="text-[#E85129]"/>
       <span>Filter</span>
     </Button>

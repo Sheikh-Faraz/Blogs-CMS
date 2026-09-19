@@ -182,7 +182,7 @@ export default function HeroImagePicker({
 
   return (
     <div className="space-y-4">
-      <div className="flex gap-3 border p-4">
+      <div className="flex flex-col gap-3 border p-4 min-[1068px]:flex-row">
 
         {/* Upload from device */}
         <Button

@@ -71,7 +71,7 @@ export default function StatsCard ( { blogsData }: StatsCardProps ) {
     return(
         
                 //   STATS CARDS
-                  <div className="flex gap-4 my-6 px-4">
+                  <div className="flex flex-col gap-4 my-6 px-4 lg:flex-row">
                 
                   {stats.map(({ icon: Icon, label, value, color, glow }) => (
                   <motion.div
@@ -129,7 +129,8 @@ export default function StatsCard ( { blogsData }: StatsCardProps ) {
                               duration: 0.8,
                               delay: 0.15,
                             }}
-                            className="text-[35px] my-3 font-bold tracking-tight"
+                            // className="text-[35px] my-3 font-bold tracking-tight lg:text-[]"
+                            className="text-[25px] my-3 font-bold tracking-tight lg:text-[35px] md:text-[25px]"
                           >
                             <AnimatedCounter value={value} />
                           </motion.p>

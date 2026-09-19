@@ -483,39 +483,31 @@ const handleSubmit = async () => {
     <div className="w-full">
 
       {/* 🔥 HEADER */}
-      {/* <div className="flex items-center justify-between px-6 py-4 border-b bg-card text-card-foreground"> */}
-      <div className="flex items-center justify-between px-6 py-4 mx-5 border-b bg-card text-card-foreground">
-        <div>
-          <h1 className="text-2xl font-semibold truncate max-w-190">
-            {title || "Untitled"}
-          </h1>
+<div className="mx-5 flex justify-between gap-4 border-b bg-card px-6 py-4 text-card-foreground">
+  <div className="flex min-w-0 flex-1">
+    <h1 className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap text-2xl font-semibold">
+      {title || "Untitled"}
+    </h1>
+  </div>
 
-
-        </div>
-
-        {/* <Button  */}
-        <button 
-          onClick={handleSubmit} 
-          disabled={createBlogLoading} 
-          // className="rounded-none bg-card text-card-foreground">
-          className="border py-2 px-3 bg-card text-card-foreground rounded-md flex gap-2 items-center hover:bg-muted">
-
-          {createBlogLoading ? 
-          (
-            <div className="flex gap-2 items-center text-center">
-              Saving
-              <LoaderIcon />
-            </div>
-          )
-            : 
-            <p className="flex gap-2 items-center">
-                Create
-              <UploadIcon className="text-[#E85129] size-4"/>
-            </p>
-          }
-        </button>
-        {/* </Button> */}
-      </div>
+<button
+  onClick={handleSubmit}
+  disabled={createBlogLoading}
+  className="flex items-center gap-1.5 rounded-md border bg-card px-2.5 py-1.5 text-sm text-card-foreground hover:bg-muted lg:gap-2 lg:px-3 lg:py-2"
+>
+  {createBlogLoading ? (
+    <div className="flex items-center gap-1.5 text-center lg:gap-2">
+      Saving
+      <LoaderIcon />
+    </div>
+  ) : (
+    <p className="flex items-center gap-1.5 lg:gap-2">
+      Create
+      <UploadIcon className="size-3.5 text-[#E85129] lg:size-4" />
+    </p>
+  )}
+</button>
+</div>
 
           <div className="flex flex-wrap gap-8 px-6 py-3 border-b text-sm text-muted-foreground">
 
@@ -579,7 +571,7 @@ const handleSubmit = async () => {
 
 
             {/* HERO TAB */}
-            <TabsContent value="hero" className=" flex gap-3">
+            <TabsContent value="hero" className="flex flex-col gap-3 min-[1008px]:flex-row">
               {/* <Card className="border mt-4"> */}
 
               <Card className="border m-4 rounded-none flex-1">
@@ -604,7 +596,7 @@ const handleSubmit = async () => {
 
                   <div>
                     <Label>Post URL Slug</Label>
-                    <div className="border p-3 my-2 max-w-63 overflow-x-auto whitespace-nowrap">
+                    <div className="border p-3 my-2 w-full overflow-x-auto whitespace-nowrap min-[1008px]:max-w-63">
                       {slug}
                     </div>
                   </div>
@@ -1037,7 +1029,7 @@ const handleSubmit = async () => {
 
                   <Separator className="border mt-2 mb-4" />
 
-                <div className="flex justify-between">
+                <div className="flex flex-col justify-between lg:flex-row gap-4">
                   
                   <div className="flex flex-wrap gap-2">
                     {aiActions.map((item) => {
@@ -1103,7 +1095,7 @@ const handleSubmit = async () => {
                 </div>
 
                 
-                <div>
+                <div className="flex">
                   <AlertDialog>
                     <Tooltip>
                       <TooltipTrigger asChild>

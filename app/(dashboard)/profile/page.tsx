@@ -914,7 +914,7 @@ export default function ProfilePage() {
       </div>
 
       {/* Cards */}
-      <div className="gap-6 w-full flex">
+      <div className="gap-6 w-full flex flex-col md:flex-row">
         
         {themes.map((themeOption) => {
           const active = theme === themeOption.id;

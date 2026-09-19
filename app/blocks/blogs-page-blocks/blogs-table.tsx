@@ -119,15 +119,31 @@ export default function BlogsTable({ blogsData, loadingData }: BlogsTableProps) 
         )
         :
         (
-        <table className="w-full text-sm">
+        // <table className="w-full text-sm">
+        <table className="w-full text-xs lg:text-sm">
 
           <thead className="bg-muted/40">
             <tr className="text-left">
-              <th className="p-4 uppercase">Post Details</th>
-              <th className="p-4 uppercase">Status</th>
-              <th className="p-4 uppercase">Author</th>
-              <th className="p-4 uppercase">Created</th>
-              <th className="p-4 text-right uppercase">Actions</th>
+              {/* <th className="p-4 uppercase"> */}
+              <th className="p-2 uppercase lg:p-4">
+                Post Details
+              </th>
+              {/* <th className="p-4 uppercase"> */}
+              <th className="p-2 uppercase lg:p-4">
+                Status
+              </th>
+              {/* <th className="p-4 uppercase"> */}
+              <th className="p-2 uppercase lg:p-4">
+                Author
+              </th>
+              {/* <th className="p-4 uppercase"> */}
+              <th className="p-2 uppercase lg:p-4">
+                Created
+              </th>
+              {/* <th className="p-4 text-right uppercase"> */}
+              <th className="p-2 text-right uppercase lg:p-4">
+                Actions
+              </th>
             </tr>
           </thead>
 
@@ -140,7 +156,6 @@ export default function BlogsTable({ blogsData, loadingData }: BlogsTableProps) 
              : 
              ( 
               <>
-              {/* {filteredBlogs.map((blog) => ( */}
               {paginatedBlogs.map((blog, index) => (
 
               <motion.tr
@@ -163,11 +178,13 @@ export default function BlogsTable({ blogsData, loadingData }: BlogsTableProps) 
                   className="border-t hover:bg-muted/30 transition"
                 >
                 {/* 🔥 POST (IMAGE + TITLE) */}
-                <td className="p-4">
+                {/* <td className="p-4"> */}
+                <td className="p-2 lg:p-4">
                   <div className="flex items-center gap-3">
 
                     {/* Image */}
-                    <div className="w-12 h-12 rounded-none overflow-hidden bg-muted">
+                    {/* <div className="w-12 h-12 rounded-none overflow-hidden bg-muted"> */}
+                    <div className="size-10 shrink-0 rounded-none overflow-hidden bg-muted lg:size-12">
                       {blog.heroImage ? (
                         <ImageOnHover
                           src={blog.heroImage}
@@ -181,27 +198,43 @@ export default function BlogsTable({ blogsData, loadingData }: BlogsTableProps) 
 
                     {/* Title */}
                     <div>
-                      <div className="font-medium truncate max-w-90">{blog.title}</div>
-                      <div className="text-xs text-muted-foreground truncate max-w-80">
+                      <div className="max-w-45 truncate font-medium lg:max-w-70 xl:max-w-90">
+                        {blog.title}
+                      </div>
+                      <div className="max-w-40 truncate text-xs text-muted-foreground lg:max-w-60 xl:max-w-80">
                         {blog.slug}
                       </div>
+
+                      {/* <div className="font-medium truncate max-w-90">{blog.title}</div>
+                      <div className="text-xs text-muted-foreground truncate max-w-80">{blog.slug}</div> */}
                     </div>
                   </div>
                 </td>
 
 
                 {/* 🔥 STATUS */}
-                <td className="p-4">
+                {/* <td className="p-4"> */}
+                <td className="p-2 lg:p-4">
                   <Badge
-                    className={`capitalize ${blog.status === "published" ? "bg-[#022C22] text-[#2BB885]" : "bg-muted text-muted-foreground" }`}
+                    className={`capitalize text-[11px] lg:text-xs ${
+                      blog.status === "published"
+                        ? "bg-[#022C22] text-[#2BB885]"
+                        : "bg-muted text-muted-foreground"
+                    }`}
                   >
                     {blog.status}
                   </Badge>
+                  {/* <Badge
+                    className={`capitalize ${blog.status === "published" ? "bg-[#022C22] text-[#2BB885]" : "bg-muted text-muted-foreground" }`}
+                  >
+                    {blog.status}
+                  </Badge> */}
                 </td>
 
 
                 {/* AUTHOR */}
-                <td >
+                {/* <td > */}
+                <td className="px-2 lg:px-4">
                   <AuthorHoverCard
                     author={{
                       fullName: blog.author?.fullName,
@@ -215,17 +248,20 @@ export default function BlogsTable({ blogsData, loadingData }: BlogsTableProps) 
                 </td>
 
                 {/* 🔥 CREATED */}
-                <td className="p-4 text-muted-foreground">
+                {/* <td className="p-4 text-muted-foreground"> */}
+                <td className="p-2 whitespace-nowrap text-muted-foreground lg:p-4">
                   {new Date(blog.createdAt).toLocaleDateString()}
                 </td>
 
                 {/* ACTIONS */}
-                <td className="p-4">
+                {/* <td className="p-4"> */}
+                <td className="p-2 lg:p-4">
                   <div className="flex justify-end">
 
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <button className="p-2 rounded-md hover:bg-muted/50 transition cursor-pointer ">
+                        {/* <button className="p-2 rounded-md hover:bg-muted/50 transition cursor-pointer "> */}
+                        <button className="cursor-pointer rounded-md p-1.5 transition hover:bg-muted/50 lg:p-2">
                           <FiMoreHorizontal size={18} />
                         </button>
                       </DropdownMenuTrigger>
@@ -294,29 +330,6 @@ export default function BlogsTable({ blogsData, loadingData }: BlogsTableProps) 
   )}
 </Tooltip>
                           
-                          {/* </AlertDialogTrigger> */}
-
-                          {/* <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Delete this blog?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                This action cannot be undone. The blog will be permanently removed.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-
-                              <AlertDialogAction
-                                onClick={() => deleteBlog(blog._id)}
-                                className="bg-red-600 hover:bg-red-700 text-white"
-                                disabled={loadingData || !can("DELETE_BLOG")}
-                              >
-                                Delete
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog> */}
 
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -366,9 +379,7 @@ export default function BlogsTable({ blogsData, loadingData }: BlogsTableProps) 
 
               </motion.tr>
             ))}
-
                       </>
-                      
             )
           }
           </tbody>
@@ -377,10 +388,12 @@ export default function BlogsTable({ blogsData, loadingData }: BlogsTableProps) 
             <tfoot className="border-t bg-muted/30">
               <tr>
                 <td colSpan={5} className="p-4">
-                  <div className="flex items-center justify-between w-full">
+                  {/* <div className="flex items-center justify-between w-full"> */}
+                  <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     
                     {/* Left Side */}
-                    <p className="text-sm text-muted-foreground">
+                    {/* <p className="text-sm text-muted-foreground"> */}
+                    <p className="text-xs text-muted-foreground lg:text-sm">
                       Showing{" "}
                       <span className="font-medium">{startIndex + 1}</span> to{" "}
                       <span className="font-medium">
