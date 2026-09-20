@@ -111,7 +111,7 @@ export default function BlogsTable({ blogsData, loadingData }: BlogsTableProps) 
   return (
 
     //   Table 
-        <div className="border overflow-x-auto m-4 bg-card px-2">
+        <div className="border overflow-x-auto m-4 bg-card px-2 ">
         {loadingData ? 
         ( <BlogTableSkeleton /> )
           :

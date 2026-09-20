@@ -53,6 +53,7 @@ export default function InvitationsPage() {
 
   return (
     <div className="mx-4 h-full rounded-md p-6">
+
       <div className="mb-8">
         <h1 className="text-3xl font-semibold">Workspace Invitations</h1>
         <p className="mt-2 text-sm text-muted-foreground">View and manage invitations to join workspaces.</p>
@@ -66,8 +67,12 @@ export default function InvitationsPage() {
       ) : (
         <div className="space-y-4">
           {receivedInvitations.map((invitation) => (
-            <div key={invitation._id} className="flex flex-col bg-card justify-between gap-4 rounded-xl border p-5 sm:flex-row sm:items-center">
-              <div className="flex items-center gap-4">
+            <div 
+              key={invitation._id} 
+              className="flex flex-col bg-card justify-between gap-4 rounded-xl border p-5 md:flex-row md:items-center"
+            >
+              
+              <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg border bg-muted text-lg font-semibold">
                   {invitation.workspace?.name?.charAt(0).toUpperCase() || "W"}
                 </div>
@@ -81,8 +86,8 @@ export default function InvitationsPage() {
                   </p>
                 </div>
               </div>
+
               <button 
-                // onClick={() => router.push(`/invitations/${invitation._id}`)} 
                 onClick={() => startTransition(`/invitations/${invitation._id}`)} 
                 className="bg-card text-card-foreground rounded-md px-4 py-2 text-sm hover:bg-muted border"
               >

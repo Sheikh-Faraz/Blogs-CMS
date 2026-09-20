@@ -94,28 +94,46 @@ function SignUpFormContent({
   return (
     <form className={cn("flex flex-col gap-6", className)} {...props} onSubmit={handleSubmit}>
     
-    <div className="flex flex-row-reverse w-fit mx-auto gap-5">
-      {/* <div> */}
-        {/* {isInvitationFlow && (
-          <div className="rounded-xl border bg-muted/50 p-4 text-sm">
-              <p className="font-medium">
-                Workspace invitation
-              </p>
+    {/* <div className="flex flex-row-reverse w-fit mx-auto gap-5"> */}
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-5 px-4 sm:px-6 lg:flex-row-reverse lg:items-start lg:justify-center">
 
-              <p className="mt-1 text-muted-foreground">
-                Create your account to join this
-                workspace.
-              </p>
+      {isInvitationFlow && (
+        <div className="w-full min-w-0 rounded-xl bg-card text-card-foreground lg:max-w-sm">
+          <div className="p-4 text-center text-sm sm:p-5">
 
-              {invitedEmail && (
-                <p className="mt-2 text-xs text-muted-foreground">
-                  Invitation for: {invitedEmail}
-                </p>
-              )}
+            <MailPlus className="mx-auto my-4 size-10 text-[#E85129] sm:size-12" />
+
+            <p className="font-medium">
+              Workspace invitation
+            </p>
+
+            <p className="mt-1 text-muted-foreground">
+              Log in to continue with your invitation.
+            </p>
+
+            {invitedEmail && (
+              <p className="mt-2 break-all text-xs text-muted-foreground">
+                Invitation for:
+                <span className="ml-1 text-[#E85129]">
+                  {invitedEmail}
+                </span>
+              </p>
+            )}
+
+            <div className="mt-4 text-center text-sm">
+              <a
+                href="/signup"
+                className="text-muted-foreground underline underline-offset-4 hover:text-[#E85129]"
+              >
+                Cancel invitation
+              </a>
             </div>
-          )} */}
 
-          {isInvitationFlow && (
+          </div>
+        </div>
+      )}
+
+          {/* {isInvitationFlow && (
                 <div className="rounded-xl bg-card text-card-foreground flex items-center justify-center text-center">
                     <div className="p-4 text-sm text-center">
                      
@@ -150,12 +168,13 @@ function SignUpFormContent({
           
                     </div>
                 </div>
-              )}
+              )} */}
         {/* </div> */}
 
 
-    <div className="bg-card text-card-foreground p-8 rounded-xl">
-      {/* <div className="flex flex-col items-center gap-2 text-center max-[425px]:m-4 m-2"> */}
+    {/* <div className="bg-card text-card-foreground p-8 rounded-xl"> */}
+    <div className="w-full min-w-0 rounded-xl bg-card p-5 text-card-foreground sm:p-8 lg:max-w-md">
+    
       <div className="flex flex-col items-center gap-2 text-center m-2">
 
         <h1 className="text-2xl font-bold">Create an account</h1>
