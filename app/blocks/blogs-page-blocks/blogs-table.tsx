@@ -111,13 +111,10 @@ export default function BlogsTable({ blogsData, loadingData }: BlogsTableProps) 
   return (
 
     //   Table 
-      <div className="border overflow-hidden m-4 bg-card">
-        
+        <div className="border overflow-x-auto m-4 bg-card">
         {loadingData ? 
-        ( 
-            <BlogTableSkeleton />
-        )
-        :
+        ( <BlogTableSkeleton /> )
+          :
         (
         // <table className="w-full text-sm">
         <table className="w-full text-xs lg:text-sm">
@@ -147,8 +144,8 @@ export default function BlogsTable({ blogsData, loadingData }: BlogsTableProps) 
             </tr>
           </thead>
 
-          <tbody>
-        
+
+          <tbody>  
             { filteredBlogs.length === 0 ? 
              (
                 <EmptyBlogState />
@@ -388,8 +385,8 @@ export default function BlogsTable({ blogsData, loadingData }: BlogsTableProps) 
             <tfoot className="border-t bg-muted/30">
               <tr>
                 <td colSpan={5} className="p-4">
-                  {/* <div className="flex items-center justify-between w-full"> */}
-                  <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  {/* <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"> */}
+                  <div className="flex items-center justify-between w-full">
                     
                     {/* Left Side */}
                     {/* <p className="text-sm text-muted-foreground"> */}
