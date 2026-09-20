@@ -62,7 +62,9 @@ export default function InvitationsPage() {
       {receivedInvitations.length === 0 ? (
         <div className="flex min-h-75 flex-col items-center justify-center rounded-md border bg-card"> 
           <h2 className="text-lg font-medium">No pending invitations</h2>
-          <p className="mt-2 text-sm text-muted-foreground">You don&apos;t have any workspace invitations right now.</p>
+          <p className="m-4 text-sm text-muted-foreground text-center">
+            You don&apos;t have any workspace invitations right now.
+          </p>
         </div>
       ) : (
         <div className="space-y-4">
