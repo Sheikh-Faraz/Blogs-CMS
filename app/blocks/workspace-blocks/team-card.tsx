@@ -156,11 +156,43 @@ export default function TeamCard() {
       <div className="mx-auto w-full max-w-5xl">
         <div className="mb-7 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div><h1 className="text-2xl font-semibold tracking-tight">Workspace Members</h1><p className="mt-2 max-w-xl text-sm text-muted-foreground">Add teammates to collaborate on projects together. Control permissions and manage access levels for each member.</p></div>
-          <div className="flex items-center gap-3"><div className="hidden whitespace-nowrap text-sm text-muted-foreground sm:block">{members.length} {members.length === 1 ? "member" : "members"}</div>{can("MANAGE_MEMBER_ROLES") && <button onClick={() => setInviteOpen(true)} className="flex items-center gap-2 rounded-md border bg-card px-3 py-2 text-card-foreground hover:bg-muted"><FiUserPlus className="text-[#E85129]" />Invite Member</button>}</div>
+          
+          <div className="flex items-center gap-3">
+            
+            <div className="hidden whitespace-nowrap text-sm text-muted-foreground sm:block">
+              {members.length} {members.length === 1 ? "member" : "members"}
+            </div>
+            {can("MANAGE_MEMBER_ROLES") && 
+              <button 
+                onClick={() => setInviteOpen(true)} 
+                className="flex items-center gap-2 rounded-md border bg-card px-3 py-2 text-card-foreground hover:bg-muted"
+              >
+                <FiUserPlus className="text-[#E85129]" />
+                Invite Member
+              </button>}
+
+            </div>
+
         </div>
-        <div className="mb-5 flex items-center gap-3"><div className="relative w-full max-w-xs"><Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" /><Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search" className="pl-9" /></div><div className="flex items-center gap-2 text-sm text-muted-foreground"><Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => setRoleInfoOpen(true)} aria-label="View role permissions"><CircleHelp className="h-4 w-4" /></Button><span className="sm:hidden">{members.length} {members.length === 1 ? "member" : "members"}</span></div></div>
+
+        {/* <div className="mb-5 flex items-center gap-3 border border-red-600"> */}
+        <div className="mb-5 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+          <div className="relative w-full max-w-xs">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search" className="pl-9" />
+          </div>
+
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => setRoleInfoOpen(true)} aria-label="View role permissions">
+              <CircleHelp className="h-4 w-4" />
+            </Button>
+            <span className="sm:hidden">{members.length} {members.length === 1 ? "member" : "members"}</span>
+          </div>
+          </div>
+
         <div className="border-t">
-          {membersLoading ? <TeamSkeleton /> : filteredMembers.length === 0 ? <div className="py-14 text-center text-sm text-muted-foreground">{search ? "No members match your search." : "No workspace members found."}</div> : filteredMembers.map((member) => {
+          {membersLoading ? <TeamSkeleton /> : filteredMembers.length === 0 ? 
+            <div className="py-14 text-center text-sm text-muted-foreground">{search ? "No members match your search." : "No workspace members found."}</div> : filteredMembers.map((member) => {
             const editable = canEditMember(member);
             const kickable = canKickMember(member);
             const isUpdating = updatingMembershipId === member._id;

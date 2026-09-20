@@ -75,7 +75,6 @@ export default function DeleteCard() {
           className="my-6"
         >
           <Card 
-            // className="relative overflow-hidden rounded-xl border bg-background/60 backdrop-blur-md shadow-sm hover:shadow-lg transition-all duration-300"
             className="relative overflow-hidden rounded-xl border backdrop-blur-md shadow-sm hover:shadow-lg transition-all duration-300"
           >
             
@@ -112,38 +111,24 @@ export default function DeleteCard() {
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="leading-relaxed flex justify-between"
+                className="leading-relaxed flex flex-col gap-4 justify-between lg:flex-row"
               >
                 <div>
-                    <p className="text-md font-bold text-muted-foreground">
-                      Delete {workspace?.name || authUser?.defaultWorkspace?.name || "Workspace"}
+                    <p className="flex gap-2 text-md font-bold text-muted-foreground">
+                      Delete 
+                      <p className="truncate flex-1">
+                        {workspace?.name || authUser?.defaultWorkspace?.name || "Workspace"}
+                      </p>
                     </p>
-                    <p className="text-xs text-muted-foreground my-4 w-sm">
+                    <p className="text-xs text-muted-foreground my-4 flex-1">
                       You must need to have atleast one workspace, therefore you cannot delete your last workspace.
                     </p>
                     <p className="text-xs text-red-400 my-2">Are you sure you want to delete this workspace?</p>
                 </div>
 
-                {/* <button
-                  type="button"
-                  onClick={handleDeleteWorkspace}
-                  disabled={deleteWorkspaceLoading}
-                  className="px-2 rounded-md bg-red-600 text-white disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {deleteWorkspaceLoading 
-                      ? 
-                    <LoaderIcon 
-                      color="white"
-                      size="xl"
-                    />
-                      : 
-                    "Delete Workspace"
-                  }
-                </button> */}
 
         <Tooltip>
           <TooltipTrigger asChild>
-            {/* <span className="border border-blue-600"> */}
                 <button
                   type="button"
                   onClick={() => setDeleteDialogOpen(true)}
@@ -170,6 +155,8 @@ export default function DeleteCard() {
                   </TooltipContent>
           </Tooltip>
 
+              
+              {/* Dialog open confirmaiton for deletion */}
                 <Dialog
                   open={deleteDialogOpen}
                   onOpenChange={setDeleteDialogOpen}

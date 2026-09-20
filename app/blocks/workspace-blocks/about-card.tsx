@@ -40,12 +40,8 @@ export default function AboutCard(
   
     // User Context
     const { 
-
       fetchUser, 
-      // authUser,
-
       workspace,
-
     } = useUser();
 
     
@@ -90,7 +86,7 @@ export default function AboutCard(
     <div>
 
         {/* STATS CARDS */}
-          <div className="flex gap-3 my-6">
+          <div className="flex flex-col gap-3 my-6 lg:flex-row">
         
           {stats.map(({ icon: Icon, label, value, color, glow }) => (
           <motion.div

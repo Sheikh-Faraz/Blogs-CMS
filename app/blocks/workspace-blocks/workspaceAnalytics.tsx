@@ -109,8 +109,8 @@ export default function WorkspaceAnalytics({
             </div>
 
             {/* Small summary on right */}
-            <div className="flex flex-wrap items-center gap-5">
-              <div className="flex items-center gap-2">
+            <div className="flex flex-col flex-wrap items-start gap-5 sm:flex-row sm:items-center">
+              <div className="flex items-center gap-2 ">
                 <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
 
                 <div>
@@ -313,7 +313,7 @@ export default function WorkspaceAnalytics({
         {/* ================================================================ */}
 
         <div>
-          <div className="flex items-center justify-between border-b border-border/60 px-6 py-5">
+          <div className="flex flex-col gap-4 items-start justify-between border-b border-border/60 px-6 py-5 border sm:flex-row sm:items-center">
             <div>
               <h3 className="text-sm font-semibold">
                 Author performance
@@ -332,6 +332,12 @@ export default function WorkspaceAnalytics({
             </div>
           </div>
 
+
+          {/* Table */}
+          <div className="overflow-x-auto">
+            <div className="min-w-175">
+
+
           {/* Table header */}
           <div className="hidden grid-cols-[2fr_1fr_1fr_1fr_1fr] gap-4 border-b border-border/60 px-6 py-3 text-xs font-medium text-muted-foreground md:grid">
             <span>Author</span>
@@ -342,7 +348,7 @@ export default function WorkspaceAnalytics({
           </div>
 
           {/* Table rows */}
-          <div className="divide-y divide-border/60">
+          <div className="divide-y divide-border/60 overflow-x-auto">
             {authors.length > 0 ? (
               authors.map((author, index) => {
                 const contribution =
@@ -431,7 +437,9 @@ export default function WorkspaceAnalytics({
                     </div>
 
                     {/* Mobile */}
-                    <div className="flex items-center justify-between md:hidden">
+                    <div 
+                      className="flex items-center justify-between md:hidden overflow-x-auto"
+                    >
                       <div className="flex items-center gap-3">
                         <Avatar className="h-9 w-9">
                           <AvatarImage
@@ -484,6 +492,11 @@ export default function WorkspaceAnalytics({
               </div>
             )}
           </div>
+
+        </div>
+      </div>
+
+
         </div>
       </Card>
     </motion.div>

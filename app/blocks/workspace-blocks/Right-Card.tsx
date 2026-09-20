@@ -18,7 +18,6 @@ export default function RightCard() {
     // User Context
     const { 
       fetchUser, 
-      // authUser, 
       
       CurrentActiveWorkspace, 
       workspace,
@@ -37,7 +36,8 @@ export default function RightCard() {
   return (
 
 
-<div className="w-80 shrink-0 space-y-6 my-6">
+    // <div className="w-80 shrink-0 space-y-6 my-6"> 
+    <div className="flex-1 shrink-0 space-y-6 my-6">
 
         {/* Organisation status */}
         <Card className="rounded-2xl border shadow-sm text-white bg-[#E85129]">

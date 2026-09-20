@@ -104,8 +104,6 @@ export default function HeaderCard() {
     // User Context
     const { 
       fetchUser, 
-
-      // CurrentActiveWorkspace, 
       workspace,
     } = useUser();
 
@@ -203,7 +201,7 @@ export default function HeaderCard() {
 
           <div className="px-5 pt-0 pb-0">
             {/* Logo + edit */}
-            <div className="flex items-start justify-between mb-3">
+            <div className="flex flex-col items-start gap-2 justify-between mb-3  md:flex-row md:items-center">
               <div className="w-14 h-14 rounded-2xl border-4 border-[#E85129] flex items-center justify-center shadow-sm shrink-0">
 
                 {workspace?.logo ?

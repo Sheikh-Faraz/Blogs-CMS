@@ -205,14 +205,15 @@ function WorkspacePageContent() {
           </Dialog>
 
     
-    <div className="flex justify-between items-center px-4 mb-8">
-      <p className="text-3xl font-bold">Current Workspace</p>
+    <div 
+      className="flex flex-col gap-4 justify-between items-start px-4 mb-8 lg:flex-row lg:items-center "
+    >
 
-      <div className="flex items-center gap-3">
+      <p className="text-3xl font-bold">Current Workspace</p>
+      <div className="flex flex-col items-start gap-4 lg:items-center lg:flex-row">
         
         {can("LEAVE_WORKSPACE") && (
           <button
-          // disabled={leaveWorkspaceLoading || can("LEAVE_WORKSPACE")}
           disabled={leaveWorkspaceLoading}
           onClick = {()=> setOpenLeaveDialog(true)}
           className="border py-2 px-3 bg-card text-card-foreground rounded-md flex gap-2 items-center hover:bg-muted"
@@ -220,7 +221,7 @@ function WorkspacePageContent() {
             <LeaveIcon className="mr-2 text-[#E85129]" />
             Leave current workspace
           </button>
-        )}
+        )} 
       
 
       {/* Create new workspace */}
@@ -236,12 +237,11 @@ function WorkspacePageContent() {
 
     </div>
 
-      {/* <div className="flex gap-5 p-4 min-h-full border border-blue-600"> */}
       <div className="p-4 min-h-full">
         <HeaderCard />
 
         {/* ── Main column ────────────────────────────────────────────────────── */}
-        <div className="flex gap-3">
+        <div className="flex flex-col gap-3 xl:flex-row">
 
         <div className="flex-1 min-w-0 space-y-4">
 
@@ -251,6 +251,11 @@ function WorkspacePageContent() {
             draftBlogs={analytics?.overview.draftBlogs ?? 0}
             authors={analytics?.overview.totalAuthors ?? 0 }
           />
+
+          {/* <div className="lg:hidden"> */}
+          <div className="xl:hidden">
+            <RightCard />
+          </div>
 
 
           <WorkspaceAnalytics
@@ -279,7 +284,12 @@ function WorkspacePageContent() {
 
         </div>
 
-          <RightCard />
+          {/* On lg screen and smaller do not show this here and show in above */}
+          {/* <div className="border border-red-600 hidden min-[1025px]:block"> */}
+          <div className="hidden xl:block">
+            <RightCard />
+          </div>
+
         </div>
 
 
