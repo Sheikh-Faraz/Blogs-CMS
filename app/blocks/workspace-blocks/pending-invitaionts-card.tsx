@@ -156,7 +156,10 @@ export default function PendingInvitationsCard() {
   };
 
   return (
-    <Card className="rounded-xl border shadow-sm">
+    <Card className="rounded-xl border shadow-sm overflow-x-auto">
+
+    <div className="min-w-175">
+
       <CardHeader>
         <CardTitle className="text-sm font-semibold">
           Pending Invitations
@@ -296,6 +299,7 @@ export default function PendingInvitationsCard() {
         </AlertDialog>
 
 
+    </div>
 
     </Card>
 
