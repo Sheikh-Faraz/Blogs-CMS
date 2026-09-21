@@ -189,6 +189,7 @@ export default function DeleteCard() {
                         variant="destructive"
                         onClick={handleDeleteWorkspace}
                         disabled={deleteWorkspaceLoading || !can("DELETE_WORKSPACE")}
+                        className="w-full"
                       >
                         {deleteWorkspaceLoading ? (
                           <LoaderIcon
