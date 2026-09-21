@@ -7,6 +7,9 @@ import { useEffect } from "react";
 import { useUser } from "@/context/User.context";
 import { useGlobalLoading } from "@/context/Loading.context";
 
+// Icons
+import { MdErrorOutline } from "react-icons/md";
+
 
 function InvitationsSkeleton() {
   return (
@@ -61,6 +64,7 @@ export default function InvitationsPage() {
 
       {receivedInvitations.length === 0 ? (
         <div className="flex min-h-75 flex-col items-center justify-center rounded-md border bg-card"> 
+          <MdErrorOutline className="text-[#E85129] my-2 h-10 w-10"/>
           <h2 className="text-lg font-medium">No pending invitations</h2>
           <p className="m-4 text-sm text-muted-foreground text-center">
             You don&apos;t have any workspace invitations right now.
