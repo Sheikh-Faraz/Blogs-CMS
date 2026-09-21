@@ -71,11 +71,11 @@ export default function UnsplashModal({
 
 
         <form
-        onSubmit={(e) => {
-            e.preventDefault(); // prevent page reload
-            handleSearch();
-        }}
-        className="p-6 border-b flex gap-3 items-center"
+          onSubmit={(e) => {
+              e.preventDefault(); // prevent page reload
+              handleSearch();
+          }}
+          className="p-6 border-b flex flex-col gap-4 items-start sm:flex-row sm:items-center"
         >
         <Input
             placeholder="Search images..."
