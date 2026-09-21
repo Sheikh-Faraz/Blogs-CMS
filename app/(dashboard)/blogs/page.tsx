@@ -13,9 +13,8 @@ import StatsCard from "@/app/blocks/blogs-page-blocks/stats-card";
 import BlogsTable from "@/app/blocks/blogs-page-blocks/blogs-table";
 
 
-// Header Skeleton
+// Skeletons
 import HeaderSkeleton from "@/app/blocks/blogs-page-blocks/blogs-page-skeleton/Header-skeleton";
-// Stats  Skeleton
 import StatsSkeleton from "@/app/blocks/blogs-page-blocks/blogs-page-skeleton/Stats-skeleton";
 
 
