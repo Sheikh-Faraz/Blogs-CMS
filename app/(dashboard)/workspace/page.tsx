@@ -252,11 +252,10 @@ function WorkspacePageContent() {
             authors={analytics?.overview.totalAuthors ?? 0 }
           />
 
-          {/* <div className="lg:hidden"> */}
+          {/* Show for smaller and not on bigger screens */}
           <div className="xl:hidden">
             <RightCard />
           </div>
-
 
           <WorkspaceAnalytics
             totalBlogs={analytics?.overview.totalBlogs ?? 0}
@@ -284,8 +283,7 @@ function WorkspacePageContent() {
 
         </div>
 
-          {/* On lg screen and smaller do not show this here and show in above */}
-          {/* <div className="border border-red-600 hidden min-[1025px]:block"> */}
+          {/* Show this on larger screns and donot show this on smaller screens for responsiveness */}
           <div className="hidden xl:block">
             <RightCard />
           </div>

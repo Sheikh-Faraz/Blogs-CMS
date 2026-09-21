@@ -163,8 +163,16 @@ export default function DeleteCard() {
                 >
                   <DialogContent>
                     <DialogHeader>
-                      <DialogTitle>
-                        Delete {workspace?.name || "this workspace"}?
+
+                      {/* <DialogTitle className="flex min-w-0 items-center border border-red-600"> */}
+                      <DialogTitle className="flex items-center w-fit">
+                        {/* <span className="shrink-0">Delete</span> */}
+                        <span>Delete</span>
+
+                        <p className="mx-2 w-32 truncate sm:w-60">
+                          {workspace?.name || "this workspace"}
+                        </p>
+
                       </DialogTitle>
 
                       <DialogDescription className="my-4">
