@@ -561,13 +561,13 @@ export default function EditWorkspaceDialog({
 
       <DialogContent
         className="
-          w-[calc(100%-1rem)]
+          w-[calc(100%-2rem)]
           max-w-none
           gap-0
           overflow-auto
           p-0
-          max-h-[95vh]
-          sm:w-[calc(100%-2rem)]
+          max-h-[calc(100vh-2rem)]
+          sm:w-[calc(100%-3rem)]
           md:max-w-3xl
           lg:max-w-4xl
           xl:max-w-5xl
