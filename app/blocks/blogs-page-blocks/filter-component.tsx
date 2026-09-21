@@ -193,6 +193,7 @@ export default function FilterComponent({
 
 
 <Dialog>
+
   <DialogTrigger asChild>
     <Button variant="outline" className="rounded-md bg-card w-full lg:w-fit">
       <ListFilter className="text-[#E85129]"/>
@@ -200,9 +201,10 @@ export default function FilterComponent({
     </Button>
   </DialogTrigger>
 
-  <DialogContent className="sm:max-w-lg">
+  {/* <DialogContent className="sm:max-w-lg"> */}
+  <DialogContent className="w-[calc(100%-2rem)] max-h-[90vh] overflow-y-auto sm:max-w-lg">
     <DialogHeader>
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between mt-4 mb-2 mr-6 items-center">
         <DialogTitle>Filter & Sort</DialogTitle>
 
         {/* Clear all */}
@@ -222,7 +224,8 @@ export default function FilterComponent({
             setSearch(""); // optional
             setAuthorFilter("all");
           }}
-          className="text-sm mr-6 items-center text-center justify-center flex"
+          // className="text-sm mr-6 items-center text-center justify-center flex"
+          className="text-sm items-center text-center justify-center flex"
         >
           <IoMdRefresh className="text-[#E85129]" />
           Clear All
