@@ -183,7 +183,14 @@ export default function TeamCard() {
           </div>
 
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Button type="button" variant="ghost" size="icon" className="h-8 w-8" onClick={() => setRoleInfoOpen(true)} aria-label="View role permissions">
+            <Button 
+              type="button" 
+              variant="ghost" 
+              size="icon" 
+              className="h-8 w-8" 
+              onClick={() => setRoleInfoOpen(true)} 
+              aria-label="View role permissions"
+            >
               <CircleHelp className="h-4 w-4" />
             </Button>
             <span className="sm:hidden">{members.length} {members.length === 1 ? "member" : "members"}</span>
@@ -196,10 +203,53 @@ export default function TeamCard() {
             const editable = canEditMember(member);
             const kickable = canKickMember(member);
             const isUpdating = updatingMembershipId === member._id;
-            return <div key={member._id} className="group flex min-h-20 items-center gap-3 border-b py-3">
-              <button type="button" onClick={() => openProfile(member)} className="flex min-w-0 flex-1 items-center gap-3 text-left"><Avatar className="h-10 w-10 shrink-0"><AvatarImage src={member.user.profilePic || undefined} /><AvatarFallback>{initials(member.user.fullName)}</AvatarFallback></Avatar><span className="min-w-0"><span className="block truncate text-sm font-semibold">{member.user.fullName}</span><span className="block truncate text-xs text-muted-foreground">{member.user.email}</span></span></button>
-              <div className="hidden items-center gap-2 sm:flex">{!editable ? <span className="mr-10 text-sm font-medium">{roleLabel[member.role]}</span> : <div className="flex items-center gap-2"><Select value={member.role} onValueChange={(value) => requestRoleChange(member, value as EditableRole)} disabled={!editable || isUpdating}><SelectTrigger className="w-32.5"><SelectValue /></SelectTrigger><SelectContent>{currentMember?.role === "OWNER" && <SelectItem value="ADMIN">Admin</SelectItem>}<SelectItem value="EDITOR">Editor</SelectItem><SelectItem value="VIEWER">Viewer</SelectItem></SelectContent></Select>{isUpdating && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}</div>}</div>
-              <div className="sm:hidden"><Badge variant="outline">{roleLabel[member.role]}</Badge></div>
+            // return <div key={member._id} className="group flex min-h-20 items-center gap-3 border-b py-3">
+            return <div key={member._id} className="group flex min-h-20 items-center gap-3 overflow-x-auto py-3">
+
+            <div className="flex-1 flex gap-6 justify-between">
+
+              <button type="button" 
+                onClick={() => openProfile(member)} 
+                className="flex min-w-0 flex-1 items-center gap-3 text-left"
+              >
+                <Avatar className="h-10 w-10 shrink-0">
+                  <AvatarImage src={member.user.profilePic || undefined} />
+                    <AvatarFallback>{initials(member.user.fullName)}</AvatarFallback>
+                </Avatar>
+                  <span className="min-w-0">
+                    <span className="block truncate text-sm font-semibold">{member.user.fullName}</span>
+                    <span className="block truncate text-xs text-muted-foreground">{member.user.email}</span>
+                  </span>
+              </button>
+
+              {/* To change the role of the member */}
+              {/* <div className="hidden border border-red-600 items-center gap-2 sm:flex"> */}
+              <div className="flex items-center gap-2 ml-6">
+                {!editable ? 
+                  <span className="mr-10 text-sm font-medium">{roleLabel[member.role]}</span> 
+                  : 
+                <div className="flex items-center gap-2">
+                  <Select 
+                    value={member.role} 
+                    onValueChange={(value) => requestRoleChange(member, value as EditableRole)} 
+                    disabled={!editable || isUpdating}
+                  >
+                    <SelectTrigger className="w-32.5">
+                      <SelectValue />
+                    </SelectTrigger>
+                    
+                    <SelectContent>
+                      {currentMember?.role === "OWNER" && <SelectItem value="ADMIN">Admin</SelectItem>}
+                      <SelectItem value="EDITOR">Editor</SelectItem>
+                      <SelectItem value="VIEWER">Viewer</SelectItem>
+                    </SelectContent>
+                    
+                    </Select>{isUpdating && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+                  </div>}
+                </div>
+
+
+              {/* <div className="sm:hidden"><Badge variant="outline">{roleLabel[member.role]}</Badge></div> */}
               
               <DropdownMenu>
               
@@ -233,7 +283,10 @@ export default function TeamCard() {
                 </DropdownMenuContent>
                   
                 </DropdownMenu>
-            </div>;
+            
+            </div>
+
+            </div>
           })}
         </div>
       </div>
@@ -241,15 +294,131 @@ export default function TeamCard() {
       <Dialog open={kickMemberDialog} onOpenChange={(open) => { if (!kickingMembershipId) setKickMemberDialog(open); }}>
         <DialogContent className="sm:max-w-md"><DialogHeader><DialogTitle>Kick member?</DialogTitle><DialogDescription className="my-2">{selectedMember ? `Are you sure you want to kick '${selectedMember.user.fullName}' from '${workspace?.name}'? They will immediately lose access to this workspace.` : "Are you sure you want to kick this member from the workspace?"}</DialogDescription></DialogHeader><DialogFooter><Button type="button" variant="outline" disabled={!!kickingMembershipId} onClick={() => setKickMemberDialog(false)}>Cancel</Button><Button type="button" variant="destructive" disabled={!!kickingMembershipId || !selectedMember} onClick={confirmKickMember}>{kickingMembershipId ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Removing...</> : "Kick Member"}</Button></DialogFooter></DialogContent>
       </Dialog>
-
+      
+      {/* Invite member dialog */}
       <InviteMemberDialog open={inviteOpen} onOpenChange={setInviteOpen} />
 
       <Dialog open={pendingRoleChange !== null} onOpenChange={(open) => !open && !updatingMembershipId && setPendingRoleChange(null)}><DialogContent className="w-[calc(50%)] max-w-none!">{pendingRoleChange && <><DialogHeader><DialogTitle>Change member role?</DialogTitle><DialogDescription>You are changing <span className="font-medium text-foreground">{pendingRoleChange.member.user.fullName}</span> from {roleLabel[pendingRoleChange.member.role]} to {roleLabel[pendingRoleChange.role]}.</DialogDescription></DialogHeader><div className="my-4 rounded-lg border bg-muted/20 p-4"><div className="mb-4"><div className="flex items-center justify-between gap-3"><div><p className="text-sm font-semibold">{roleLabel[pendingRoleChange.role]}</p><p className="mt-1 text-xs text-muted-foreground">{rolePermissions[pendingRoleChange.role].description}</p></div><Badge variant="secondary">New role</Badge></div></div><div className="grid gap-4 sm:grid-cols-2"><div><p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">They can</p>{renderPermissionList(rolePermissions[pendingRoleChange.role].can, "can")}</div><div><p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">They can&apos;t</p>{rolePermissions[pendingRoleChange.role].cannot.length > 0 ? renderPermissionList(rolePermissions[pendingRoleChange.role].cannot, "cannot") : <p className="text-sm text-muted-foreground">No restrictions at this level.</p>}</div></div></div><DialogFooter><Button variant="outline" disabled={!!updatingMembershipId} onClick={() => setPendingRoleChange(null)}>Cancel</Button><Button disabled={!!updatingMembershipId} onClick={confirmRoleChange}>{updatingMembershipId ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Updating...</> : `Change to ${roleLabel[pendingRoleChange.role]}`}</Button></DialogFooter></>}</DialogContent></Dialog>
+      
+      
+      
+<Dialog open={roleInfoOpen} onOpenChange={setRoleInfoOpen}>
+  <DialogContent className="w-[calc(100%-2rem)] max-h-[90vh] overflow-y-auto sm:max-w-xl md:max-w-3xl lg:max-w-5xl">
+    <DialogHeader>
+      <DialogTitle className="text-base sm:text-lg">
+        Workspace role permissions
+      </DialogTitle>
 
-      <Dialog open={roleInfoOpen} onOpenChange={setRoleInfoOpen}><DialogContent className="w-[calc(100%-20rem)]! max-w-none!"><DialogHeader><DialogTitle>Workspace role permissions</DialogTitle><DialogDescription>Each role controls what a member can access and manage in the workspace.</DialogDescription></DialogHeader><div className="grid gap-3 sm:grid-cols-2">{(Object.keys(rolePermissions) as Role[]).map((role) => <div key={role} className="rounded-lg border p-4"><div className="mb-3 flex items-center justify-between gap-3"><div><p className="text-sm font-semibold">{roleLabel[role]}</p><p className="mt-1 text-xs text-muted-foreground">{rolePermissions[role].description}</p></div><Badge variant="outline">{roleLabel[role]}</Badge></div><div className="space-y-2">{rolePermissions[role].can.map((item) => <div key={item} className="flex items-start gap-2 text-xs"><Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-500" /><span>{item}</span></div>)}{rolePermissions[role].cannot.map((item) => <div key={item} className="flex items-start gap-2 text-xs text-muted-foreground"><X className="mt-0.5 h-3.5 w-3.5 shrink-0" /><span>{item}</span></div>)}</div></div>)}</div></DialogContent></Dialog>
+      <DialogDescription className="text-xs sm:text-sm">
+        Each role controls what a member can access and manage in the workspace.
+      </DialogDescription>
+    </DialogHeader>
 
+    {/* Showing permissions */}
+    <div className="grid gap-3 sm:grid-cols-2">
+      {(Object.keys(rolePermissions) as Role[]).map((role) => (
+        <div
+          key={role}
+          className="rounded-lg border p-3 sm:p-4"
+        >
+          <div className="mb-3 flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-sm font-semibold">
+                {roleLabel[role]}
+              </p>
+
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                {rolePermissions[role].description}
+              </p>
+            </div>
+
+            <Badge
+              variant="outline"
+              className="shrink-0 text-xs"
+            >
+              {roleLabel[role]}
+            </Badge>
+          </div>
+
+          <div className="space-y-2">
+            {rolePermissions[role].can.map((item) => (
+              <div
+                key={item}
+                className="flex items-start gap-2 text-xs"
+              >
+                <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-500" />
+
+                <span className="leading-relaxed">
+                  {item}
+                </span>
+              </div>
+            ))}
+
+            {rolePermissions[role].cannot.map((item) => (
+              <div
+                key={item}
+                className="flex items-start gap-2 text-xs text-muted-foreground"
+              >
+                <X className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+
+                <span className="leading-relaxed">
+                  {item}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </DialogContent>
+</Dialog>
+
+
+      {/* Shows Role Permissions
+      <Dialog open={roleInfoOpen} onOpenChange={setRoleInfoOpen}>
+        <DialogContent className="w-[calc(100%-20rem)]! max-w-none!">
+
+          <DialogHeader>
+            <DialogTitle>Workspace role permissions</DialogTitle>
+            <DialogDescription>Each role controls what a member can access and manage in the workspace.</DialogDescription>          </DialogHeader>
+          
+          Showing permissions
+          <div className="grid gap-3 sm:grid-cols-2 border border-red-600">
+            {(Object.keys(rolePermissions) as Role[]).map((role) => 
+              <div key={role} className="rounded-lg border p-4">
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-semibold">{roleLabel[role]}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">{rolePermissions[role].description}</p>
+                  </div>
+                  <Badge variant="outline">{roleLabel[role]}</Badge>
+                </div>
+                
+                <div className="space-y-2">
+                  {rolePermissions[role].can.map((item) => 
+                    <div key={item} className="flex items-start gap-2 text-xs">
+                      <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-500" />
+                      <span>{item}</span>
+                    </div>)}
+                    
+                  {rolePermissions[role].cannot.map((item) => 
+                    <div key={item} className="flex items-start gap-2 text-xs text-muted-foreground">
+                      <X className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                      <span>{item}</span>          
+                    </div>
+                  )}
+              </div>
+            </div>)}
+          </div>
+
+        </DialogContent>
+      </Dialog> */}
+
+      
+      {/* Shows memeber's info */}
       <Dialog open={profileOpen} onOpenChange={setProfileOpen}>
-        <DialogContent className="max-w-lg">
+        {/* <DialogContent className="max-w-lg border border-red-600"> */}
+        <DialogContent className="w-[calc(100%-2rem)] max-h-[90vh] overflow-y-auto max-w-lg">
           {selectedMember && 
             <>
               <DialogHeader>

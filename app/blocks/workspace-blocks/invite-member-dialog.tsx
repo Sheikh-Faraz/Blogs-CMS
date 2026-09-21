@@ -153,7 +153,7 @@ export default function InviteMemberDialog({ open, onOpenChange }: InviteMemberD
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="w-[calc(100%-2rem)] max-h-[90vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Invite Member</DialogTitle>
           <DialogDescription>Invite someone to join this workspace.</DialogDescription>
