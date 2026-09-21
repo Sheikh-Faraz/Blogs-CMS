@@ -290,6 +290,8 @@ export default function TeamCard() {
           })}
         </div>
       </div>
+      
+
 
       <Dialog open={kickMemberDialog} onOpenChange={(open) => { if (!kickingMembershipId) setKickMemberDialog(open); }}>
         <DialogContent className="sm:max-w-md"><DialogHeader><DialogTitle>Kick member?</DialogTitle><DialogDescription className="my-2">{selectedMember ? `Are you sure you want to kick '${selectedMember.user.fullName}' from '${workspace?.name}'? They will immediately lose access to this workspace.` : "Are you sure you want to kick this member from the workspace?"}</DialogDescription></DialogHeader><DialogFooter><Button type="button" variant="outline" disabled={!!kickingMembershipId} onClick={() => setKickMemberDialog(false)}>Cancel</Button><Button type="button" variant="destructive" disabled={!!kickingMembershipId || !selectedMember} onClick={confirmKickMember}>{kickingMembershipId ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Removing...</> : "Kick Member"}</Button></DialogFooter></DialogContent>
@@ -297,122 +299,253 @@ export default function TeamCard() {
       
       {/* Invite member dialog */}
       <InviteMemberDialog open={inviteOpen} onOpenChange={setInviteOpen} />
-
-      <Dialog open={pendingRoleChange !== null} onOpenChange={(open) => !open && !updatingMembershipId && setPendingRoleChange(null)}><DialogContent className="w-[calc(50%)] max-w-none!">{pendingRoleChange && <><DialogHeader><DialogTitle>Change member role?</DialogTitle><DialogDescription>You are changing <span className="font-medium text-foreground">{pendingRoleChange.member.user.fullName}</span> from {roleLabel[pendingRoleChange.member.role]} to {roleLabel[pendingRoleChange.role]}.</DialogDescription></DialogHeader><div className="my-4 rounded-lg border bg-muted/20 p-4"><div className="mb-4"><div className="flex items-center justify-between gap-3"><div><p className="text-sm font-semibold">{roleLabel[pendingRoleChange.role]}</p><p className="mt-1 text-xs text-muted-foreground">{rolePermissions[pendingRoleChange.role].description}</p></div><Badge variant="secondary">New role</Badge></div></div><div className="grid gap-4 sm:grid-cols-2"><div><p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">They can</p>{renderPermissionList(rolePermissions[pendingRoleChange.role].can, "can")}</div><div><p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">They can&apos;t</p>{rolePermissions[pendingRoleChange.role].cannot.length > 0 ? renderPermissionList(rolePermissions[pendingRoleChange.role].cannot, "cannot") : <p className="text-sm text-muted-foreground">No restrictions at this level.</p>}</div></div></div><DialogFooter><Button variant="outline" disabled={!!updatingMembershipId} onClick={() => setPendingRoleChange(null)}>Cancel</Button><Button disabled={!!updatingMembershipId} onClick={confirmRoleChange}>{updatingMembershipId ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Updating...</> : `Change to ${roleLabel[pendingRoleChange.role]}`}</Button></DialogFooter></>}</DialogContent></Dialog>
       
-      
-      
-<Dialog open={roleInfoOpen} onOpenChange={setRoleInfoOpen}>
-  <DialogContent className="w-[calc(100%-2rem)] max-h-[90vh] overflow-y-auto sm:max-w-xl md:max-w-3xl lg:max-w-5xl">
-    <DialogHeader>
-      <DialogTitle className="text-base sm:text-lg">
-        Workspace role permissions
-      </DialogTitle>
 
-      <DialogDescription className="text-xs sm:text-sm">
-        Each role controls what a member can access and manage in the workspace.
-      </DialogDescription>
-    </DialogHeader>
+      {/* Change Role Member confirmation */}
+      <Dialog
+        open={pendingRoleChange !== null}
+        onOpenChange={(open) =>
+          !open &&
+          !updatingMembershipId &&
+          setPendingRoleChange(null)
+        }
+      >
+        <DialogContent className="w-[calc(100%-2rem)] max-h-[90vh] overflow-y-auto sm:max-w-xl md:max-w-2xl lg:max-w-3xl">
+          {pendingRoleChange && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-base sm:text-lg">
+                  Change member role?
+                </DialogTitle>
 
-    {/* Showing permissions */}
-    <div className="grid gap-3 sm:grid-cols-2">
-      {(Object.keys(rolePermissions) as Role[]).map((role) => (
-        <div
-          key={role}
-          className="rounded-lg border p-3 sm:p-4"
-        >
-          <div className="mb-3 flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <p className="text-sm font-semibold">
-                {roleLabel[role]}
-              </p>
+                <DialogDescription className="text-xs leading-relaxed sm:text-sm">
+                  You are changing{" "}
+                  <span className="font-medium text-foreground">
+                    {pendingRoleChange.member.user.fullName}
+                  </span>{" "}
+                  from{" "}
+                  {roleLabel[pendingRoleChange.member.role]} to{" "}
+                  {roleLabel[pendingRoleChange.role]}.
+                </DialogDescription>
+              </DialogHeader>
 
-              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                {rolePermissions[role].description}
-              </p>
-            </div>
+              <div className="my-2 rounded-lg border bg-muted/20 p-3 sm:my-4 sm:p-4">
+                <div className="mb-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold">
+                        {roleLabel[pendingRoleChange.role]}
+                      </p>
 
-            <Badge
-              variant="outline"
-              className="shrink-0 text-xs"
-            >
-              {roleLabel[role]}
-            </Badge>
-          </div>
+                      <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                        {rolePermissions[pendingRoleChange.role].description}
+                      </p>
+                    </div>
 
-          <div className="space-y-2">
-            {rolePermissions[role].can.map((item) => (
-              <div
-                key={item}
-                className="flex items-start gap-2 text-xs"
-              >
-                <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-500" />
-
-                <span className="leading-relaxed">
-                  {item}
-                </span>
-              </div>
-            ))}
-
-            {rolePermissions[role].cannot.map((item) => (
-              <div
-                key={item}
-                className="flex items-start gap-2 text-xs text-muted-foreground"
-              >
-                <X className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-
-                <span className="leading-relaxed">
-                  {item}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      ))}
-    </div>
-  </DialogContent>
-</Dialog>
-
-
-      {/* Shows Role Permissions
-      <Dialog open={roleInfoOpen} onOpenChange={setRoleInfoOpen}>
-        <DialogContent className="w-[calc(100%-20rem)]! max-w-none!">
-
-          <DialogHeader>
-            <DialogTitle>Workspace role permissions</DialogTitle>
-            <DialogDescription>Each role controls what a member can access and manage in the workspace.</DialogDescription>          </DialogHeader>
-          
-          Showing permissions
-          <div className="grid gap-3 sm:grid-cols-2 border border-red-600">
-            {(Object.keys(rolePermissions) as Role[]).map((role) => 
-              <div key={role} className="rounded-lg border p-4">
-                <div className="mb-3 flex items-center justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-semibold">{roleLabel[role]}</p>
-                    <p className="mt-1 text-xs text-muted-foreground">{rolePermissions[role].description}</p>
+                    <Badge variant="secondary" className="shrink-0">
+                      New role
+                    </Badge>
                   </div>
-                  <Badge variant="outline">{roleLabel[role]}</Badge>
+                </div>
+
+                <div className="grid gap-5 sm:grid-cols-2 sm:gap-4">
+                  {/* Can */}
+                  <div>
+                    <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      They can
+                    </p>
+
+                    {renderPermissionList(
+                      rolePermissions[pendingRoleChange.role].can,
+                      "can"
+                    )}
+                  </div>
+
+                  {/* Cannot */}
+                  <div>
+                    <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      They can&apos;t
+                    </p>
+
+                    {rolePermissions[pendingRoleChange.role].cannot.length > 0 ? (
+                      renderPermissionList(
+                        rolePermissions[pendingRoleChange.role].cannot,
+                        "cannot"
+                      )
+                    ) : (
+                      <p className="text-sm text-muted-foreground">
+                        No restrictions at this level.
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <DialogFooter className="flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+                <Button
+                  variant="outline"
+                  disabled={!!updatingMembershipId}
+                  onClick={() => setPendingRoleChange(null)}
+                  className="w-full sm:w-auto"
+                >
+                  Cancel
+                </Button>
+
+                <Button
+                  disabled={!!updatingMembershipId}
+                  onClick={confirmRoleChange}
+                  className="w-full sm:w-auto"
+                >
+                  {updatingMembershipId ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Updating...
+                    </>
+                  ) : (
+                    `Change to ${roleLabel[pendingRoleChange.role]}`
+                  )}
+                </Button>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* <Dialog 
+        open={pendingRoleChange !== null} 
+        onOpenChange={(open) => !open && !updatingMembershipId && setPendingRoleChange(null)}
+      >
+        <DialogContent className="w-[calc(50%)] max-w-none! border border-red-600">
+          {pendingRoleChange && 
+            <>
+              <DialogHeader>
+                <DialogTitle>Change member role?</DialogTitle>
+                <DialogDescription>
+                  You are changing <span className="font-medium text-foreground">{pendingRoleChange.member.user.fullName}</span> from {roleLabel[pendingRoleChange.member.role]} to {roleLabel[pendingRoleChange.role]}.
+                </DialogDescription>
+              </DialogHeader>
+              
+              <div className="my-4 rounded-lg border bg-muted/20 p-4">
+                <div className="mb-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-semibold">{roleLabel[pendingRoleChange.role]}</p>
+                      <p className="mt-1 text-xs text-muted-foreground">{rolePermissions[pendingRoleChange.role].description}</p>
+                    </div>
+                    <Badge variant="secondary">New role</Badge>
+                  </div>
                 </div>
                 
-                <div className="space-y-2">
-                  {rolePermissions[role].can.map((item) => 
-                    <div key={item} className="flex items-start gap-2 text-xs">
-                      <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-500" />
-                      <span>{item}</span>
-                    </div>)}
-                    
-                  {rolePermissions[role].cannot.map((item) => 
-                    <div key={item} className="flex items-start gap-2 text-xs text-muted-foreground">
-                      <X className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                      <span>{item}</span>          
-                    </div>
-                  )}
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">They can</p>
+                      {renderPermissionList(rolePermissions[pendingRoleChange.role].can, "can")}
+                  </div>
+                  <div>
+                    <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">They can&apos;t</p>
+                      {rolePermissions[pendingRoleChange.role].cannot.length > 0 ? renderPermissionList(rolePermissions[pendingRoleChange.role].cannot, "cannot") 
+                        : <p className="text-sm text-muted-foreground">No restrictions at this level.</p>
+                      }
+                  </div>
+                </div>
               </div>
-            </div>)}
-          </div>
+              
+              <DialogFooter>
+                <Button 
+                  variant="outline" 
+                  disabled={!!updatingMembershipId} 
+                  onClick={() => setPendingRoleChange(null)}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  disabled={!!updatingMembershipId} 
+                  onClick={confirmRoleChange}
+                >
+                  {updatingMembershipId ? 
+                    <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Updating...</> : `Change to ${roleLabel[pendingRoleChange.role]}`}
+                </Button>
+              </DialogFooter>
+              </>
+              }
+            
+            </DialogContent>
+          </Dialog> */}
+      
 
-        </DialogContent>
-      </Dialog> */}
+
+   
+          <Dialog open={roleInfoOpen} onOpenChange={setRoleInfoOpen}>
+            <DialogContent className="w-[calc(100%-2rem)] max-h-[90vh] overflow-y-auto sm:max-w-xl md:max-w-3xl lg:max-w-5xl">
+              <DialogHeader>
+                <DialogTitle className="text-base sm:text-lg">
+                  Workspace role permissions
+                </DialogTitle>
+
+                <DialogDescription className="text-xs sm:text-sm">
+                  Each role controls what a member can access and manage in the workspace.
+                </DialogDescription>
+              </DialogHeader>
+
+              {/* Showing permissions */}
+              <div className="grid gap-3 sm:grid-cols-2">
+                {(Object.keys(rolePermissions) as Role[]).map((role) => (
+                  <div
+                    key={role}
+                    className="rounded-lg border p-3 sm:p-4"
+                  >
+                    <div className="mb-3 flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold">
+                          {roleLabel[role]}
+                        </p>
+
+                        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                          {rolePermissions[role].description}
+                        </p>
+                      </div>
+
+                      <Badge
+                        variant="outline"
+                        className="shrink-0 text-xs"
+                      >
+                        {roleLabel[role]}
+                      </Badge>
+                    </div>
+
+                    <div className="space-y-2">
+                      {rolePermissions[role].can.map((item) => (
+                        <div
+                          key={item}
+                          className="flex items-start gap-2 text-xs"
+                        >
+                          <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-500" />
+
+                          <span className="leading-relaxed">
+                            {item}
+                          </span>
+                        </div>
+                      ))}
+
+                      {rolePermissions[role].cannot.map((item) => (
+                        <div
+                          key={item}
+                          className="flex items-start gap-2 text-xs text-muted-foreground"
+                        >
+                          <X className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+
+                          <span className="leading-relaxed">
+                            {item}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </DialogContent>
+          </Dialog>
+
 
       
       {/* Shows memeber's info */}
