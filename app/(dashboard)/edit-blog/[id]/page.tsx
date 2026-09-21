@@ -516,30 +516,32 @@ export default function EditBlogPage() {
     <div className="w-full">
 
       {/* 🔥 HEADER */}
-      <div className="mx-5 flex justify-between gap-4 border-b bg-card px-6 py-4 text-card-foreground">
+      {/* <div className="mx-5 flex justify-between gap-4 border-b bg-card px-6 py-4 text-card-foreground"> */}
+      <div className="mx-5 flex flex-col-reverse justify-between gap-5 border-b bg-card px-6 py-4 text-card-foreground md:flex-row">
+
         <div className="flex min-w-0 flex-1">
           <h1 className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap text-2xl font-semibold">
             {title || "Untitled"}
           </h1>
         </div>
       
-      <button
-        onClick={handleSubmit} 
-        disabled={updateBlogLoading || !can("UPDATE_BLOG")} 
-        className="flex items-center gap-1.5 rounded-md border bg-card px-2.5 py-1.5 text-sm text-card-foreground hover:bg-muted lg:gap-2 lg:px-3 lg:py-2"
-      >
-        {updateBlogLoading ? (
-          <div className="flex items-center gap-1.5 text-center lg:gap-2">
-            Saving
-            <LoaderIcon />
-          </div>
-        ) : (
-          <p className="flex items-center gap-1.5 lg:gap-2">
-              Update changes
-            <UploadIcon className="size-3.5 text-[#E85129] lg:size-4" />
-          </p>
-        )}
-      </button>
+        <button
+          onClick={handleSubmit} 
+          disabled={updateBlogLoading || !can("UPDATE_BLOG")} 
+          className="w-fit flex items-center gap-1.5 rounded-md border bg-card px-2.5 py-1.5 text-sm text-card-foreground hover:bg-muted lg:gap-2 lg:px-3 lg:py-2"
+        >
+          {updateBlogLoading ? (
+            <div className="flex items-center gap-1.5 text-center lg:gap-2">
+              Saving
+              <LoaderIcon />
+            </div>
+          ) : (
+            <p className="flex items-center gap-1.5 lg:gap-2">
+                Update changes
+              <UploadIcon className="size-3.5 text-[#E85129] lg:size-4" />
+            </p>
+          )}
+        </button>
       </div>
 
 

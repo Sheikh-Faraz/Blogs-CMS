@@ -222,7 +222,6 @@ export default function FilterComponent({
             setSearch(""); // optional
             setAuthorFilter("all");
           }}
-          // className="text-sm text-white mr-6 "
           className="text-sm mr-6 items-center text-center justify-center flex"
         >
           <IoMdRefresh className="text-[#E85129]" />
