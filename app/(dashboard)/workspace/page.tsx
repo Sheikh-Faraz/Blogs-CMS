@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, Suspense, } from "react";
+import { useSearchParams, useRouter, } from "next/navigation";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 
 // Context 
 import { useUser } from "@/context/User.context";
@@ -56,6 +56,8 @@ import { FaDoorOpen as LeaveIcon } from "react-icons/fa6";
 
 // export default function WorkspacePage() {
 function WorkspacePageContent() {
+    
+    const router = useRouter();
 
     const searchParams = useSearchParams();
     const [createWorkspaceOpen, setCreateWorkspaceOpen] = useState(false);
@@ -103,9 +105,9 @@ function WorkspacePageContent() {
     const handleCreateWorkspaceOpenChange = (open: boolean) => {
       setCreateWorkspaceOpen(open);
 
-      // if (!open && createWorkspaceRequested) {
-      //   router.replace("/workspace");
-      // }
+      if (!open && createWorkspaceRequested) {
+        router.replace("/workspace");
+      }
     };
 
     
