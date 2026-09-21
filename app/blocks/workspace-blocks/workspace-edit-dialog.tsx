@@ -548,7 +548,7 @@ export default function EditWorkspaceDialog({
       open={open}
       onOpenChange={onOpenChange}
     >
-      <DialogContent
+      {/* <DialogContent
         className="
           w-[calc(100%-20rem)] 
           max-w-none!
@@ -557,12 +557,27 @@ export default function EditWorkspaceDialog({
           gap-0
           max-h-[90vh]
         "
+      > */}
+
+      <DialogContent
+        className="
+          w-[calc(100%-1rem)]
+          max-w-none
+          gap-0
+          overflow-auto
+          p-0
+          max-h-[95vh]
+          sm:w-[calc(100%-2rem)]
+          md:max-w-3xl
+          lg:max-w-4xl
+          xl:max-w-5xl
+        "
       >
         {/* =====================================================
             HEADER
         ===================================================== */}
 
-        <DialogHeader
+        {/* <DialogHeader
           className="
             border-b
             px-6
@@ -572,6 +587,20 @@ export default function EditWorkspaceDialog({
           <DialogTitle className="text-base font-semibold">
             Edit Workspace
           </DialogTitle>
+        </DialogHeader> */}
+
+        <DialogHeader
+          className="
+            border-b
+            px-4
+            py-4
+            sm:px-6
+            sm:py-5
+          "
+        >
+          <DialogTitle className="text-base font-semibold sm:text-lg">
+            Edit Workspace
+          </DialogTitle>
         </DialogHeader>
 
         {/* =====================================================
@@ -579,11 +608,13 @@ export default function EditWorkspaceDialog({
         ===================================================== */}
 
         <div className="overflow-y-auto">
+
           {/* ===================================================
               BANNER
           ==================================================== */}
 
-          <div className="relative h-52">
+          {/* <div className="relative h-52"> */}
+          <div className="relative h-36 sm:h-44 md:h-52">
             {bannerPreview ? (
               <img
                 src={bannerPreview}
@@ -615,13 +646,25 @@ export default function EditWorkspaceDialog({
 
             {/* Banner controls */}
 
-            <div
+            {/* <div
               className="
                 absolute
                 right-4
                 top-4
                 flex
                 gap-2
+              "
+            > */}
+
+            <div
+              className="
+                absolute
+                right-3
+                top-3
+                flex
+                gap-2
+                sm:right-4
+                sm:top-4
               "
             >
               <button
@@ -691,22 +734,41 @@ export default function EditWorkspaceDialog({
             <div
               className="
                 absolute
-                -bottom-11
-                left-6
+                -bottom-9
+                left-4
+                sm:-bottom-11
+                sm:left-6
               "
+              // className="
+              //   absolute
+              //   -bottom-11
+              //   left-6
+              // "
             >
               <div className="relative">
                 <div
                   className="
-                    h-24
-                    w-24
+                    h-20
+                    w-20
                     overflow-hidden
                     rounded-full
                     border-4
                     border-[#E85129]
                     bg-muted
                     shadow-md
+                    sm:h-24
+                    sm:w-24
                   "
+                  // className="
+                  //   h-24
+                  //   w-24
+                  //   overflow-hidden
+                  //   rounded-full
+                  //   border-4
+                  //   border-[#E85129]
+                  //   bg-muted
+                  //   shadow-md
+                  // "
                 >
                   {logoPreview ? (
                     <img
@@ -815,10 +877,18 @@ export default function EditWorkspaceDialog({
           <div
             className="
               space-y-5
-              px-6
+              px-4
               pb-6
-              pt-16
+              pt-14
+              sm:px-6
+              sm:pt-16
             "
+            // className="
+            //   space-y-5
+            //   px-6
+            //   pt-16
+            //   pb-6
+            // "
           >
             {/* Workspace name */}
 
@@ -856,7 +926,8 @@ export default function EditWorkspaceDialog({
 
             {/* Location */}
 
-            <div className="flex gap-5 w-fullw">
+            {/* <div className="flex gap-5 w-fullw"> */}
+            <div className="grid w-full gap-5 sm:grid-cols-2">
 
               <div className="w-full">
                 <Label>Location</Label>
@@ -1087,11 +1158,12 @@ export default function EditWorkspaceDialog({
                         {/* Visibility */}
 
                         <div
-                          className="
-                            flex
-                            items-center
-                            gap-2
-                          "
+                          className="flex shrink-0 items-center gap-2"
+                          // className="
+                          //   flex
+                          //   items-center
+                          //   gap-2
+                          // "
                         >
                           <span
                             className="
@@ -1134,13 +1206,25 @@ export default function EditWorkspaceDialog({
         <div
           className="
             flex
-            items-center
-            justify-end
+            flex-col-reverse
             gap-2
             border-t
-            px-6
+            px-4
             py-4
+            sm:flex-row
+            sm:items-center
+            sm:justify-end
+            sm:px-6
           "
+          // className="
+          //   flex
+          //   items-center
+          //   justify-end
+          //   gap-2
+          //   border-t
+          //   px-6
+          //   py-4
+          // "
         >
           <Button
             type="button"
@@ -1149,6 +1233,7 @@ export default function EditWorkspaceDialog({
             onClick={() =>
               onOpenChange(false)
             }
+            className="w-full sm:w-auto"
           >
             Cancel
           </Button>
@@ -1157,6 +1242,7 @@ export default function EditWorkspaceDialog({
             type="button"
             disabled={saving || !name.trim() || !can("UPDATE_WORKSPACE")}
             onClick={handleSubmit}
+            className="w-full sm:w-auto"
           >
             {updateWorkspaceLoading ? 
               <LoaderIcon />
