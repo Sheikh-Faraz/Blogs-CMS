@@ -207,7 +207,8 @@ export default function FilterComponent({
 
         {/* Clear all */}
         <Button
-          variant="ghost"
+          // variant="ghost"
+          variant="outline"
           onClick={() => {
             setStatusFilter("all");
             setCategoryFilter("all");
@@ -221,9 +222,10 @@ export default function FilterComponent({
             setSearch(""); // optional
             setAuthorFilter("all");
           }}
-          className="text-sm text-white mr-6 "
+          // className="text-sm text-white mr-6 "
+          className="text-sm mr-6 items-center text-center justify-center flex"
         >
-          <IoMdRefresh className="ml-2 text-[#E85129]" />
+          <IoMdRefresh className="text-[#E85129]" />
           Clear All
         </Button>
       </div>
