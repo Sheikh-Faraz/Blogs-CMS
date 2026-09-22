@@ -28,7 +28,7 @@ export default function AuthorHoverCard({ author }: { author: Author }) {
         <div
           className="
             flex w-fit max-w-full cursor-pointer items-center gap-2
-            rounded-full border border-red-600 bg-card
+            rounded-full bg-card border
             pl-2 pr-3 transition hover:bg-muted/40
             sm:pr-5
           "
