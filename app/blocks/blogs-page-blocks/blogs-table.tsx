@@ -229,7 +229,6 @@ export default function BlogsTable({ blogsData, loadingData }: BlogsTableProps) 
 
 
                 {/* AUTHOR */}
-                {/* <td > */}
                 <td className="px-2 lg:px-4">
                   <AuthorHoverCard
                     author={{

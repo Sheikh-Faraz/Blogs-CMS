@@ -27,7 +27,9 @@ export default function AuthorHoverCard({ author }: { author: Author }) {
       
       {/* TRIGGER (your table pill) */}
       <HoverCardTrigger asChild>
-        <div className="flex gap-2 items-center border rounded-full bg-card w-fit pl-2 pr-5 cursor-pointer hover:bg-muted/40 transition">
+        <div 
+          className="flex gap-2 items-center border rounded-full bg-card w-fit pl-2 pr-5 cursor-pointer hover:bg-muted/40 transition"
+        >
           <Image
             src={author.profilePic || UserImagePlaceholder.src}
             alt="Profile Picture"
@@ -37,10 +39,13 @@ export default function AuthorHoverCard({ author }: { author: Author }) {
           />
 
           <div>
-            <p className="truncate max-w-20 text-[12px] font-semibold pt-1">
+            {/* <p className="truncate max-w-20 text-[12px] font-semibold pt-1 border border-red-600"> */}
+            <p className="truncate max-w-10 text-[12px] font-semibold pt-1 md:max-w-20">
               {author.fullName}
             </p>
-            <p className="truncate max-w-20 text-[10px] text-muted-foreground">
+
+            {/* <p className="truncate max-w-20 text-[10px] text-muted-foreground"> */}
+            <p className="truncate max-w-10 text-[12px] font-semibold pt-1 md:max-w-20">
               {author.role || "No Role"}
             </p>
           </div>
