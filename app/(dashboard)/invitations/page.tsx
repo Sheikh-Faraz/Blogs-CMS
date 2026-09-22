@@ -13,18 +13,27 @@ import { MdErrorOutline } from "react-icons/md";
 
 function InvitationsSkeleton() {
   return (
-    <div className="space-y-4" aria-label="Loading invitations">
+    <div className="space-y-3 sm:space-y-4" aria-label="Loading invitations">
       {[1, 2, 3].map((item) => (
-        <div key={item} className="flex flex-col justify-between gap-4 rounded-xl border p-5 sm:flex-row sm:items-center">
-          <div className="flex items-center gap-4">
-            <div className="h-12 w-12 shrink-0 animate-pulse rounded-lg bg-muted" />
-            <div className="space-y-2">
-              <div className="h-4 w-36 animate-pulse rounded bg-muted" />
-              <div className="h-3.5 w-56 max-w-[60vw] animate-pulse rounded bg-muted" />
-              <div className="h-3 w-24 animate-pulse rounded bg-muted" />
+        <div
+          key={item}
+          className="flex flex-col justify-between gap-4 rounded-xl border p-3 sm:p-5 lg:flex-row lg:items-center"
+        >
+          {/* Invitation details */}
+          <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+            <div className="h-10 w-10 shrink-0 animate-pulse rounded-lg bg-muted sm:h-12 sm:w-12" />
+
+            <div className="min-w-0 space-y-2">
+              <div className="h-4 w-32 animate-pulse rounded bg-muted sm:w-36" />
+
+              <div className="h-3.5 w-44 max-w-[60vw] animate-pulse rounded bg-muted sm:w-56" />
+
+              <div className="h-3 w-20 animate-pulse rounded bg-muted sm:w-24" />
             </div>
           </div>
-          <div className="h-9 w-32 animate-pulse rounded-lg bg-muted" />
+
+          {/* Action */}
+          <div className="h-9 w-full animate-pulse rounded-lg bg-muted sm:w-32" />
         </div>
       ))}
     </div>
@@ -44,11 +53,12 @@ export default function InvitationsPage() {
 
   if (receivedInvitationsLoading) {
     return (
-      <div className="mx-4 h-full rounded-md p-6">
-        <div className="mb-8 space-y-3">
-          <div className="h-8 w-64 animate-pulse rounded bg-muted" />
-          <div className="h-4 w-80 max-w-full animate-pulse rounded bg-muted" />
+      <div className="mx-3 h-full rounded-md p-4 sm:mx-4 sm:p-6">
+        <div className="mb-6 space-y-3 sm:mb-8">
+          <div className="h-7 w-48 animate-pulse rounded bg-muted sm:h-8 sm:w-64" />
+          <div className="h-4 w-64 max-w-full animate-pulse rounded bg-muted sm:w-80" />
         </div>
+
         <InvitationsSkeleton />
       </div>
     );
