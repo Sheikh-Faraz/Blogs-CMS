@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 
-import { motion } from "framer-motion";
+// import { motion } from "framer-motion";
 
 // Contexts
 import { useBlog } from "@/context/Blog.context";
@@ -154,25 +154,30 @@ export default function BlogsTable({ blogsData, loadingData }: BlogsTableProps) 
               <>
               {paginatedBlogs.map((blog, index) => (
 
-              <motion.tr
+              // <motion.tr
+              //     key={`${currentPage}-${blog._id}`}
+              //     initial={{
+              //       opacity: 0,
+              //       y: 20,
+              //       filter: "blur(6px)",
+              //     }}
+              //     animate={{
+              //       opacity: 1,
+              //       y: 0,
+              //       filter: "blur(0px)",
+              //     }}
+              //     transition={{
+              //       duration: 0.45,
+              //       delay: index * 0.05,
+              //       ease: [0.22, 1, 0.36, 1],
+              //     }}
+              //     className="border-t hover:bg-muted/30 transition"
+              //   >
+              <tr
                   key={`${currentPage}-${blog._id}`}
-                  initial={{
-                    opacity: 0,
-                    y: 20,
-                    filter: "blur(6px)",
-                  }}
-                  animate={{
-                    opacity: 1,
-                    y: 0,
-                    filter: "blur(0px)",
-                  }}
-                  transition={{
-                    duration: 0.45,
-                    delay: index * 0.05,
-                    ease: [0.22, 1, 0.36, 1],
-                  }}
-                  className="border-t hover:bg-muted/30 transition"
+                  className="border-t hover:bg-muted/30"
                 >
+
                 {/* 🔥 POST (IMAGE + TITLE) */}
                 {/* <td className="p-4"> */}
                 <td className="p-2 lg:p-4">
@@ -372,7 +377,8 @@ export default function BlogsTable({ blogsData, loadingData }: BlogsTableProps) 
                 </td>
 
 
-              </motion.tr>
+              </tr>
+              // {/* </motion.tr> */}
             ))}
                       </>
             )

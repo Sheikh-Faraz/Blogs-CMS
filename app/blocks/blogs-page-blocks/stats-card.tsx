@@ -74,10 +74,11 @@ export default function StatsCard ( { blogsData }: StatsCardProps ) {
                   <div className="flex flex-col gap-4 my-6 px-4 lg:flex-row">
                 
                   {stats.map(({ icon: Icon, label, value, color, glow }) => (
-                  <motion.div
+                  // <motion.div
+                  <div
                     key={label}
-                    whileHover={{ y: -6, scale: 1.02 }}
-                    transition={{ type: "spring", stiffness: 260, damping: 18 }}
+                    // whileHover={{ y: -6, scale: 1.02 }}
+                    // transition={{ type: "spring", stiffness: 260, damping: 18 }}
                     className="relative w-full"
                   >
                     {/* Glow background layer */}
@@ -108,9 +109,10 @@ export default function StatsCard ( { blogsData }: StatsCardProps ) {
                       />
                 
                       <CardContent className="relative p-4">
-                        <motion.div
+                        {/* <motion.div */}
+                        <div
                           // whileHover={{ rotate: 6, scale: 1.1 }}
-                          whileHover={{ scale: 1.1 }}
+                          // whileHover={{ scale: 1.1 }}
                           // transition={{ type: "spring", stiffness: 300 }}
                           // transition={{ type: " ", stiffness: 300 }}
                           className="mb-2 text-muted-foreground group-hover:text-foreground"
@@ -119,38 +121,44 @@ export default function StatsCard ( { blogsData }: StatsCardProps ) {
                             {label}
                           </p>
         
-                        </motion.div>
+                        {/* </motion.div> */}
+                        </div>
 
                         <div className="flex gap-3 items-center w-fit">
-                          <motion.p
-                            initial={{ opacity: 0, y: 15 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{
-                              duration: 0.8,
-                              delay: 0.15,
-                            }}
-                            // className="text-[35px] my-3 font-bold tracking-tight lg:text-[]"
+                          {/* <motion.p */}
+                          <p
+                            // initial={{ opacity: 0, y: 15 }}
+                            // animate={{ opacity: 1, y: 0 }}
+                            // transition={{
+                            //   duration: 0.8,
+                            //   delay: 0.15,
+                            // }}
                             className="text-[25px] my-3 font-bold tracking-tight lg:text-[35px] md:text-[25px]"
                           >
-                            <AnimatedCounter value={value} />
-                          </motion.p>
+                            {/* <AnimatedCounter value={value} /> */}
+                            {value}
+                          {/* </motion.p> */}
+                          </p>
 
-                          <motion.div
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{
-                              duration: 0.6,
-                              delay: 0.3,
-                            }}
+                          {/* <motion.div */}
+                          <div
+                            // initial={{ opacity: 0, scale: 0.8 }}
+                            // animate={{ opacity: 1, scale: 1 }}
+                            // transition={{
+                            //   duration: 0.6,
+                            //   delay: 0.3,
+                            // }}
                           >
                             <Icon size={18} className="text-[#E85129]" />
-                          </motion.div>
+                          {/* </motion.div> */}
+                          </div>
                         </div>
         
                 
                       </CardContent>
                     </Card>
-                  </motion.div>
+                  {/* </motion.div> */}
+                  </div>
                 ))}
         </div>
     )
