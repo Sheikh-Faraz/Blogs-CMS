@@ -836,25 +836,27 @@ const handleSubmit = async () => {
 
                 {/* INPUT TO SELECT TAG  */}
                 <div className="mt-6">
-                <Field>
-                  <FieldLabel htmlFor="input-badge">
-                    Tags
-                  </FieldLabel>
+                  <Field>
+                    <FieldLabel htmlFor="input-badge">
+                      Tags
+                    </FieldLabel>
 
-                  <div className="flex overflow-x-auto whitespace-nowrap gap-2 scrollbar-hide">
-                    {selectedTags.map((tag) => (
-                      <div key={tag} className="rounded-none p-1 ml-1 flex border text-sm items-center">
-                        <p className="truncate max-w-30">
-                          {tag}
-                        </p>
-                        <X 
-                          data-icon="inline-end" 
-                          className="ml-2 cursor-pointer hover:bg-red-500 rounded-full border border-white size-3"
-                          onClick={() => setSelectedTags((prev) => prev.filter((t) => t !== tag))}
-                        />
-                      </div>
-                    ))}
-
+                    <div className="flex flex-nowrap overflow-x-auto  lg:max-w-65 gap-2 py-2">
+                      {selectedTags.map((tag) => (
+                        <div 
+                          key={tag} 
+                          className="rounded-none p-1 ml-1 flex border text-sm items-center"
+                        >
+                          <p className="truncate max-w-30">
+                            {tag}
+                          </p>
+                          <X 
+                            data-icon="inline-end" 
+                            className="ml-2 cursor-pointer hover:bg-red-500 rounded-full border border-white size-3"
+                            onClick={() => setSelectedTags((prev) => prev.filter((t) => t !== tag))}
+                          />
+                        </div>
+                      ))}
                   </div>
 
                   <Input
