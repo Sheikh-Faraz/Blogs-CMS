@@ -812,7 +812,7 @@ const handleSubmit = async () => {
                                         <LoaderIcon />
                                       </>
                                     ) : (
-                                      "Delete"
+                                      <p className="text-white">Delete</p>
                                     )}
                                   </AlertDialogAction>
                                 </AlertDialogFooter>

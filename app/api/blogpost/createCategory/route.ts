@@ -8,18 +8,14 @@ import { getCurrentUser } from "@/lib/getCurrentUser";
 import { getActiveWorkspace } from "@/lib/workspace";
 import { requireMembership } from "@/lib/premission";
 
-// export async function POST(req: Request) {
+
 export async function POST(req: NextRequest) {
   try {
     await connectDB();
 
-    // const nextReq = req as any;
-    // const user = await getCurrentUser(nextReq);
-
     const user = await getCurrentUser(req);
 
     if (!user) {
-      // return Response.json(
       return NextResponse.json(
         { error: "Unauthorized" },
         { status: 401 }
@@ -36,7 +32,6 @@ export async function POST(req: NextRequest) {
     );
 
     if (membership.role === "VIEWER") {
-      // return Response.json(
       return NextResponse.json(
         { error: "You do not have permission to create categories", },
         { status: 403 }
@@ -45,11 +40,9 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
 
-    const categoryName =
-      body.categoryName?.trim().replace(/\s+/g, " ");
+    const categoryName = body.categoryName?.trim().replace(/\s+/g, " ");
 
     if (!categoryName) {
-      // return Response.json(
       return NextResponse.json(
         { error: "Category name is required", },
         { status: 400 }
@@ -63,7 +56,6 @@ export async function POST(req: NextRequest) {
       });
 
     if (existingCategory) {
-      // return Response.json(
       return NextResponse.json(
         { error: "Category already exists", },
         { status: 400 }
@@ -76,7 +68,6 @@ export async function POST(req: NextRequest) {
         workspace: workspace._id,
       });
 
-    // return Response.json(category, {
     return NextResponse.json(
       category, 
       { status: 201,}
@@ -85,8 +76,6 @@ export async function POST(req: NextRequest) {
   } catch (err) {
 
     console.error("Error creating category:", err);
-
-    // return Response.json(
     return NextResponse.json(
       { error: "Internal Server Error", },
       { status: 500 }
